@@ -1,0 +1,58 @@
+import { Text, View, StyleSheet, Image } from 'react-native';
+
+export default function Header() {
+    return (
+        <View style={styles.container}>
+
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }} >
+                <View style={styles.user} />
+                <View>
+                    <Text style={{ color: '#949390', fontSize: 14 }} >Bem Vindo,</Text>
+                    <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 18 }} >Usuario</Text>
+                </View>
+            </View>
+
+            <View style={styles.card}>
+                <Text style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 'bold' }} >SALDO TOTAL</Text>
+                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >R$ 10.543,25</Text>
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15, marginTop: 20 }} >
+
+                    <View style={{ backgroundColor: '#9cff19', width: 113, height: 40, borderRadius: 10 }} ></View>
+                    <View style={{ backgroundColor: '#9cff19', width: 113, height: 40, borderRadius: 10 }} ></View>
+
+                </View>
+            </View>
+
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#222222',
+        padding: 16,
+        borderBottomRightRadius: 20,
+        borderBottomLeftRadius: 20,
+        height: 350,
+        elevation: 5,
+    },
+    user: {
+        backgroundColor: '#ffffff',
+        width: 51,
+        height: 51,
+        borderRadius: 50
+    },
+    card: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        width: 317,
+        height: 132,
+        borderRadius: 20,
+        padding: 25,
+        marginTop: 80,
+        marginBottom: 20,
+    }
+});
