@@ -20,6 +20,20 @@ export const categories = [
         transacoes: 3,
         valor: 2300,
     },
+    {
+        id: "4",
+        label: "Assinaturas",
+        value: "assinaturas",
+        transacoes: 5,
+        valor: 120,
+    },
+    {
+        id: "9",
+        label: "Renda",
+        value: "renda",
+        transacoes: 2,
+        valor: 2071,
+    },
 ];
 
 export const contas = [
@@ -66,7 +80,7 @@ export const transacoes = [
     {
         id: "1",
         titulo: "Salário",
-        categoriaId: "9",
+        categoriaId: "3",
         contaId: "1",
         data: "01 Jun",
         valor: 1621,
@@ -75,7 +89,7 @@ export const transacoes = [
     {
         id: "2",
         titulo: "Netflix",
-        categoriaId: "4",
+        categoriaId: "1",
         contaId: "1",
         data: "05 Jun",
         valor: 39.9,
@@ -94,15 +108,44 @@ export const transacoes = [
 
 export const dashboard = {
     saldoTotal: contas.reduce(
-        (total, conta) => total + conta.saldo,
-        0
-    ),
+        (total, conta) => total + conta.saldo, 0)
+        .toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        }),
 
     gastoTotal: transacoes
         .filter((t) => t.tipo === "despesa")
-        .reduce((total, t) => total + t.valor, 0),
+        .reduce((total, t) => total + t.valor, 0)
+        .toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        }),
 
     receitaTotal: transacoes
         .filter((t) => t.tipo === "receita")
-        .reduce((total, t) => total + t.valor, 0),
+        .reduce((total, t) => total + t.valor, 0)
+        .toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        }),
+
+    ultimasTransacoes: transacoes.slice(0, 5),
+
+    gastoOrcaTotal: orcamentos.reduce(
+        (total, orc) => total + orc.gasto, 0)
+        .toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        }),
+
+    limiteOrcTotal: orcamentos.reduce(
+        (total, orc) => total + orc.limite, 0)
+        .toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+        }),
+
+    orcAtivos: orcamentos.length,
+
 };

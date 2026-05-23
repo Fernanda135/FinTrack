@@ -9,7 +9,14 @@ import {
 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
-import { transacoes } from "@/data/transacoes";
+// import { transacoes } from "@/data/transacoes";
+import {
+    contas,
+    categories,
+    transacoes,
+    orcamentos,
+    dashboard,
+} from "@/data/data";
 
 export default function Transferencias() {
     const router = useRouter();
@@ -22,7 +29,6 @@ export default function Transferencias() {
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContainer}
                     >
-
                         {/* HEADER */}
                         <Text
                             style={{
@@ -38,52 +44,62 @@ export default function Transferencias() {
                             Transações
                         </Text>
 
-
                         {/* LISTA DE TRANSFERÊNCIAS */}
                         <View style={styles.transfContainer}>
-                            {transacoes.map((item) => (
-                                <View key={item.id} style={styles.transItem}>
-                                    <View>
-                                        {item.tipo === "receita" ? (
-                                            <SquareArrowDown
-                                                size={47}
-                                                strokeWidth={0.8}
-                                                color="#383A39"
-                                            />
-                                        ) : (
-                                            <SquareArrowUp
-                                                size={47}
-                                                strokeWidth={0.8}
-                                                color="#383A39"
-                                            />
-                                        )}
+                            {transacoes.map((item) => {
+                                const categoria = categories.find(
+                                    (cat) => cat.id === item.categoriaId,
+                                );
+
+                                const conta = contas.find((conta) => conta.id === item.contaId);
+
+                                return (
+                                    <View key={item.id} style={styles.transItem}>
+                                        <View>
+                                            {item.tipo === "receita" ? (
+                                                <SquareArrowDown
+                                                    size={47}
+                                                    strokeWidth={0.8}
+                                                    color="#383A39"
+                                                />
+                                            ) : (
+                                                <SquareArrowUp
+                                                    size={47}
+                                                    strokeWidth={0.8}
+                                                    color="#383A39"
+                                                />
+                                            )}
+                                        </View>
+
+                                        <View style={styles.transInfo}>
+                                            <Text style={styles.transTitulo}>{item.titulo}</Text>
+
+                                            <Text style={styles.transSub}>
+                                                {categoria?.label} - {conta?.label}
+                                            </Text>
+                                        </View>
+
+                                        <View style={styles.valorContainer}>
+                                            <Text
+                                                style={[
+                                                    styles.transValor,
+                                                    item.tipo === "receita"
+                                                        ? styles.valorReceita
+                                                        : styles.valorDespesa,
+                                                ]}
+                                            >
+                                                {item.tipo === "receita" ? "+" : "-"}
+
+                                                {item.valor.toLocaleString("pt-BR", {
+                                                    style: "currency",
+                                                    currency: "BRL",
+                                                })}
+                                            </Text>
+                                        </View>
                                     </View>
-                                    <View style={styles.transInfo}>
-                                        <Text style={styles.transTitulo}>{item.titulo}</Text>
-                                        <Text style={styles.transCategoria}>
-                                            {item.categoria}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.valorContainer}>
-                                        <Text
-                                            style={[
-                                                styles.transValor,
-                                                item.tipo === "receita"
-                                                    ? styles.valorReceita
-                                                    : styles.valorDespesa,
-                                            ]}
-                                        >
-                                            {item.tipo === "receita" ? "+" : "-"}
-                                            {item.valor.toLocaleString("pt-BR", {
-                                                style: "currency",
-                                                currency: "BRL",
-                                            })}
-                                        </Text>
-                                    </View>
-                                </View>
-                            ))}
+                                );
+                            })}
                         </View>
-                        
                     </ScrollView>
                 </View>
                 <BottomNav />
@@ -132,7 +148,7 @@ const styles = StyleSheet.create({
         color: "#383A39",
         marginBottom: 4,
     },
-    transCategoria: {
+    transSub: {
         fontSize: 12,
         color: "#AAAAAA",
     },

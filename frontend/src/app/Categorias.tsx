@@ -12,7 +12,15 @@ import { ArrowLeft } from "lucide-react-native";
 import { useRouter } from "expo-router";
 
 import BottomNav from "@/components/BottomNav";
-import { categories } from "@/data/categories";
+// import { categories } from "@/data/categories";
+import {
+    contas,
+    categories,
+    transacoes,
+    orcamentos,
+    dashboard,
+} from "@/data/data";
+
 
 export default function Categorias() {
     const router = useRouter();

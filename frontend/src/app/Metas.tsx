@@ -12,26 +12,20 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Plus, X } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
-import { orcamentos } from "@/data/orcamentos";
+// import { orcamentos } from "@/data/orcamentos";
+import {
+    contas,
+    categories,
+    transacoes,
+    orcamentos,
+    dashboard,
+} from "@/data/data";
+
 
 export default function Metas() {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<any>(null);
-
-    const gastoTotal = orcamentos
-        .reduce((total, gasto) => total + gasto.gasto, 0)
-        .toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        });
-
-    const limiteTotal = orcamentos
-        .reduce((total, limite) => total + limite.limite, 0)
-        .toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        });
 
     const getPorcentagem = (gasto: number, limite: number) => {
         return Math.round((gasto / limite) * 100);
@@ -60,8 +54,8 @@ export default function Metas() {
                         <Text style={styles.title}>Orçamentos</Text>
                         <View style={styles.cardsContainer}>
                             <View style={styles.topCard}>
-                                <Text style={styles.topCardText}>{gastoTotal} de</Text>
-                                <Text style={styles.topCardText}>{limiteTotal}</Text>
+                                <Text style={styles.topCardText}>{dashboard.gastoOrcaTotal} de</Text>
+                                <Text style={styles.topCardText}>{dashboard.limiteOrcTotal}</Text>
                             </View>
                             <View style={styles.topCard}>
                                 <Text style={styles.topCardText}>

@@ -10,12 +10,17 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Plus, SquarePen, Trash2 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
-import { contas } from "@/data/contas";
+// import { contas } from "@/data/contas";
+import {
+    contas,
+    categories,
+    transacoes,
+    orcamentos,
+    dashboard,
+} from "@/data/data";
+
 
 export default function Contas() {
-    const saldoTotal = contas
-        .reduce((total, conta) => total + conta.saldo, 0)
-        .toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
     return (
         <SafeAreaProvider>
@@ -29,7 +34,7 @@ export default function Contas() {
                         <View style={styles.header}>
                             <Text style={styles.title}>Contas</Text>
                             <Text style={styles.subtitle}>Saldo total consolidado</Text>
-                            <Text style={styles.totalBalance}>R$ {saldoTotal}</Text>
+                            <Text style={styles.totalBalance}>{dashboard.saldoTotal}</Text>
                         </View>
 
                         {/* CARDS DAS CONTAS */}

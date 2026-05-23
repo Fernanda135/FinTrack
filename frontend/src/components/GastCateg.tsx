@@ -2,7 +2,14 @@ import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import Svg, { Circle } from "react-native-svg";
 
-import { categories } from "@/data/categories";
+// import { categories } from "@/data/categories";
+import {
+    contas,
+    categories,
+    transacoes,
+    orcamentos,
+    dashboard,
+} from "@/data/data";
 
 export default function GastCateg() {
 
@@ -11,9 +18,7 @@ export default function GastCateg() {
         .slice(0, 3);
 
     const total = categorias.reduce(
-        (sum, item) => sum + item.valor,
-        0
-    );
+        (sum, item) => sum + item.valor, 0);
 
     const colors = ["#1E1E1E", "#9CFF19", "#BDBDBD"];
 
@@ -69,7 +74,6 @@ export default function GastCateg() {
                                     fill="transparent"
                                     strokeDasharray={circumference}
                                     strokeDashoffset={strokeDashoffset}
-                                    strokeLinecap="round"
                                     origin="55,55"
                                     rotation={rotation - 90}
                                 />
@@ -148,7 +152,7 @@ const styles = StyleSheet.create({
         width: "100%",
         borderWidth: 1,
         borderColor: "#F3F4F6",
-        borderRadius: 18,
+        borderRadius: 10,
         padding: 18,
         backgroundColor: "#FFFFFF",
         flexDirection: "row",
@@ -162,20 +166,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         position: "relative",
     },
-    chartCenter: {
-        position: "absolute",
-        width: 48,
-        height: 48,
-        borderRadius: 999,
-        backgroundColor: "#FFF",
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    centerText: {
-        fontSize: 10,
-        fontWeight: "bold",
-        color: "#1A1A1A",
-    },
     legendContainer: {
         flex: 1,
         marginLeft: 10,
@@ -188,7 +178,7 @@ const styles = StyleSheet.create({
     legendDot: {
         width: 10,
         height: 10,
-        borderRadius: 999,
+        borderRadius: 50,
         marginRight: 10,
     },
     legendText: {

@@ -1,44 +1,82 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 
-import { transacoes } from "@/data/transacoes";
+import {
+    contas,
+    categories,
+    transacoes,
+    orcamentos,
+    dashboard,
+} from "@/data/data";
 
 export default function UltTransac() {
-    // Pega apenas as 5 primeiras transações
-    const ultimasTransacoes = transacoes.slice(0, 5);
 
     return (
         <View style={styles.container}>
+
             <View style={styles.header}>
-                <Text style={styles.title}>Últimas transações</Text>
-                <Link href={"/Transferencias"} style={styles.link}>
+                <Text style={styles.title}>
+                    Últimas transações
+                </Text>
+
+                <Link
+                    href={"/Transferencias"}
+                    style={styles.link}
+                >
                     Ver tudo
                 </Link>
             </View>
 
             <View style={{ width: "100%" }}>
-                {ultimasTransacoes.map((item) => (
-                    <View key={item.id} style={styles.transactionCard}>
-                        <View>
-                            <Text style={styles.transactionTitle}>{item.titulo}</Text>
-                            <Text style={styles.transactionCategory}>{item.categoria}</Text>
-                        </View>
-                        <Text
-                            style={[
-                                styles.transactionValue,
-                                {
-                                    color: item.tipo === "receita" ? "#116e1f" : "#a70205",
-                                },
-                            ]}
+
+                {dashboard.ultimasTransacoes.map((item) => {
+                    const categoria = categories.find(
+                        (cat) => cat.id === item.categoriaId
+                    );
+
+                    return (
+                        <View
+                            key={item.id}
+                            style={styles.transactionCard}
                         >
-                            {item.tipo === "receita" ? "+" : "-"}
-                            {item.valor.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                            })}
-                        </Text>
-                    </View>
-                ))}
+
+                            <View>
+                                <Text style={styles.transactionTitle}>
+                                    {item.titulo}
+                                </Text>
+
+                                <Text style={styles.transactionCategory}>
+                                    {categoria?.label}
+                                </Text>
+                            </View>
+
+                            <Text
+                                style={[
+                                    styles.transactionValue,
+                                    {
+                                        color:
+                                            item.tipo === "receita"
+                                                ? "#116e1f"
+                                                : "#a70205",
+                                    },
+                                ]}
+                            >
+                                {item.tipo === "receita"
+                                    ? "+"
+                                    : "-"}
+
+                                {item.valor.toLocaleString(
+                                    "pt-BR",
+                                    {
+                                        style: "currency",
+                                        currency: "BRL",
+                                    }
+                                )}
+                            </Text>
+
+                        </View>
+                    );
+                })}
             </View>
         </View>
     );

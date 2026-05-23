@@ -1,10 +1,16 @@
 import { Text, View, StyleSheet, Image } from 'react-native';
 
-import { contas } from '@/data/contas';
+// import { contas } from '@/data/contas';
+import {
+    contas,
+    categories,
+    transacoes,
+    orcamentos,
+    dashboard,
+} from "@/data/data";
+
 
 export default function Header() {
-
-    const saldoTotal = contas.reduce((total, conta) => total + conta.saldo, 0);
 
     return (
         <View style={styles.container}>
@@ -19,7 +25,7 @@ export default function Header() {
 
             <View style={styles.card}>
                 <Text style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 'bold' }} >SALDO TOTAL</Text>
-                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >R$ {saldoTotal.toLocaleString("pt-BR", { style: "currency",currency: "BRL", })}</Text>
+                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >{dashboard.saldoTotal}</Text>
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15, marginTop: 20 }} >
 
