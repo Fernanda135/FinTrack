@@ -15,13 +15,12 @@ export default function Home() {
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
                 <View style={styles.contentContainer}>
-                    <ScrollView 
-                        showsVerticalScrollIndicator={false} 
-                        contentContainerStyle={styles.scrollContainer}
-                    >
+                    <ScrollView showsVerticalScrollIndicator={false} >
+
                         <Header/>
                         <GastCateg/>
                         <UltTransac/>
+
                     </ScrollView>
                 </View>
                 <BottomNav />
@@ -37,8 +36,5 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         flex: 1,
-    },
-    scrollContainer: {
-        paddingBottom: 20,
     },
 });

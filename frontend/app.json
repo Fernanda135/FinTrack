@@ -2,13 +2,14 @@
   "expo": {
     "name": "FinTrack",
     "slug": "FinTrack",
+    "scheme": "fintrack",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/Frame 1.png",
+    "icon": "./assets/icon-fintrack.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/Frame 1.png",
+      "image": "./assets/icon-fintrack.png",
       "resizeMode": "contain",
       "backgroundColor": "#222222"
     },
@@ -17,14 +18,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/Frame 1.png",
+        "foregroundImage": "./assets/icon-fintrack.png",
         "backgroundColor": "#222222"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/Frame 1.png"
+      "favicon": "./assets/icon-fintrack.png"
     },
     "plugins": [
       "expo-router"

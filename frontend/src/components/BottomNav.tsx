@@ -2,37 +2,24 @@ import * as React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { BottomNavigation } from "react-native-paper";
 import { router, usePathname } from "expo-router";
-import { Home, Landmark, Plus, PieChart, ArrowLeftRight } from "lucide-react-native";
+import {
+    Home,
+    Landmark,
+    Plus,
+    PieChart,
+    ArrowLeftRight,
+} from "lucide-react-native";
+import NovaTransacaoModal from "./NovaTransacaoModal";
 
 export default function BottomNav() {
     const pathname = usePathname();
+    const [modalVisible, setModalVisible] = React.useState(false);
 
     const routes = [
-        {
-            key: "home",
-            title: "Inicio",
-            path: "/",
-            icon: Home,
-        },
-        {
-            key: "contas",
-            title: "Contas",
-            path: "/Contas",
-            icon: Landmark,
-        },
-        {
-            key: "nova",
-            title: "",
-            path: "/nova-transacao",
-            icon: Plus,
-            isPlus: true,
-        },
-        {
-            key: "metas",
-            title: "Metas",
-            path: "/Metas",
-            icon: PieChart,
-        },
+        { key: "home", title: "Inicio", path: "/", icon: Home },
+        { key: "contas", title: "Contas", path: "/Contas", icon: Landmark },
+        { key: "nova", title: "", path: null, icon: Plus, isPlus: true },
+        { key: "metas", title: "Metas", path: "/Metas", icon: PieChart },
         {
             key: "transferencias",
             title: "Transf.",
@@ -52,7 +39,7 @@ export default function BottomNav() {
         setIndex(getIndex());
     }, [pathname]);
 
-    const renderIcon = ({ route, focused }: { route: any; focused: boolean }) => {
+    const renderIcon = ({ route, focused }: any) => {
         const Icon = route.icon;
 
         if (route.isPlus) {
@@ -66,7 +53,7 @@ export default function BottomNav() {
         return <Icon size={22} color={focused ? "#9CFF19" : "#777"} />;
     };
 
-    const renderLabel = ({ route, focused }: { route: any; focused: boolean }) => {
+    const renderLabel = ({ route, focused }: any) => {
         if (route.isPlus) return null;
         return (
             <Text style={[styles.label, focused && styles.labelActive]}>
@@ -75,26 +62,34 @@ export default function BottomNav() {
         );
     };
 
+    const handleTabPress = (route: any) => {
+        if (route.isPlus) {
+            setModalVisible(true);
+        } else if (route.path) {
+            router.push(route.path);
+        }
+    };
+
     return (
-        <BottomNavigation.Bar
-            activeIndicatorStyle={{
-                backgroundColor: "transparent",
-            }}
-            navigationState={{
-                index,
-                routes,
-            }}
-            onTabPress={({ route }) => {
-                router.push(route.path);
-            }}
-            renderIcon={renderIcon}
-            renderLabel={renderLabel}
-            activeColor="#9CFF19"
-            inactiveColor="#777"
-            style={styles.bottomNav}
-            labeled
-            shifting={false}
-        />
+        <>
+            <BottomNavigation.Bar
+                activeIndicatorStyle={{ backgroundColor: "transparent" }}
+                navigationState={{ index, routes }}
+                onTabPress={({ route }) => handleTabPress(route)}
+                renderIcon={renderIcon}
+                renderLabel={renderLabel}
+                activeColor="#9CFF19"
+                inactiveColor="#AAAAAA"
+                style={styles.bottomNav}
+                labeled
+                shifting={false}
+            />
+
+            <NovaTransacaoModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+            />
+        </>
     );
 }
 
@@ -116,7 +111,7 @@ const styles = StyleSheet.create({
         marginTop: -10,
     },
     label: {
-        color: "#777",
+        color: "#AAAAAA",
         fontSize: 11,
         marginTop: -6,
         fontWeight: "500",
