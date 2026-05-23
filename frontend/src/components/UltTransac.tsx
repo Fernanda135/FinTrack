@@ -10,43 +10,39 @@ import {
 } from "@/data/data";
 
 export default function UltTransac() {
-
     return (
         <View style={styles.container}>
-
             <View style={styles.header}>
-                <Text style={styles.title}>
-                    Últimas transações
-                </Text>
+                <Text style={styles.title}>Últimas transações</Text>
 
-                <Link
-                    href={"/Transferencias"}
-                    style={styles.link}
-                >
+                <Link href={"/Transferencias"} style={styles.link}>
                     Ver tudo
                 </Link>
             </View>
 
             <View style={{ width: "100%" }}>
-
                 {dashboard.ultimasTransacoes.map((item) => {
                     const categoria = categories.find(
-                        (cat) => cat.id === item.categoriaId
+                        (cat) => cat.id === item.categoriaId,
+                    );
+                    const conta = contas.find(
+                        (contaItem) => contaItem.id === item.contaId,
                     );
 
                     return (
-                        <View
-                            key={item.id}
-                            style={styles.transactionCard}
-                        >
-
+                        <View key={item.id} style={styles.transactionCard}>
                             <View>
-                                <Text style={styles.transactionTitle}>
-                                    {item.titulo}
-                                </Text>
+                                <Text style={styles.transactionTitle}>{item.titulo}</Text>
 
                                 <Text style={styles.transactionCategory}>
                                     {categoria?.label}
+                                </Text>
+                                <Text style={styles.transDate}>
+                                    {conta?.label} |{" "}
+                                    {new Date(item.data).toLocaleDateString("pt-BR", {
+                                        day: "2-digit",
+                                        month: "short",
+                                    })}
                                 </Text>
                             </View>
 
@@ -54,26 +50,17 @@ export default function UltTransac() {
                                 style={[
                                     styles.transactionValue,
                                     {
-                                        color:
-                                            item.tipo === "receita"
-                                                ? "#116e1f"
-                                                : "#a70205",
+                                        color: item.tipo === "receita" ? "#116e1f" : "#a70205",
                                     },
                                 ]}
                             >
-                                {item.tipo === "receita"
-                                    ? "+"
-                                    : "-"}
+                                {item.tipo === "receita" ? "+" : "-"}
 
-                                {item.valor.toLocaleString(
-                                    "pt-BR",
-                                    {
-                                        style: "currency",
-                                        currency: "BRL",
-                                    }
-                                )}
+                                {item.valor.toLocaleString("pt-BR", {
+                                    style: "currency",
+                                    currency: "BRL",
+                                })}
                             </Text>
-
                         </View>
                     );
                 })}
@@ -128,5 +115,10 @@ const styles = StyleSheet.create({
     },
     transactionValue: {
         fontSize: 16,
+    },
+    transDate: {
+        fontSize: 11,
+        color: "#AAAAAA",
+        marginTop: 4,
     },
 });

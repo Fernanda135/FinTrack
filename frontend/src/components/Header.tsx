@@ -27,10 +27,27 @@ export default function Header() {
                 <Text style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 'bold' }} >SALDO TOTAL</Text>
                 <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >{dashboard.saldoTotal}</Text>
 
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15, marginTop: 20 }} >
+                <View style={styles.infoContainer}>
 
-                    <View style={{ backgroundColor: '#9cff19', width: 113, height: 40, borderRadius: 10 }} ></View>
-                    <View style={{ backgroundColor: '#9cff19', width: 113, height: 40, borderRadius: 10 }} ></View>
+                    <View style={styles.infoCard}>
+                        <Text style={styles.infoLabel}>
+                            Receitas
+                        </Text>
+
+                        <Text style={styles.infoValue}>
+                            {dashboard.receitaTotal}
+                        </Text>
+                    </View>
+
+                    <View style={styles.infoCard}>
+                        <Text style={styles.infoLabel}>
+                            Gastos
+                        </Text>
+
+                        <Text style={styles.infoValue}>
+                            {dashboard.gastoTotal}
+                        </Text>
+                    </View>
 
                 </View>
             </View>
@@ -65,5 +82,29 @@ const styles = StyleSheet.create({
         padding: 25,
         marginTop: 80,
         marginBottom: 20,
-    }
+    },
+    infoContainer: {
+        flexDirection: "row",
+        gap: 15,
+        marginTop: 20,
+    },
+    infoCard: {
+        flex: 1,
+        backgroundColor: "#9cff19",
+        borderRadius: 14,
+        padding: 12,
+        alignItems: "center",
+    },
+    infoLabel: {
+        color: "#1A1A1A",
+        fontSize: 11,
+        fontWeight: "bold",
+        marginBottom: 4,
+        textTransform: "uppercase",
+    },
+    infoValue: {
+        color: "#1A1A1A",
+        fontSize: 14,
+        fontWeight: "bold",
+    },
 });

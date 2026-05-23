@@ -21,11 +21,14 @@ import {
     dashboard,
 } from "@/data/data";
 
+import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
+
 
 export default function Metas() {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<any>(null);
+    const [novoModalVisible, setNovoModalVisible] = useState(false);
 
     const getPorcentagem = (gasto: number, limite: number) => {
         return Math.round((gasto / limite) * 100);
@@ -136,7 +139,9 @@ export default function Metas() {
                             );
                         })}
 
-                        <TouchableOpacity style={styles.addButton}>
+                        <TouchableOpacity
+                            style={styles.addButton}
+                            onPress={() => setNovoModalVisible(true)}>
                             <Plus size={30} color="#AAAAAA" />
                         </TouchableOpacity>
                     </View>
@@ -213,11 +218,16 @@ export default function Metas() {
                                         %
                                     </Text>
                                 </View>
-                                
+
                             </View>
                         </View>
                     </View>
                 </Modal>
+
+                <NovoOrcamentoModal
+                    visible={novoModalVisible}
+                    onClose={() => setNovoModalVisible(false)}
+                />
             </SafeAreaView>
         </SafeAreaProvider>
     );

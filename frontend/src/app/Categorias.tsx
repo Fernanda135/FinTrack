@@ -25,12 +25,24 @@ import {
 export default function Categorias() {
     const router = useRouter();
 
-    const totalGastos = categories.reduce((total, item) => total + item.valor, 0);
-    const categoriasComPorcentagem = categories.map((item) => ({
-        ...item,
-        porcentagem: Number(((item.valor / totalGastos) * 100).toFixed(1)),
-        progresso: item.valor / totalGastos,
-    }));
+    const categoriasGastos = categories.filter(
+        (item) => item.value !== "renda"
+    );
+
+    const totalGastos = categoriasGastos.reduce(
+        (total, item) => total + item.valor,
+        0
+    );
+
+    const categoriasComPorcentagem = categoriasGastos
+        .map((item) => ({
+            ...item,
+            porcentagem: Number(
+                ((item.valor / totalGastos) * 100).toFixed(1)
+            ),
+            progresso: item.valor / totalGastos,
+        }))
+        .sort((a, b) => b.valor - a.valor);
 
     return (
         <SafeAreaProvider>

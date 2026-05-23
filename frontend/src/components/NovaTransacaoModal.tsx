@@ -18,7 +18,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
     const [valor, setValor] = useState("");
     const [conta, setConta] = useState("");
     const [categoria, setCategoria] = useState("");
-    const [descricao, setDescricao] = useState("");
+    const [titulo, setTitulo] = useState("");
 
     const [contaModal, setContaModal] = useState(false);
     const [categoriaModal, setCategoriaModal] = useState(false);
@@ -40,7 +40,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
             valor: parseFloat(valor.replace(',', '.')) || 0,
             conta,
             categoria,
-            descricao,
+            titulo,
             data: new Date().toISOString()
         };
         // console.log('Nova transação:', transacao);
@@ -48,7 +48,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
         setValor("");
         setConta("");
         setCategoria("");
-        setDescricao("");
+        setTitulo("");
         onClose();
     };
 
@@ -116,7 +116,17 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                     value={valor}
                                     onChangeText={handleValorChange}
                                 />
+                            </View>
 
+                            <View style={styles.titleContainer}>
+                                <Text style={styles.titleLabel}>Título</Text>
+                                <TextInput
+                                    style={styles.titleInput}
+                                    placeholder="título da transação"
+                                    placeholderTextColor="#AAAAAA"
+                                    value={titulo}
+                                    onChangeText={setTitulo}
+                                />
                             </View>
 
                             <TouchableOpacity
@@ -145,21 +155,9 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                 </View>
                             </TouchableOpacity>
 
-                            <View style={styles.descContainer}>
-                                <Text style={styles.descLabel}>Descrição</Text>
-                                <TextInput
-                                    style={styles.descInput}
-                                    placeholder="descrição..."
-                                    placeholderTextColor="#AAAAAA"
-                                    value={descricao}
-                                    onChangeText={setDescricao}
-                                />
-                            </View>
-
                             <TouchableOpacity
                                 style={styles.confirmButton}
-                                onPress={handleConfirmar}
-                            >
+                                onPress={handleConfirmar} >
                                 <Text style={styles.confirmText}>confirmar</Text>
                             </TouchableOpacity>
 
@@ -332,16 +330,16 @@ const styles = StyleSheet.create({
     placeholderText: {
         color: "#AAAAAA",
     },
-    descContainer: {
+    titleContainer: {
         marginBottom: 30,
     },
-    descLabel: {
+    titleLabel: {
         color: "#222222",
         fontSize: 14,
         marginBottom: 5,
         fontWeight: 'bold'
     },
-    descInput: {
+    titleInput: {
         backgroundColor: "#F8F8F8",
         padding: 15,
         borderRadius: 10,

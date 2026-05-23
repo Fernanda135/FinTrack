@@ -28,11 +28,32 @@ export const categories = [
         valor: 120,
     },
     {
-        id: "9",
+        id: "5",
         label: "Renda",
         value: "renda",
         transacoes: 2,
         valor: 2071,
+    },
+    {
+        id: "6",
+        label: "Saúde",
+        value: "saude",
+        transacoes: 6,
+        valor: 340,
+    },
+    {
+        id: "7",
+        label: "Lazer",
+        value: "lazer",
+        transacoes: 8,
+        valor: 760,
+    },
+    {
+        id: "8",
+        label: "Educação",
+        value: "educacao",
+        transacoes: 4,
+        valor: 890,
     },
 ];
 
@@ -52,6 +73,22 @@ export const contas = [
         tipo: "Conta Corrente",
         saldo: 5120.9,
         cor: "#F7D117",
+    },
+    {
+        id: "3",
+        label: "Carteira",
+        value: "carteira",
+        tipo: "Carteira",
+        saldo: 250.75,
+        cor: "#22C55E",
+    },
+    {
+        id: "4",
+        label: "Inter",
+        value: "inter",
+        tipo: "Conta Digital",
+        saldo: 1870.4,
+        cor: "#FF7A00",
     },
 ];
 
@@ -74,24 +111,42 @@ export const orcamentos = [
         gasto: 626.6,
         limite: 600,
     },
+    {
+        id: 3,
+        categoriaId: "7",
+        title: "Lazer",
+        descricao:
+            "Cinema, viagens, festas e passeios.",
+        gasto: 420,
+        limite: 800,
+    },
+    {
+        id: 4,
+        categoriaId: "6",
+        title: "Saúde",
+        descricao:
+            "Farmácia, consultas e exames médicos.",
+        gasto: 190,
+        limite: 500,
+    },
 ];
 
 export const transacoes = [
     {
         id: "1",
         titulo: "Salário",
-        categoriaId: "3",
+        categoriaId: "5",
         contaId: "1",
-        data: "01 Jun",
+        data: "2025-06-01",
         valor: 1621,
         tipo: "receita",
     },
     {
         id: "2",
         titulo: "Netflix",
-        categoriaId: "1",
+        categoriaId: "4",
         contaId: "1",
-        data: "05 Jun",
+        data: "2025-06-05",
         valor: 39.9,
         tipo: "despesa",
     },
@@ -100,19 +155,111 @@ export const transacoes = [
         titulo: "Supermercado",
         categoriaId: "1",
         contaId: "2",
-        data: "03 Jun",
+        data: "2025-06-03",
         valor: 287.5,
         tipo: "despesa",
+    },
+    {
+        id: "4",
+        titulo: "Farmácia",
+        categoriaId: "6",
+        contaId: "4",
+        data: "2025-06-07",
+        valor: 78.9,
+        tipo: "despesa",
+    },
+    {
+        id: "5",
+        titulo: "Cinema",
+        categoriaId: "7",
+        contaId: "3",
+        data: "2025-06-08",
+        valor: 45,
+        tipo: "despesa",
+    },
+    {
+        id: "6",
+        titulo: "Freelance",
+        categoriaId: "5",
+        contaId: "4",
+        data: "2025-06-10",
+        valor: 850,
+        tipo: "receita",
+    },
+    {
+        id: "7",
+        titulo: "Curso de React",
+        categoriaId: "8",
+        contaId: "2",
+        data: "2025-06-11",
+        valor: 299.9,
+        tipo: "despesa",
+    },
+    {
+        id: "8",
+        titulo: "Uber",
+        categoriaId: "2",
+        contaId: "1",
+        data: "2025-06-12",
+        valor: 24.5,
+        tipo: "despesa",
+    },
+    {
+        id: "9",
+        titulo: "iFood",
+        categoriaId: "1",
+        contaId: "1",
+        data: "2025-06-12",
+        valor: 63.9,
+        tipo: "despesa",
+    },
+    {
+        id: "10",
+        titulo: "Spotify",
+        categoriaId: "4",
+        contaId: "2",
+        data: "2025-06-13",
+        valor: 21.9,
+        tipo: "despesa",
+    },
+];
+
+export const tiposConta = [
+    {
+        id: "1",
+        label: "Conta Corrente",
+        value: "conta_corrente",
+    },
+    {
+        id: "2",
+        label: "Conta Poupança",
+        value: "conta_poupanca",
+    },
+    {
+        id: "3",
+        label: "Carteira",
+        value: "carteira",
+    },
+    {
+        id: "4",
+        label: "Cartão de Crédito",
+        value: "cartao_credito",
+    },
+    {
+        id: "5",
+        label: "Investimentos",
+        value: "investimentos",
     },
 ];
 
 export const dashboard = {
     saldoTotal: contas.reduce(
-        (total, conta) => total + conta.saldo, 0)
-        .toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        }),
+        (total, conta) => total + conta.saldo,
+        0
+    ).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL",
+    }),
 
     gastoTotal: transacoes
         .filter((t) => t.tipo === "despesa")
@@ -132,20 +279,19 @@ export const dashboard = {
 
     ultimasTransacoes: transacoes.slice(0, 5),
 
-    gastoOrcaTotal: orcamentos.reduce(
-        (total, orc) => total + orc.gasto, 0)
+    gastoOrcaTotal: orcamentos
+        .reduce((total, orc) => total + orc.gasto, 0)
         .toLocaleString("pt-BR", {
             style: "currency",
             currency: "BRL",
         }),
 
-    limiteOrcTotal: orcamentos.reduce(
-        (total, orc) => total + orc.limite, 0)
+    limiteOrcTotal: orcamentos
+        .reduce((total, orc) => total + orc.limite, 0)
         .toLocaleString("pt-BR", {
             style: "currency",
             currency: "BRL",
         }),
 
     orcAtivos: orcamentos.length,
-
 };

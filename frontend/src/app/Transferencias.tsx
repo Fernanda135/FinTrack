@@ -72,10 +72,19 @@ export default function Transferencias() {
                                         </View>
 
                                         <View style={styles.transInfo}>
-                                            <Text style={styles.transTitulo}>{item.titulo}</Text>
+                                            <Text style={styles.transTitulo}>
+                                                {item.titulo}
+                                            </Text>
 
                                             <Text style={styles.transSub}>
-                                                {categoria?.label} - {conta?.label}
+                                                {categoria?.label}
+                                            </Text>
+
+                                            <Text style={styles.transDate}>
+                                                {conta?.label} | {new Date(item.data).toLocaleDateString("pt-BR", {
+                                                    day: "2-digit",
+                                                    month: "short",
+                                                })}
                                             </Text>
                                         </View>
 
@@ -158,6 +167,11 @@ const styles = StyleSheet.create({
     },
     transValor: {
         fontSize: 16,
+    },
+    transDate: {
+        fontSize: 11,
+        color: "#AAAAAA",
+        marginTop: 4,
     },
     valorReceita: {
         color: "#116e1f",

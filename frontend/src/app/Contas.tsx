@@ -1,4 +1,5 @@
 import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -18,9 +19,12 @@ import {
     orcamentos,
     dashboard,
 } from "@/data/data";
+import NovaContaModal from "@/components/NovaContaModal";
 
 
 export default function Contas() {
+
+    const [modalVisible, setModalVisible] = useState(false);
 
     return (
         <SafeAreaProvider>
@@ -80,7 +84,10 @@ export default function Contas() {
                                 </View>
                             ))}
 
-                            <TouchableOpacity style={styles.addButton}>
+                            <TouchableOpacity
+                                style={styles.addButton}
+                                onPress={() => setModalVisible(true)}
+                            >
                                 <Plus size={30} color="#AAAAAA" />
                             </TouchableOpacity>
 
@@ -89,6 +96,12 @@ export default function Contas() {
                 </View>
 
                 <BottomNav />
+
+                <NovaContaModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                />
+
             </SafeAreaView>
         </SafeAreaProvider>
     );
@@ -185,4 +198,5 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: 25,
         marginBottom: 20,
-    },});
+    },
+});
