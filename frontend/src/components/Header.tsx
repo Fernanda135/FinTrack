@@ -1,6 +1,4 @@
 import { Text, View, StyleSheet, Image } from 'react-native';
-
-// import { contas } from '@/data/contas';
 import {
     contas,
     categories,
@@ -19,36 +17,23 @@ export default function Header() {
                 <View style={styles.user} />
                 <View>
                     <Text style={{ color: '#949390', fontSize: 14 }} >Bem Vindo,</Text>
-                    <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 18 }} >Usuario</Text>
+                    <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 18 }} >Fulano</Text>
                 </View>
             </View>
 
             <View style={styles.card}>
                 <Text style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 'bold' }} >SALDO TOTAL</Text>
                 <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >{dashboard.saldoTotal}</Text>
-
+                
                 <View style={styles.infoContainer}>
-
                     <View style={styles.infoCard}>
-                        <Text style={styles.infoLabel}>
-                            Receitas
-                        </Text>
-
-                        <Text style={styles.infoValue}>
-                            {dashboard.receitaTotal}
-                        </Text>
+                        <Text style={styles.infoLabel}>Receitas</Text>
+                        <Text style={styles.infoValue}>{dashboard.receitaTotal}</Text>
                     </View>
-
                     <View style={styles.infoCard}>
-                        <Text style={styles.infoLabel}>
-                            Gastos
-                        </Text>
-
-                        <Text style={styles.infoValue}>
-                            {dashboard.gastoTotal}
-                        </Text>
+                        <Text style={styles.infoLabel}>Gastos</Text>
+                        <Text style={styles.infoValue}>{dashboard.gastoTotal}</Text>
                     </View>
-
                 </View>
             </View>
 
@@ -104,7 +89,7 @@ const styles = StyleSheet.create({
     },
     infoValue: {
         color: "#1A1A1A",
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: "bold",
     },
 });

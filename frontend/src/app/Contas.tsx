@@ -11,7 +11,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Plus, SquarePen, Trash2 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
-// import { contas } from "@/data/contas";
+import NovaContaModal from "@/components/NovaContaModal";
 import {
     contas,
     categories,
@@ -19,7 +19,6 @@ import {
     orcamentos,
     dashboard,
 } from "@/data/data";
-import NovaContaModal from "@/components/NovaContaModal";
 
 
 export default function Contas() {
@@ -44,20 +43,15 @@ export default function Contas() {
                         {/* CARDS DAS CONTAS */}
                         <View style={styles.cardsContainer}>
                             {contas.map((conta) => (
-                                <View
-                                    key={conta.id}
-                                    style={[styles.card, { backgroundColor: conta.cor }]}
-                                >
+                                <View key={conta.id} style={[styles.card, { backgroundColor: conta.cor }]} >
                                     <View style={styles.cardTop}>
                                         <View style={styles.leftContent}>
                                             <View style={styles.iconBox} />
-
                                             <View>
                                                 <Text style={styles.cardTitle}>{conta.label}</Text>
                                                 <Text style={styles.cardSubtitle}>{conta.tipo}</Text>
                                             </View>
                                         </View>
-
                                         <Text style={styles.balance}>
                                             {conta.saldo.toLocaleString("pt-BR", {
                                                 style: "currency",
@@ -65,15 +59,8 @@ export default function Contas() {
                                             })}
                                         </Text>
                                     </View>
-
                                     <View style={styles.line} />
-
-                                    <View
-                                        style={{
-                                            flexDirection: "row",
-                                            justifyContent: "space-between",
-                                        }}
-                                    >
+                                    <View style={{ flexDirection: "row", justifyContent: "space-between" }} >
                                         <TouchableOpacity>
                                             <Trash2 size={18} color={"#ffffff"} />
                                         </TouchableOpacity>
@@ -84,23 +71,16 @@ export default function Contas() {
                                 </View>
                             ))}
 
-                            <TouchableOpacity
-                                style={styles.addButton}
-                                onPress={() => setModalVisible(true)}
-                            >
+                            <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)} >
                                 <Plus size={30} color="#AAAAAA" />
                             </TouchableOpacity>
-
                         </View>
                     </ScrollView>
                 </View>
 
                 <BottomNav />
 
-                <NovaContaModal
-                    visible={modalVisible}
-                    onClose={() => setModalVisible(false)}
-                />
+                <NovaContaModal visible={modalVisible} onClose={() => setModalVisible(false)} />
 
             </SafeAreaView>
         </SafeAreaProvider>

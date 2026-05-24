@@ -12,7 +12,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Plus, X } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
-// import { orcamentos } from "@/data/orcamentos";
+import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
 import {
     contas,
     categories,
@@ -21,10 +21,8 @@ import {
     dashboard,
 } from "@/data/data";
 
-import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
 
-
-export default function Metas() {
+export default function Orcamentos() {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<any>(null);
@@ -61,14 +59,12 @@ export default function Metas() {
                                 <Text style={styles.topCardText}>{dashboard.limiteOrcTotal}</Text>
                             </View>
                             <View style={styles.topCard}>
-                                <Text style={styles.topCardText}>
-                                    {orcamentos.length} ativos
-                                </Text>
+                                <Text style={styles.topCardText}>{orcamentos.length} ativos</Text>
                             </View>
                         </View>
                     </View>
 
-                    {/* CARDS DE METAS */}
+                    {/* CARDS DE ORÇAMENTOS */}
                     <View style={styles.listContainer}>
                         {orcamentos.map((item) => {
                             const percentage = getPorcentagem(item.gasto, item.limite);
@@ -76,7 +72,6 @@ export default function Metas() {
 
                             return (
                                 <View key={item.id} style={styles.budgetCard}>
-
                                     <View style={styles.cardTop}>
                                         <View style={styles.leftArea}>
                                             <View style={styles.iconPlaceholder} />
@@ -92,7 +87,6 @@ export default function Metas() {
                                                     currency: "BRL",
                                                 })}
                                             </Text>
-
                                             <Text style={styles.limit}>
                                                 de{" "}
                                                 {item.limite.toLocaleString("pt-BR", {
@@ -104,32 +98,30 @@ export default function Metas() {
                                     </View>
 
                                     <View style={styles.progressLine}>
-                                        <View
-                                            style={[
-                                                styles.progressBar,
-                                                {
-                                                    width: `${Math.min(percentage, 100)}%`,
-                                                    backgroundColor: color,
-                                                },]}
+                                        <View style={[
+                                            styles.progressBar,
+                                            {
+                                                width: `${Math.min(percentage, 100)}%`,
+                                                backgroundColor: color,
+                                            },]}
                                         />
                                     </View>
 
                                     <View style={styles.cardFooter}>
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                setOrcamentoSelecionado(item);
-                                                setModalVisible(true);
-                                            }}
+                                        <TouchableOpacity onPress={() => {
+                                            setOrcamentoSelecionado(item);
+                                            setModalVisible(true);
+                                        }}
                                         >
                                             <Text style={styles.details}>Ver Detalhes</Text>
                                         </TouchableOpacity>
 
-                                        <Text
-                                            style={[
-                                                styles.percent,
-                                                percentage >= 100 && {
-                                                    color: "#B00000",
-                                                },]}
+                                        <Text style={[
+                                            styles.percent,
+                                            percentage >= 100 && {
+                                                color: "#B00000",
+                                            },
+                                        ]}
                                         >
                                             {percentage >= 100 ? "Limite Excedido! " : ""}
                                             {percentage}%
@@ -139,9 +131,7 @@ export default function Metas() {
                             );
                         })}
 
-                        <TouchableOpacity
-                            style={styles.addButton}
-                            onPress={() => setNovoModalVisible(true)}>
+                        <TouchableOpacity style={styles.addButton} onPress={() => setNovoModalVisible(true)}>
                             <Plus size={30} color="#AAAAAA" />
                         </TouchableOpacity>
                     </View>
@@ -169,25 +159,16 @@ export default function Metas() {
                                     ),
                                 }
                             ]} >
-                                <TouchableOpacity
-                                    style={styles.closeIcon}
-                                    onPress={() => setModalVisible(false)}
-                                >
+                                <TouchableOpacity style={styles.closeIcon} onPress={() => setModalVisible(false)} >
                                     <X size={22} color="#FFF" />
                                 </TouchableOpacity>
-
-                                <Text style={styles.modalTitle}>
-                                    {orcamentoSelecionado?.title}
-                                </Text>
-                                <Text style={styles.modalDescription}>
-                                    {orcamentoSelecionado?.descricao}
-                                </Text>
+                                <Text style={styles.modalTitle}>{orcamentoSelecionado?.title}</Text>
+                                <Text style={styles.modalDescription}>{orcamentoSelecionado?.descricao}</Text>
                             </View>
 
                             <View style={styles.modalBody}>
                                 <View style={styles.infoCard}>
                                     <Text style={styles.infoLabel}>Gasto Atual</Text>
-
                                     <Text style={styles.infoValue}>
                                         {orcamentoSelecionado?.gasto?.toLocaleString("pt-BR", {
                                             style: "currency",
@@ -198,7 +179,6 @@ export default function Metas() {
 
                                 <View style={styles.infoCard}>
                                     <Text style={styles.infoLabel}>Limite</Text>
-
                                     <Text style={styles.infoValue}>
                                         {orcamentoSelecionado?.limite?.toLocaleString("pt-BR", {
                                             style: "currency",
@@ -209,7 +189,6 @@ export default function Metas() {
 
                                 <View style={styles.infoCard}>
                                     <Text style={styles.infoLabel}>Utilizado</Text>
-
                                     <Text style={styles.infoValue}>
                                         {getPorcentagem(
                                             orcamentoSelecionado?.gasto || 0,
@@ -224,10 +203,7 @@ export default function Metas() {
                     </View>
                 </Modal>
 
-                <NovoOrcamentoModal
-                    visible={novoModalVisible}
-                    onClose={() => setNovoModalVisible(false)}
-                />
+                <NovoOrcamentoModal visible={novoModalVisible} onClose={() => setNovoModalVisible(false)} />
             </SafeAreaView>
         </SafeAreaProvider>
     );

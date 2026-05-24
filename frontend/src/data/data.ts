@@ -250,6 +250,11 @@ export const tiposConta = [
         label: "Investimentos",
         value: "investimentos",
     },
+    {
+        id: "6",
+        label: "Outros",
+        value: "outros",
+    },
 ];
 
 export const dashboard = {

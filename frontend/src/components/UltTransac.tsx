@@ -1,6 +1,5 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
-
 import {
     contas,
     categories,
@@ -9,61 +8,50 @@ import {
     dashboard,
 } from "@/data/data";
 
+
 export default function UltTransac() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Últimas transações</Text>
-
-                <Link href={"/Transferencias"} style={styles.link}>
-                    Ver tudo
-                </Link>
+                <Link href={"/Transferencias"} style={styles.link}>Ver tudo</Link>
             </View>
 
-            <View style={{ width: "100%" }}>
-                {dashboard.ultimasTransacoes.map((item) => {
-                    const categoria = categories.find(
-                        (cat) => cat.id === item.categoriaId,
-                    );
-                    const conta = contas.find(
-                        (contaItem) => contaItem.id === item.contaId,
-                    );
+            <View style={{ width: "100%" }}>{dashboard.ultimasTransacoes.map((item) => {
+                const categoria = categories.find(
+                    (cat) => cat.id === item.categoriaId,
+                );
+                const conta = contas.find(
+                    (contaItem) => contaItem.id === item.contaId,
+                );
 
-                    return (
-                        <View key={item.id} style={styles.transactionCard}>
-                            <View>
-                                <Text style={styles.transactionTitle}>{item.titulo}</Text>
-
-                                <Text style={styles.transactionCategory}>
-                                    {categoria?.label}
-                                </Text>
-                                <Text style={styles.transDate}>
-                                    {conta?.label} |{" "}
-                                    {new Date(item.data).toLocaleDateString("pt-BR", {
-                                        day: "2-digit",
-                                        month: "short",
-                                    })}
-                                </Text>
-                            </View>
-
-                            <Text
-                                style={[
-                                    styles.transactionValue,
-                                    {
-                                        color: item.tipo === "receita" ? "#116e1f" : "#a70205",
-                                    },
-                                ]}
-                            >
-                                {item.tipo === "receita" ? "+" : "-"}
-
-                                {item.valor.toLocaleString("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
+                return (
+                    <View key={item.id} style={styles.transactionCard}>
+                        <View>
+                            <Text style={styles.transactionTitle}>{item.titulo}</Text>
+                            <Text style={styles.transactionCategory}>{categoria?.label}</Text>
+                            <Text style={styles.transDate}>
+                                {conta?.label} | {" "}
+                                {new Date(item.data).toLocaleDateString("pt-BR", {
+                                    day: "2-digit",
+                                    month: "short",
                                 })}
                             </Text>
                         </View>
-                    );
-                })}
+
+                        <Text style={[
+                            styles.transactionValue,
+                            { color: item.tipo === "receita" ? "#116e1f" : "#a70205" },
+                        ]} >
+                            {item.tipo === "receita" ? "+" : "-"}
+                            {item.valor.toLocaleString("pt-BR", {
+                                style: "currency",
+                                currency: "BRL",
+                            })}
+                        </Text>
+                    </View>
+                );
+            })}
             </View>
         </View>
     );

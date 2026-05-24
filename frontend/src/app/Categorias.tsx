@@ -5,14 +5,11 @@ import {
     ScrollView,
     TouchableOpacity,
 } from "react-native";
-
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-
 import { ArrowLeft } from "lucide-react-native";
 import { useRouter } from "expo-router";
 
 import BottomNav from "@/components/BottomNav";
-// import { categories } from "@/data/categories";
 import {
     contas,
     categories,
@@ -23,23 +20,15 @@ import {
 
 
 export default function Categorias() {
+
     const router = useRouter();
 
-    const categoriasGastos = categories.filter(
-        (item) => item.value !== "renda"
-    );
-
-    const totalGastos = categoriasGastos.reduce(
-        (total, item) => total + item.valor,
-        0
-    );
-
+    const categoriasGastos = categories.filter((item) => item.value !== "renda");
+    const totalGastos = categoriasGastos.reduce((total, item) => total + item.valor, 0);
     const categoriasComPorcentagem = categoriasGastos
         .map((item) => ({
             ...item,
-            porcentagem: Number(
-                ((item.valor / totalGastos) * 100).toFixed(1)
-            ),
+            porcentagem: Number(((item.valor / totalGastos) * 100).toFixed(1)),
             progresso: item.valor / totalGastos,
         }))
         .sort((a, b) => b.valor - a.valor);
@@ -63,7 +52,6 @@ export default function Categorias() {
 
                         <View style={styles.totalContainer}>
                             <Text style={styles.totalLabel}>Total de gastos</Text>
-
                             <Text style={styles.totalValue}>
                                 {totalGastos.toLocaleString("pt-BR", {
                                     style: "currency",
@@ -75,20 +63,13 @@ export default function Categorias() {
                         {/* CARDS DE CATEGORIAS */}
                         <View style={styles.cardsContainer}>
                             {categoriasComPorcentagem.map((item) => (
-                                <View
-                                    key={item.id}
-                                    style={styles.card}
-                                >
+                                <View key={item.id} style={styles.card} >
                                     <View style={styles.cardTop}>
                                         <View style={styles.leftContent}>
                                             <View style={styles.icon} />
-
                                             <View>
                                                 <Text style={styles.cardCateg}>{item.label}</Text>
-
-                                                <Text style={styles.cardQtd}>
-                                                    {item.transacoes} transações
-                                                </Text>
+                                                <Text style={styles.cardQtd}>{item.transacoes} transações</Text>
                                             </View>
                                         </View>
 
@@ -102,14 +83,12 @@ export default function Categorias() {
 
                                     <View style={styles.progressArea}>
                                         <View style={styles.progressBar}>
-                                            <View
-                                                style={[
-                                                    styles.progress,
-                                                    { width: `${item.progresso * 100}%` }
-                                                ]}
+                                            <View style={[
+                                                styles.progress,
+                                                { width: `${item.progresso * 100}%` }
+                                            ]}
                                             />
                                         </View>
-
                                         <Text style={styles.percent}>{item.porcentagem}%</Text>
                                     </View>
                                 </View>

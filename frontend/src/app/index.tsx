@@ -9,7 +9,6 @@ import GastCateg from "@/components/GastCateg";
 import UltTransac from "@/components/UltTransac";
 
 export default function Home() {
-    const router = useRouter();
 
     return (
         <SafeAreaProvider>

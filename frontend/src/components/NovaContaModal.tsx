@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import {
     Modal,
     View,
@@ -10,11 +9,8 @@ import {
     FlatList,
     ScrollView,
 } from "react-native";
-
 import { X, ChevronDown } from "lucide-react-native";
-
 import ColorPicker from "react-native-wheel-color-picker";
-
 import { tiposConta } from "@/data/data";
 
 
@@ -25,12 +21,11 @@ export default function NovaContaModal({ visible, onClose }: any) {
     const [saldo, setSaldo] = useState("");
     const [tipo, setTipo] = useState("");
     const [cor, setCor] = useState("#AAAAAA");
-
     const [tipoModal, setTipoModal] = useState(false);
 
     const getTipoLabel = () => {
         const tipoEncontrado = tiposConta.find(
-            (t) => t.value === tipo );
+            (t) => t.value === tipo);
 
         return tipoEncontrado
             ? tipoEncontrado.label
@@ -40,14 +35,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
     const formatarValor = (text: string) => {
         let value = text.replace(/\D/g, "");
         if (value === "") return "";
-
-        value = (
-            parseInt(value) / 100
-        ).toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-        });
-
+        value = (parseInt(value) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
         return value;
     };
 
@@ -69,8 +57,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
         setSaldo("");
         setTipo("");
         setCor("#AAAAAA");
-
-        onClose();
+        onClose()
     };
 
     return (
@@ -85,24 +72,15 @@ export default function NovaContaModal({ visible, onClose }: any) {
 
                         {/* HEADER */}
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>
-                                Nova Conta
-                            </Text>
-
-                            <TouchableOpacity onPress={onClose}>
+                            <Text style={styles.modalTitle}>Nova Conta</Text>
+                            <TouchableOpacity onPress={onClose} >
                                 <X size={24} color="#222222" />
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView
-                            style={styles.modalBody}
-                            showsVerticalScrollIndicator={false} >
-
+                        <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false} >
                             <View style={styles.inputContainer}>
-                                <Text style={styles.label}>
-                                    Nome
-                                </Text>
-
+                                <Text style={styles.label}>Nome</Text>
                                 <TextInput
                                     style={styles.input}
                                     placeholder="nome da conta"
@@ -112,10 +90,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
                             </View>
 
                             <View style={styles.valueContainer}>
-                                <Text style={styles.valueLabel}>
-                                    saldo inicial
-                                </Text>
-
+                                <Text style={styles.valueLabel}>saldo inicial</Text>
                                 <TextInput
                                     style={styles.valueInput}
                                     placeholder="R$ 0,00"
@@ -128,41 +103,24 @@ export default function NovaContaModal({ visible, onClose }: any) {
                             <TouchableOpacity
                                 style={styles.selectContainer}
                                 onPress={() => setTipoModal(true)} >
-                                <Text style={styles.selectLabel}>
-                                    Tipo
-                                </Text>
-
+                                <Text style={styles.selectLabel}>Tipo</Text>
                                 <View style={styles.selectButton}>
-                                    <Text
-                                        style={[
-                                            styles.selectText,
-                                            !tipo &&
-                                            styles.placeholderText,
-                                        ]} >
-                                        {getTipoLabel()}
-                                    </Text>
-
-                                    <ChevronDown
-                                        size={20}
-                                        color="#AAAAAA"
-                                    />
+                                    <Text style={[
+                                        styles.selectText,
+                                        !tipo && styles.placeholderText
+                                    ]} >{getTipoLabel()}</Text>
+                                    <ChevronDown size={20} color="#AAAAAA" />
                                 </View>
                             </TouchableOpacity>
 
                             <View style={styles.colorContainer}>
                                 <View style={styles.colorHeader}>
-                                    <Text style={styles.selectLabel}>
-                                        Cor da conta
-                                    </Text>
-
+                                    <Text style={styles.selectLabel}>Cor da conta</Text>
                                     <View
                                         style={[
                                             styles.selectedColor,
-                                            {
-                                                backgroundColor: cor,
-                                            },]} />
+                                            { backgroundColor: cor },]} />
                                 </View>
-
                                 <View style={styles.colorPickerWrapper}>
                                     <ColorPicker
                                         color={cor}
@@ -181,54 +139,37 @@ export default function NovaContaModal({ visible, onClose }: any) {
                             <TouchableOpacity
                                 style={styles.confirmButton}
                                 onPress={handleConfirmar} >
-                                <Text style={styles.confirmText}>
-                                    confirmar
-                                </Text>
+                                <Text style={styles.confirmText}>confirmar</Text>
                             </TouchableOpacity>
 
                         </ScrollView>
                     </View>
                 </View>
-
             </Modal>
 
             {/* TIPOS */}
             <Modal
                 transparent={true}
                 visible={tipoModal}
-                animationType="fade" >
+                animationType="fade"
+            >
 
-                <TouchableOpacity
-                    style={styles.selectModalOverlay}
-                    onPress={() => setTipoModal(false)} >
+                <TouchableOpacity style={styles.selectModalOverlay} onPress={() => setTipoModal(false)} >
                     <View style={styles.selectModalContent}>
-
-                        <Text style={styles.selectModalTitle}>
-                            Selecione um tipo
-                        </Text>
-
+                        <Text style={styles.selectModalTitle}>Selecione um tipo</Text>
                         <FlatList
                             data={tiposConta}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-
-                                <TouchableOpacity
-                                    style={styles.selectOption}
-                                    onPress={() => {
-                                        setTipo(item.value);
-                                        setTipoModal(false);
-                                    }} >
-
-                                    <Text style={styles.selectOptionText}>
-                                        {item.label}
-                                    </Text>
+                                <TouchableOpacity style={styles.selectOption} onPress={() => {
+                                    setTipo(item.value);
+                                    setTipoModal(false);
+                                }} >
+                                    <Text style={styles.selectOptionText}>{item.label}</Text>
                                 </TouchableOpacity>
-
                             )}
                         />
-
                     </View>
-
                 </TouchableOpacity>
 
             </Modal>

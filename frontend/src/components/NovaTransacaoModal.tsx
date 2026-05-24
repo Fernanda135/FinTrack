@@ -1,9 +1,6 @@
 import React, { useState } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList } from "react-native";
 import { X, ChevronDown } from "lucide-react-native";
-
-// import { categories } from "@/data/categories";
-// import { contas } from "@/data/contas"
 import {
     contas,
     categories,
@@ -19,7 +16,6 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
     const [conta, setConta] = useState("");
     const [categoria, setCategoria] = useState("");
     const [titulo, setTitulo] = useState("");
-
     const [contaModal, setContaModal] = useState(false);
     const [categoriaModal, setCategoriaModal] = useState(false);
 
@@ -55,7 +51,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
     const formatarValor = (text: string) => {
         let value = text.replace(/\D/g, '');
         if (value === '') return '';
-        value = (parseInt(value) / 100).toLocaleString("pt-BR", { style: "currency",currency: "BRL", });
+        value = (parseInt(value) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL", });
         return value;
     };
 
@@ -73,9 +69,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                 onRequestClose={onClose}
             >
                 <View style={styles.modalOverlay}>
-
                     <View style={styles.modalContent}>
-
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Nova Transação</Text>
                             <TouchableOpacity onPress={onClose}>
@@ -84,23 +78,24 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                         </View>
 
                         <View style={styles.modalBody}>
-
                             <View style={styles.typeContainer}>
-                                <TouchableOpacity
-                                    style={[styles.typeButton, tipo === "entrada" && styles.typeButtonActive]}
-                                    onPress={() => setTipo("entrada")}
-                                >
-                                    <Text style={[styles.typeText, tipo === "entrada" && styles.typeTextActive]}>
-                                        Entrada
-                                    </Text>
+                                <TouchableOpacity onPress={() => setTipo("entrada")} style={[
+                                    styles.typeButton,
+                                    tipo === "entrada" && styles.typeButtonActive
+                                ]} >
+                                    <Text style={[
+                                        styles.typeText,
+                                        tipo === "entrada" && styles.typeTextActive
+                                    ]}>Entrada</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.typeButton, tipo === "saida" && styles.typeButtonActive]}
-                                    onPress={() => setTipo("saida")}
-                                >
-                                    <Text style={[styles.typeText, tipo === "saida" && styles.typeTextActive]}>
-                                        Saída
-                                    </Text>
+                                <TouchableOpacity onPress={() => setTipo("saida")} style={[
+                                    styles.typeButton,
+                                    tipo === "saida" && styles.typeButtonActive
+                                ]} >
+                                    <Text style={[
+                                        styles.typeText,
+                                        tipo === "saida" && styles.typeTextActive]}
+                                    >Saída</Text>
                                 </TouchableOpacity>
 
                             </View>
@@ -129,44 +124,34 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                 />
                             </View>
 
-                            <TouchableOpacity
-                                style={styles.selectContainer}
-                                onPress={() => setContaModal(true)}
-                            >
+                            <TouchableOpacity style={styles.selectContainer} onPress={() => setContaModal(true)} >
                                 <Text style={styles.selectLabel}>Conta</Text>
                                 <View style={styles.selectButton}>
-                                    <Text style={[styles.selectText, !conta && styles.placeholderText]}>
-                                        {getContaLabel()}
-                                    </Text>
+                                    <Text style={[
+                                        styles.selectText,
+                                        !conta && styles.placeholderText
+                                    ]}>{getContaLabel()}</Text>
                                     <ChevronDown size={20} color="#AAAAAA" />
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={styles.selectContainer}
-                                onPress={() => setCategoriaModal(true)}
-                            >
+                            <TouchableOpacity style={styles.selectContainer} onPress={() => setCategoriaModal(true)} >
                                 <Text style={styles.selectLabel}>Categoria</Text>
                                 <View style={styles.selectButton}>
-                                    <Text style={[styles.selectText, !categoria && styles.placeholderText]}>
-                                        {getCategoriaLabel()}
-                                    </Text>
+                                    <Text style={[
+                                        styles.selectText,
+                                        !categoria && styles.placeholderText
+                                    ]}>{getCategoriaLabel()}</Text>
                                     <ChevronDown size={20} color="#AAAAAA" />
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={styles.confirmButton}
-                                onPress={handleConfirmar} >
+                            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar} >
                                 <Text style={styles.confirmText}>confirmar</Text>
                             </TouchableOpacity>
-
                         </View>
-
                     </View>
-
                 </View>
-
             </Modal>
 
             {/* MODAL COM CONTAS */}
@@ -175,22 +160,17 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                 visible={contaModal}
                 animationType="fade"
             >
-                <TouchableOpacity
-                    style={styles.selectModalOverlay}
-                    onPress={() => setContaModal(false)}
-                >
+                <TouchableOpacity style={styles.selectModalOverlay} onPress={() => setContaModal(false)} >
                     <View style={styles.selectModalContent}>
                         <Text style={styles.selectModalTitle}>Selecione uma conta</Text>
                         <FlatList
                             data={contas}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    style={styles.selectOption}
-                                    onPress={() => {
-                                        setConta(item.value);
-                                        setContaModal(false);
-                                    }}
+                                <TouchableOpacity style={styles.selectOption} onPress={() => {
+                                    setConta(item.value);
+                                    setContaModal(false);
+                                }}
                                 >
                                     <Text style={styles.selectOptionText}>{item.label}</Text>
                                 </TouchableOpacity>
@@ -206,22 +186,17 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                 visible={categoriaModal}
                 animationType="fade"
             >
-                <TouchableOpacity
-                    style={styles.selectModalOverlay}
-                    onPress={() => setCategoriaModal(false)}
-                >
+                <TouchableOpacity style={styles.selectModalOverlay} onPress={() => setCategoriaModal(false)} >
                     <View style={styles.selectModalContent}>
                         <Text style={styles.selectModalTitle}>Selecione uma categoria</Text>
                         <FlatList
                             data={categories}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    style={styles.selectOption}
-                                    onPress={() => {
-                                        setCategoria(item.value);
-                                        setCategoriaModal(false);
-                                    }}
+                                <TouchableOpacity style={styles.selectOption} onPress={() => {
+                                    setCategoria(item.value);
+                                    setCategoriaModal(false);
+                                }}
                                 >
                                     <Text style={styles.selectOptionText}>{item.label}</Text>
                                 </TouchableOpacity>
@@ -229,7 +204,6 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                         />
                     </View>
                 </TouchableOpacity>
-
             </Modal>
         </>
     );

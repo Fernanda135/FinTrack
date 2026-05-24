@@ -9,7 +9,6 @@ import {
 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
-// import { transacoes } from "@/data/transacoes";
 import {
     contas,
     categories,
@@ -19,7 +18,6 @@ import {
 } from "@/data/data";
 
 export default function Transferencias() {
-    const router = useRouter();
 
     return (
         <SafeAreaProvider>
@@ -30,19 +28,7 @@ export default function Transferencias() {
                         contentContainerStyle={styles.scrollContainer}
                     >
                         {/* HEADER */}
-                        <Text
-                            style={{
-                                color: "#9CFF19",
-                                fontWeight: "bold",
-                                fontSize: 30,
-                                padding: 20,
-                                marginTop: 25,
-                                marginBottom: 20,
-                                textAlign: "center",
-                            }}
-                        >
-                            Transações
-                        </Text>
+                        <Text style={styles.header} >Transações</Text>
 
                         {/* LISTA DE TRANSFERÊNCIAS */}
                         <View style={styles.transfContainer}>
@@ -57,29 +43,15 @@ export default function Transferencias() {
                                     <View key={item.id} style={styles.transItem}>
                                         <View>
                                             {item.tipo === "receita" ? (
-                                                <SquareArrowDown
-                                                    size={47}
-                                                    strokeWidth={0.8}
-                                                    color="#383A39"
-                                                />
+                                                <SquareArrowDown size={47} strokeWidth={0.8} color="#383A39" />
                                             ) : (
-                                                <SquareArrowUp
-                                                    size={47}
-                                                    strokeWidth={0.8}
-                                                    color="#383A39"
-                                                />
+                                                <SquareArrowUp size={47} strokeWidth={0.8} color="#383A39" />
                                             )}
                                         </View>
 
                                         <View style={styles.transInfo}>
-                                            <Text style={styles.transTitulo}>
-                                                {item.titulo}
-                                            </Text>
-
-                                            <Text style={styles.transSub}>
-                                                {categoria?.label}
-                                            </Text>
-
+                                            <Text style={styles.transTitulo}>{item.titulo}</Text>
+                                            <Text style={styles.transSub}>{categoria?.label}</Text>
                                             <Text style={styles.transDate}>
                                                 {conta?.label} | {new Date(item.data).toLocaleDateString("pt-BR", {
                                                     day: "2-digit",
@@ -89,16 +61,14 @@ export default function Transferencias() {
                                         </View>
 
                                         <View style={styles.valorContainer}>
-                                            <Text
-                                                style={[
-                                                    styles.transValor,
-                                                    item.tipo === "receita"
-                                                        ? styles.valorReceita
-                                                        : styles.valorDespesa,
-                                                ]}
+                                            <Text style={[
+                                                styles.transValor,
+                                                item.tipo === "receita"
+                                                    ? styles.valorReceita
+                                                    : styles.valorDespesa,
+                                            ]}
                                             >
                                                 {item.tipo === "receita" ? "+" : "-"}
-
                                                 {item.valor.toLocaleString("pt-BR", {
                                                     style: "currency",
                                                     currency: "BRL",
@@ -128,6 +98,15 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         flexGrow: 1,
+    },
+    header: {
+        color: "#9CFF19",
+        fontWeight: "bold",
+        fontSize: 30,
+        padding: 20,
+        marginTop: 25,
+        marginBottom: 20,
+        textAlign: "center",
     },
     transfContainer: {
         backgroundColor: "#F8F8F8",

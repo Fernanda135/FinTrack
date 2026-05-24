@@ -1,8 +1,6 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import Svg, { Circle } from "react-native-svg";
-
-// import { categories } from "@/data/categories";
 import {
     contas,
     categories,
@@ -17,39 +15,28 @@ export default function GastCateg() {
         .sort((a, b) => b.valor - a.valor)
         .slice(0, 3);
 
-    const total = categorias.reduce(
-        (sum, item) => sum + item.valor, 0);
-
+    const total = categorias.reduce((sum, item) => sum + item.valor, 0);
     const colors = ["#1E1E1E", "#9CFF19", "#BDBDBD"];
-
     const radius = 38;
     const strokeWidth = 14;
     const circumference = 2 * Math.PI * radius;
-
     let cumulativePercentage = 0;
 
     return (
         <View style={styles.container}>
 
             <View style={styles.header}>
-                <Text style={styles.title}>
-                    Gastos por categoria
-                </Text>
-                <Link
-                    href={"/Categorias"}
-                    style={styles.link}
-                >
-                    Ver tudo
-                </Link>
+                <Text style={styles.title}>Gastos por categoria</Text>
+                <Link href={"/Categorias"} style={styles.link} >Ver tudo</Link>
             </View>
 
             <View style={styles.categoryCard}>
-
+                
                 {/* GRÁFICO COM TOP 3 CATEGORIAS */}
                 <View style={styles.chartContainer}>
                     <Svg width={110} height={110}>
                         {categorias.map((item, index) => {
-                            
+
                             const percentage =
                                 item.valor / total;
 
@@ -84,25 +71,18 @@ export default function GastCateg() {
 
                 <View style={styles.legendContainer}>
                     {categorias.map((item, index) => (
-                        <View
-                            key={item.id}
-                            style={styles.legendItem}
-                        >
-
+                        <View key={item.id} style={styles.legendItem} >
                             <View
-                                style={[
-                                    styles.legendDot,
-                                    {
-                                        backgroundColor:
-                                            colors[index],
-                                    },
+                                style={[styles.legendColor,
+                                {
+                                    backgroundColor:
+                                        colors[index],
+                                },
                                 ]}
                             />
 
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.legendText}>
-                                    {item.label}
-                                </Text>
+                                <Text style={styles.legendText}>{item.label}</Text>
                             </View>
                             <Text style={styles.legendValue} >
                                 {item.valor.toLocaleString(
@@ -175,7 +155,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
     },
-    legendDot: {
+    legendColor: {
         width: 10,
         height: 10,
         borderRadius: 50,
@@ -185,11 +165,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "bold",
         color: "#1A1A1A",
-    },
-    legendPercent: {
-        fontSize: 10,
-        color: "#777",
-        marginTop: 2,
     },
     legendValue: {
         fontSize: 12,

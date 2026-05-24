@@ -12,6 +12,7 @@ import {
 import NovaTransacaoModal from "./NovaTransacaoModal";
 
 export default function BottomNav() {
+
     const pathname = usePathname();
     const [modalVisible, setModalVisible] = React.useState(false);
 
@@ -19,38 +20,28 @@ export default function BottomNav() {
         { key: "home", title: "Inicio", path: "/", icon: Home },
         { key: "contas", title: "Contas", path: "/Contas", icon: Landmark },
         { key: "nova", title: "", path: null, icon: Plus, isPlus: true },
-        { key: "metas", title: "Metas", path: "/Metas", icon: PieChart },
-        {
-            key: "transferencias",
-            title: "Transf.",
-            path: "/Transferencias",
-            icon: ArrowLeftRight,
-        },
+        { key: "orcamentos", title: "Orçame.", path: "/Orcamentos", icon: PieChart },
+        { key: "transferencias", title: "Transf.", path: "/Transferencias", icon: ArrowLeftRight },
     ];
 
     const getIndex = () => {
         const index = routes.findIndex((item) => item.path === pathname);
         return index !== -1 ? index : 0;
     };
-
     const [index, setIndex] = React.useState(getIndex());
-
-    React.useEffect(() => {
-        setIndex(getIndex());
-    }, [pathname]);
+    React.useEffect(() => { setIndex(getIndex()) }, [pathname]);
 
     const renderIcon = ({ route, focused }: any) => {
         const Icon = route.icon;
 
         if (route.isPlus) {
             return (
-                <View style={styles.plusButton}>
+                <View style={styles.plusBtn}>
                     <Plus size={28} color="#222" strokeWidth={3} />
                 </View>
             );
         }
-
-        return <Icon size={22} color={focused ? "#9CFF19" : "#777"} />;
+        return <Icon size={22} color={focused ? "#9CFF19" : "#AAAAAA"} />;
     };
 
     const renderLabel = ({ route, focused }: any) => {
@@ -63,11 +54,8 @@ export default function BottomNav() {
     };
 
     const handleTabPress = (route: any) => {
-        if (route.isPlus) {
-            setModalVisible(true);
-        } else if (route.path) {
-            router.push(route.path);
-        }
+        if (route.isPlus) return setModalVisible(true); 
+        return router.push(route.path);
     };
 
     return (
@@ -82,13 +70,11 @@ export default function BottomNav() {
                 inactiveColor="#AAAAAA"
                 style={styles.bottomNav}
                 labeled
-                shifting={false}
-            />
+                shifting={false} />
 
             <NovaTransacaoModal
                 visible={modalVisible}
-                onClose={() => setModalVisible(false)}
-            />
+                onClose={() => setModalVisible(false)} />
         </>
     );
 }
@@ -100,7 +86,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
         elevation: 0,
     },
-    plusButton: {
+    plusBtn: {
         width: 50,
         height: 50,
         borderRadius: 25,
