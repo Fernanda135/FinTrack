@@ -1,13 +1,8 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import Svg, { Circle } from "react-native-svg";
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+
+import { categories } from "@/data/data";
 
 export default function GastCateg() {
 

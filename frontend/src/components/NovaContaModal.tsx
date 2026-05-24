@@ -11,9 +11,8 @@ import {
 } from "react-native";
 import { X, ChevronDown } from "lucide-react-native";
 import ColorPicker from "react-native-wheel-color-picker";
+
 import { tiposConta } from "@/data/data";
-
-
 
 export default function NovaContaModal({ visible, onClose }: any) {
 

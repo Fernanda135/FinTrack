@@ -10,28 +10,14 @@ import { ArrowLeft } from "lucide-react-native";
 import { useRouter } from "expo-router";
 
 import BottomNav from "@/components/BottomNav";
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+import { useCategorias } from "@/hooks/useCategorias";
 
 
 export default function Categorias() {
 
     const router = useRouter();
 
-    const categoriasGastos = categories.filter((item) => item.value !== "renda");
-    const totalGastos = categoriasGastos.reduce((total, item) => total + item.valor, 0);
-    const categoriasComPorcentagem = categoriasGastos
-        .map((item) => ({
-            ...item,
-            porcentagem: Number(((item.valor / totalGastos) * 100).toFixed(1)),
-            progresso: item.valor / totalGastos,
-        }))
-        .sort((a, b) => b.valor - a.valor);
+    const { categoriasComPorcentagem, totalGastos } = useCategorias();
 
     return (
         <SafeAreaProvider>

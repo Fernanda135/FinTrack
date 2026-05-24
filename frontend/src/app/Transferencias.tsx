@@ -9,15 +9,12 @@ import {
 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+import { useTransacoes } from "@/hooks/useTransacoes";
+
 
 export default function Transferencias() {
+
+    const { transacoes } = useTransacoes();
 
     return (
         <SafeAreaProvider>
@@ -33,11 +30,11 @@ export default function Transferencias() {
                         {/* LISTA DE TRANSFERÊNCIAS */}
                         <View style={styles.transfContainer}>
                             {transacoes.map((item) => {
-                                const categoria = categories.find(
+                                const categoria = transacoes.find(
                                     (cat) => cat.id === item.categoriaId,
                                 );
 
-                                const conta = contas.find((conta) => conta.id === item.contaId);
+                                const conta = transacoes.find((conta) => conta.id === item.contaId);
 
                                 return (
                                     <View key={item.id} style={styles.transItem}>
@@ -51,9 +48,9 @@ export default function Transferencias() {
 
                                         <View style={styles.transInfo}>
                                             <Text style={styles.transTitulo}>{item.titulo}</Text>
-                                            <Text style={styles.transSub}>{categoria?.label}</Text>
+                                            <Text style={styles.transSub}>{item.categoria?.label}</Text>
                                             <Text style={styles.transDate}>
-                                                {conta?.label} | {new Date(item.data).toLocaleDateString("pt-BR", {
+                                                {item.categoria?.label} | {new Date(item.data).toLocaleDateString("pt-BR", {
                                                     day: "2-digit",
                                                     month: "short",
                                                 })}

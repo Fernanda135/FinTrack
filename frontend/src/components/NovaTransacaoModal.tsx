@@ -1,13 +1,9 @@
 import React, { useState } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList } from "react-native";
 import { X, ChevronDown } from "lucide-react-native";
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+
+import { contas, categories } from "@/data/data";
+
 
 export default function NovaTransacaoModal({ visible, onClose }: any) {
 

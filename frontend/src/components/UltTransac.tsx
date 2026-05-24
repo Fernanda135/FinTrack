@@ -1,15 +1,14 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+
+import { contas, categories } from "@/data/data";
+import { useDashboard } from "@/hooks/useDashboard";
 
 
 export default function UltTransac() {
+
+    const { ultimasTransacoes } = useDashboard();
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -17,7 +16,7 @@ export default function UltTransac() {
                 <Link href={"/Transferencias"} style={styles.link}>Ver tudo</Link>
             </View>
 
-            <View style={{ width: "100%" }}>{dashboard.ultimasTransacoes.map((item) => {
+            <View style={{ width: "100%" }}>{ultimasTransacoes.map((item) => {
                 const categoria = categories.find(
                     (cat) => cat.id === item.categoriaId,
                 );

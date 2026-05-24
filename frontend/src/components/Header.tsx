@@ -1,14 +1,10 @@
 import { Text, View, StyleSheet, Image } from 'react-native';
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+import { useDashboard } from '@/hooks/useDashboard';
 
 
 export default function Header() {
+
+    const { saldoTotal, receitaTotal, gastoTotal } = useDashboard();
 
     return (
         <View style={styles.container}>
@@ -23,16 +19,16 @@ export default function Header() {
 
             <View style={styles.card}>
                 <Text style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 'bold' }} >SALDO TOTAL</Text>
-                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >{dashboard.saldoTotal}</Text>
+                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >{saldoTotal}</Text>
                 
                 <View style={styles.infoContainer}>
                     <View style={styles.infoCard}>
                         <Text style={styles.infoLabel}>Receitas</Text>
-                        <Text style={styles.infoValue}>{dashboard.receitaTotal}</Text>
+                        <Text style={styles.infoValue}>{receitaTotal}</Text>
                     </View>
                     <View style={styles.infoCard}>
                         <Text style={styles.infoLabel}>Gastos</Text>
-                        <Text style={styles.infoValue}>{dashboard.gastoTotal}</Text>
+                        <Text style={styles.infoValue}>{gastoTotal}</Text>
                     </View>
                 </View>
             </View>

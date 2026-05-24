@@ -10,13 +10,7 @@ import {
     ScrollView,
 } from "react-native";
 import { X, ChevronDown } from "lucide-react-native";
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+import { categories } from "@/data/data";
 
 
 export default function NovoOrcamentoModal({ visible, onClose }: any) {

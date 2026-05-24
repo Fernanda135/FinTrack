@@ -12,16 +12,13 @@ import { Plus, SquarePen, Trash2 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
 import NovaContaModal from "@/components/NovaContaModal";
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+import { contas } from "@/data/data";
+import { useDashboard } from "@/hooks/useDashboard";
 
 
 export default function Contas() {
+
+    const { saldoTotal } = useDashboard();
 
     const [modalVisible, setModalVisible] = useState(false);
 
@@ -37,7 +34,7 @@ export default function Contas() {
                         <View style={styles.header}>
                             <Text style={styles.title}>Contas</Text>
                             <Text style={styles.subtitle}>Saldo total consolidado</Text>
-                            <Text style={styles.totalBalance}>{dashboard.saldoTotal}</Text>
+                            <Text style={styles.totalBalance}>{saldoTotal}</Text>
                         </View>
 
                         {/* CARDS DAS CONTAS */}

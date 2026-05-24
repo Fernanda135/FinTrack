@@ -13,13 +13,9 @@ import { Plus, X } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
 import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
-import {
-    contas,
-    categories,
-    transacoes,
-    orcamentos,
-    dashboard,
-} from "@/data/data";
+import { orcamentos } from "@/data/data";
+import { useOrcamentos } from "@/hooks/userOrcamentos";
+import { useDashboard } from "@/hooks/useDashboard";
 
 
 export default function Orcamentos() {
@@ -28,19 +24,8 @@ export default function Orcamentos() {
     const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<any>(null);
     const [novoModalVisible, setNovoModalVisible] = useState(false);
 
-    const getPorcentagem = (gasto: number, limite: number) => {
-        return Math.round((gasto / limite) * 100);
-    };
-
-    const getColor = (percentage: number) => {
-        if (percentage < 80) {
-            return "#1F7A1F";
-        }
-        if (percentage < 100) {
-            return "#D8A300";
-        }
-        return "#B00000";
-    };
+    const { getPorcentagem, getColor } = useOrcamentos();
+    const { gastoOrcaTotal, limiteOrcTotal } = useDashboard();
 
     return (
         <SafeAreaProvider>
@@ -55,8 +40,8 @@ export default function Orcamentos() {
                         <Text style={styles.title}>Orçamentos</Text>
                         <View style={styles.cardsContainer}>
                             <View style={styles.topCard}>
-                                <Text style={styles.topCardText}>{dashboard.gastoOrcaTotal} de</Text>
-                                <Text style={styles.topCardText}>{dashboard.limiteOrcTotal}</Text>
+                                <Text style={styles.topCardText}>{gastoOrcaTotal} de</Text>
+                                <Text style={styles.topCardText}>{limiteOrcTotal}</Text>
                             </View>
                             <View style={styles.topCard}>
                                 <Text style={styles.topCardText}>{orcamentos.length} ativos</Text>
