@@ -12,6 +12,7 @@ import { useRouter } from "expo-router";
 import BottomNav from "@/components/BottomNav";
 import { useCategorias } from "@/hooks/useCategorias";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { COLORS } from "@/constants/colors";
 
 
 export default function Categorias() {
@@ -32,7 +33,7 @@ export default function Categorias() {
                         {/* HEADER */}
                         <View style={styles.header}>
                             <TouchableOpacity onPress={() => router.back()}>
-                                <ArrowLeft size={24} color="#9EFF00" />
+                                <ArrowLeft size={24} color={COLORS.primary} />
                             </TouchableOpacity>
                             <Text style={styles.title}>Categorias</Text>
                         </View>
@@ -85,7 +86,7 @@ export default function Categorias() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#222222",
+        backgroundColor: COLORS.darkBackground,
     },
     content: {
         flex: 1,
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
         marginBottom: 35,
     },
     title: {
-        color: "#9EFF00",
+        color: COLORS.primary,
         fontSize: 32,
         fontWeight: "bold",
     },
@@ -110,14 +111,14 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     totalLabel: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 12,
         textTransform: "uppercase",
         marginBottom: 6,
         fontWeight: "600",
     },
     totalValue: {
-        color: "#FFF",
+        color: COLORS.white,
         fontSize: 34,
         fontWeight: "bold",
     },
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     card: {
-        backgroundColor: "#FFF",
+        backgroundColor: COLORS.white,
         borderRadius: 10,
         padding: 16,
     },
@@ -145,20 +146,20 @@ const styles = StyleSheet.create({
         width: 34,
         height: 34,
         borderRadius: 10,
-        backgroundColor: "#D9D9D9",
+        backgroundColor: COLORS.lightGray,
     },
     cardCateg: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 16,
         fontWeight: "bold",
     },
     cardQtd: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 11,
         marginTop: 2,
     },
     cardValue: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 18,
         fontWeight: "bold",
     },
@@ -170,13 +171,13 @@ const styles = StyleSheet.create({
     progressBar: {
         flex: 1,
         height: 5,
-        backgroundColor: "#EFEFEF",
+        backgroundColor: COLORS.borderGray,
         borderRadius: 999,
         overflow: "hidden",
     },
     progress: {
         height: "100%",
-        backgroundColor: "#1F7A3D",
+        backgroundColor: COLORS.progressGreen,
         borderRadius: 999,
     },
     percent: {

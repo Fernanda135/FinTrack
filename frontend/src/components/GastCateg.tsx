@@ -4,6 +4,7 @@ import Svg, { Circle } from "react-native-svg";
 
 import { categories } from "@/data/data";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { COLORS } from "@/constants/colors";
 
 export default function GastCateg() {
 
@@ -12,7 +13,7 @@ export default function GastCateg() {
         .slice(0, 3);
 
     const total = categorias.reduce((sum, item) => sum + item.valor, 0);
-    const colors = ["#1E1E1E", "#9CFF19", "#BDBDBD"];
+    const colors = [COLORS.black, COLORS.primary, COLORS.gray];
     const radius = 38;
     const strokeWidth = 14;
     const circumference = 2 * Math.PI * radius;
@@ -110,19 +111,19 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#1A1A1A",
+        color: COLORS.black,
     },
     link: {
         fontSize: 14,
-        color: "#AAAAAA",
+        color: COLORS.gray,
     },
     categoryCard: {
         width: "100%",
         borderWidth: 1,
-        borderColor: "#F3F4F6",
+        borderColor: COLORS.borderGray,
         borderRadius: 10,
         padding: 18,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -152,11 +153,11 @@ const styles = StyleSheet.create({
     legendText: {
         fontSize: 12,
         fontWeight: "bold",
-        color: "#1A1A1A",
+        color: COLORS.black,
     },
     legendValue: {
         fontSize: 12,
         fontWeight: "bold",
-        color: "#1A1A1A",
+        color: COLORS.black,
     },
 });

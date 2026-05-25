@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, Image } from 'react-native';
 
 import { useDashboard } from '@/hooks/useDashboard';
 import { formatCurrency } from '@/utils/formatCurrency';
+import { COLORS } from '@/constants/colors';
 
 
 export default function Header() {
@@ -14,14 +15,14 @@ export default function Header() {
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }} >
                 <View style={styles.user} />
                 <View>
-                    <Text style={{ color: '#949390', fontSize: 14 }} >Bem Vindo,</Text>
-                    <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 18 }} >Fulano</Text>
+                    <Text style={{ color: COLORS.gray, fontSize: 14 }} >Bem Vindo,</Text>
+                    <Text style={{ color: COLORS.white, fontWeight: 'bold', fontSize: 18 }} >Fulano</Text>
                 </View>
             </View>
 
             <View style={styles.card}>
-                <Text style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 'bold' }} >SALDO TOTAL</Text>
-                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >{formatCurrency(saldoTotal)}</Text>
+                <Text style={{ color: COLORS.gray, fontSize: 14, fontWeight: 'bold' }} >SALDO TOTAL</Text>
+                <Text style={{ color: COLORS.white, fontWeight: 'bold', fontSize: 34 }} >{formatCurrency(saldoTotal)}</Text>
                 
                 <View style={styles.infoContainer}>
                     <View style={styles.infoCard}>
@@ -42,7 +43,7 @@ export default function Header() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#222222',
+        backgroundColor: COLORS.darkBackground,
         padding: 16,
         borderBottomRightRadius: 20,
         borderBottomLeftRadius: 20,
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     user: {
-        backgroundColor: '#ffffff',
+        backgroundColor: COLORS.white,
         width: 51,
         height: 51,
         borderRadius: 50
@@ -73,20 +74,20 @@ const styles = StyleSheet.create({
     },
     infoCard: {
         flex: 1,
-        backgroundColor: "#9cff19",
-        borderRadius: 14,
+        backgroundColor: COLORS.primary,
+        borderRadius: 10,
         padding: 12,
         alignItems: "center",
     },
     infoLabel: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 11,
         fontWeight: "bold",
         marginBottom: 4,
         textTransform: "uppercase",
     },
     infoValue: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 16,
         fontWeight: "bold",
     },

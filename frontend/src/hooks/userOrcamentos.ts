@@ -1,3 +1,5 @@
+import { COLORS } from "@/constants/colors";
+
 export function useOrcamentos() {
 
     const getPorcentagem = (
@@ -9,14 +11,14 @@ export function useOrcamentos() {
 
     const getColor = (percentage: number) => {
         if (percentage < 80) {
-            return "#1F7A1F";
+            return COLORS.progressGreen;
         }
 
         if (percentage < 100) {
-            return "#D8A300";
+            return COLORS.warning;
         }
 
-        return "#B00000";
+        return COLORS.error;
     };
 
     return {

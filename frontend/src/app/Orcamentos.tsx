@@ -17,6 +17,7 @@ import { orcamentos } from "@/data/data";
 import { useOrcamentos } from "@/hooks/userOrcamentos";
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { COLORS } from "@/constants/colors";
 
 
 
@@ -95,7 +96,7 @@ export default function Orcamentos() {
                                         <Text style={[
                                             styles.percent,
                                             percentage >= 100 && {
-                                                color: "#B00000",
+                                                color: COLORS.error,
                                             },
                                         ]}
                                         >
@@ -108,7 +109,7 @@ export default function Orcamentos() {
                         })}
 
                         <TouchableOpacity style={styles.addButton} onPress={() => setNovoModalVisible(true)}>
-                            <Plus size={30} color="#AAAAAA" />
+                            <Plus size={30} color={COLORS.gray} />
                         </TouchableOpacity>
                     </View>
                 </ScrollView>
@@ -136,7 +137,7 @@ export default function Orcamentos() {
                                 }
                             ]} >
                                 <TouchableOpacity style={styles.closeIcon} onPress={() => setModalVisible(false)} >
-                                    <X size={22} color="#FFF" />
+                                    <X size={22} color={COLORS.white} />
                                 </TouchableOpacity>
                                 <Text style={styles.modalTitle}>{orcamentoSelecionado?.title}</Text>
                                 <Text style={styles.modalDescription}>{orcamentoSelecionado?.descricao}</Text>
@@ -178,13 +179,13 @@ export default function Orcamentos() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
     },
     scrollContainer: {
         paddingBottom: 50,
     },
     header: {
-        backgroundColor: "#9CFF19",
+        backgroundColor: COLORS.primary,
         height: 220,
         borderBottomLeftRadius: 25,
         borderBottomRightRadius: 25,
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
         position: "relative",
     },
     title: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 30,
         fontWeight: "bold",
     },
@@ -209,14 +210,14 @@ const styles = StyleSheet.create({
     topCard: {
         width: 150,
         height: 55,
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
         borderRadius: 10,
         elevation: 2,
         alignItems: "center",
         justifyContent: "center",
     },
     topCardText: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontWeight: "bold",
         fontSize: 16,
     },
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
         gap: 25,
     },
     budgetCard: {
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
         borderRadius: 12,
         padding: 18,
         elevation: 2,
@@ -244,18 +245,18 @@ const styles = StyleSheet.create({
     iconPlaceholder: {
         width: 30,
         height: 30,
-        backgroundColor: "#AAAAAA",
+        backgroundColor: COLORS.gray,
         borderRadius: 8,
         marginTop: 3,
     },
     cardTitle: {
         fontSize: 16,
         fontWeight: "600",
-        color: "#222222",
+        color: COLORS.darkBackground,
     },
     cardDescription: {
         fontSize: 12,
-        color: "#AAAAAA",
+        color: COLORS.gray,
         marginTop: 4,
         width: 180,
     },
@@ -265,17 +266,17 @@ const styles = StyleSheet.create({
     value: {
         fontWeight: "bold",
         fontSize: 18,
-        color: "#222222",
+        color: COLORS.darkBackground,
     },
     limit: {
         fontSize: 12,
-        color: "#AAAAAA",
+        color: COLORS.gray,
         marginTop: 2,
     },
     progressLine: {
         width: "100%",
         height: 5,
-        backgroundColor: "#EFEFEF",
+        backgroundColor: COLORS.borderGray,
         borderRadius: 20,
         marginTop: 15,
         overflow: "hidden",
@@ -292,12 +293,12 @@ const styles = StyleSheet.create({
     },
     details: {
         fontSize: 12,
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontWeight: "600",
     },
     percent: {
         fontSize: 12,
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontWeight: "600",
     },
     addButton: {
@@ -305,12 +306,12 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderWidth: 2,
         borderStyle: "dashed",
-        borderColor: "#AAAAAA",
+        borderColor: COLORS.gray,
         justifyContent: "center",
         alignItems: "center",
         marginTop: 25,
         marginBottom: 20,
-        backgroundColor: "#EFEFEF",
+        backgroundColor: COLORS.borderGray,
     },
     modalOverlay: {
         flex: 1,
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         width: "100%",
-        backgroundColor: "#FFF",
+        backgroundColor: COLORS.white,
         borderRadius: 25,
         overflow: "hidden",
     },
@@ -333,7 +334,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     modalTitle: {
-        color: "#FFF",
+        color: COLORS.white,
         fontSize: 28,
         fontWeight: "bold",
     },
@@ -348,18 +349,18 @@ const styles = StyleSheet.create({
         gap: 15,
     },
     infoCard: {
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         borderRadius: 16,
         padding: 16,
     },
     infoLabel: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 12,
         textTransform: "uppercase",
         marginBottom: 5,
     },
     infoValue: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 22,
         fontWeight: "bold",
     },

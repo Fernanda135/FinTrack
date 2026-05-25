@@ -15,6 +15,7 @@ import NovaContaModal from "@/components/NovaContaModal";
 import { contas } from "@/data/data";
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { COLORS } from "@/constants/colors";
 
 
 
@@ -58,17 +59,17 @@ export default function Contas() {
                                     <View style={styles.line} />
                                     <View style={{ flexDirection: "row", justifyContent: "space-between" }} >
                                         <TouchableOpacity>
-                                            <Trash2 size={18} color={"#ffffff"} />
+                                            <Trash2 size={18} color={COLORS.gray} />
                                         </TouchableOpacity>
                                         <TouchableOpacity>
-                                            <SquarePen size={18} color={"#ffffff"} />
+                                            <SquarePen size={18} color={COLORS.gray} />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
                             ))}
 
                             <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)} >
-                                <Plus size={30} color="#AAAAAA" />
+                                <Plus size={30} color={COLORS.gray} />
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
@@ -86,7 +87,7 @@ export default function Contas() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
     },
     contentContainer: {
         flex: 1,
@@ -100,20 +101,20 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     title: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 32,
         fontWeight: "bold",
         marginBottom: 20,
     },
     subtitle: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 12,
         fontWeight: "bold",
         textTransform: "uppercase",
         marginBottom: 4,
     },
     totalBalance: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 30,
         fontWeight: "bold",
     },
@@ -145,17 +146,17 @@ const styles = StyleSheet.create({
         backgroundColor: "#aaaaaa5f",
     },
     cardTitle: {
-        color: "#FFF",
+        color: COLORS.white,
         fontSize: 16,
         fontWeight: "bold",
     },
     cardSubtitle: {
-        color: "#FFF",
+        color: COLORS.white,
         fontSize: 11,
         marginTop: 2,
     },
     balance: {
-        color: "#FFF",
+        color: COLORS.white,
         fontSize: 20,
         fontWeight: "bold",
     },
@@ -169,7 +170,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderWidth: 2,
         borderStyle: "dashed",
-        borderColor: "#AAAAAA",
+        borderColor: COLORS.gray,
         justifyContent: "center",
         alignItems: "center",
         marginTop: 25,

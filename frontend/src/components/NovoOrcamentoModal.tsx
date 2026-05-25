@@ -12,6 +12,7 @@ import {
 import { X, ChevronDown } from "lucide-react-native";
 import { categories } from "@/data/data";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { COLORS } from "@/constants/colors";
 
 
 export default function NovoOrcamentoModal({ visible, onClose }: any) {
@@ -66,7 +67,7 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Novo Orçamento</Text>
                             <TouchableOpacity onPress={onClose}>
-                                <X size={24} color="#222222" />
+                                <X size={24} color={COLORS.darkBackground} />
                             </TouchableOpacity>
                         </View>
 
@@ -76,7 +77,7 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                                 <TextInput
                                     style={styles.valueInput}
                                     placeholder="R$ 0,00"
-                                    placeholderTextColor="#AAAAAA"
+                                    placeholderTextColor={COLORS.gray}
                                     keyboardType="numeric"
                                     value={limite}
                                     onChangeText={handleLimiteChange}
@@ -90,7 +91,7 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                                         styles.selectText,
                                         !categoria && styles.placeholderText,
                                     ]} >{getCategoriaLabel()}</Text>
-                                    <ChevronDown size={20} color="#AAAAAA" />
+                                    <ChevronDown size={20} color={COLORS.gray} />
                                 </View>
                             </TouchableOpacity>
 
@@ -104,7 +105,7 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                                     },                                ]}
                                     multiline
                                     placeholder="descrição do orçamento..."
-                                    placeholderTextColor="#AAAAAA"
+                                    placeholderTextColor={COLORS.gray}
                                     value={descricao}
                                     onChangeText={setDescricao}
                                 />
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
     },
     modalContent: {
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         height: "72%",
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     modalTitle: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 24,
         fontWeight: "bold",
     },
@@ -175,18 +176,18 @@ const styles = StyleSheet.create({
     },
     valueContainer: {
         marginBottom: 25,
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         borderRadius: 18,
         padding: 20,
         alignItems: "center",
     },
     valueLabel: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 14,
         marginBottom: 5,
     },
     valueInput: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 34,
         fontWeight: "bold",
     },
@@ -194,13 +195,13 @@ const styles = StyleSheet.create({
         marginBottom: 25,
     },
     selectLabel: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 14,
         marginBottom: 8,
         fontWeight: "bold",
     },
     selectButton: {
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         borderRadius: 14,
         padding: 15,
         flexDirection: "row",
@@ -208,30 +209,30 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     selectText: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 14,
     },
     placeholderText: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
     },
     inputContainer: {
         marginBottom: 30,
     },
     label: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 14,
         marginBottom: 8,
         fontWeight: "bold",
     },
     input: {
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         borderRadius: 14,
         padding: 15,
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 14,
     },
     confirmButton: {
-        backgroundColor: "#9CFF19",
+        backgroundColor: COLORS.primary,
         paddingVertical: 16,
         borderRadius: 14,
         alignItems: "center",
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     confirmText: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 16,
         fontWeight: "bold",
         textTransform: "lowercase",
@@ -252,7 +253,7 @@ const styles = StyleSheet.create({
     },
     selectModalContent: {
         width: "80%",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
         borderRadius: 20,
         padding: 20,
         maxHeight: "70%",
@@ -262,16 +263,16 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 15,
         textAlign: "center",
-        color: "#222222",
+        color: COLORS.darkBackground,
     },
     selectOption: {
         paddingVertical: 16,
         borderBottomWidth: 1,
-        borderBottomColor: "#EFEFEF",
+        borderBottomColor: COLORS.borderGray,
     },
     selectOptionText: {
         textAlign: "center",
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 16,
     },
 });

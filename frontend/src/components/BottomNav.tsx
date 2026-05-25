@@ -10,6 +10,7 @@ import {
     ArrowLeftRight,
 } from "lucide-react-native";
 import NovaTransacaoModal from "./NovaTransacaoModal";
+import { COLORS } from "@/constants/colors";
 
 export default function BottomNav() {
 
@@ -37,11 +38,11 @@ export default function BottomNav() {
         if (route.isPlus) {
             return (
                 <View style={styles.plusBtn}>
-                    <Plus size={28} color="#222" strokeWidth={3} />
+                    <Plus size={28} color={COLORS.darkBackground} strokeWidth={3} />
                 </View>
             );
         }
-        return <Icon size={22} color={focused ? "#9CFF19" : "#AAAAAA"} />;
+        return <Icon size={22} color={focused ? COLORS.primary : COLORS.gray} />;
     };
 
     const renderLabel = ({ route, focused }: any) => {
@@ -66,8 +67,8 @@ export default function BottomNav() {
                 onTabPress={({ route }) => handleTabPress(route)}
                 renderIcon={renderIcon}
                 renderLabel={renderLabel}
-                activeColor="#9CFF19"
-                inactiveColor="#AAAAAA"
+                activeColor={COLORS.primary}
+                inactiveColor={COLORS.gray}
                 style={styles.bottomNav}
                 labeled
                 shifting={false} />
@@ -81,7 +82,7 @@ export default function BottomNav() {
 
 const styles = StyleSheet.create({
     bottomNav: {
-        backgroundColor: "#222222",
+        backgroundColor: COLORS.darkBackground,
         height: 75,
         borderTopWidth: 0,
         elevation: 0,
@@ -90,20 +91,20 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 25,
-        backgroundColor: "#9CFF19",
+        backgroundColor: COLORS.primary,
         justifyContent: "center",
         alignItems: "center",
         marginBottom: 4,
         marginTop: -10,
     },
     label: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 11,
         marginTop: -6,
         fontWeight: "500",
         textAlign: "center",
     },
     labelActive: {
-        color: "#9CFF19",
+        color: COLORS.primary,
     },
 });

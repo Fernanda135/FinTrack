@@ -5,6 +5,7 @@ import { contas, categories } from "@/data/data";
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
+import { COLORS } from "@/constants/colors";
 
 
 export default function UltTransac() {
@@ -36,7 +37,7 @@ export default function UltTransac() {
 
                         <Text style={[
                             styles.transactionValue,
-                            { color: item.tipo === "receita" ? "#116e1f" : "#a70205" },
+                            { color: item.tipo === "receita" ? COLORS.success : COLORS.danger },
                         ]} >
                             {item.tipo === "receita" ? "+" : "-"}
                             {formatCurrency(item.valor)}
@@ -65,32 +66,32 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 16,
         fontWeight: "bold",
-        color: "#1A1A1A",
+        color: COLORS.black,
     },
     link: {
         fontSize: 14,
-        color: "#AAAAAA",
+        color: COLORS.gray,
     },
     transactionCard: {
         width: "100%",
         borderWidth: 1,
-        borderColor: "#F3F4F6",
+        borderColor: COLORS.borderGray,
         borderRadius: 10,
         marginBottom: 10,
         padding: 16,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
     },
     transactionTitle: {
         fontSize: 15,
         fontWeight: "600",
-        color: "#1A1A1A",
+        color: COLORS.black,
     },
     transactionCategory: {
         fontSize: 12,
-        color: "#AAAAAA",
+        color: COLORS.gray,
         marginTop: 4,
     },
     transactionValue: {
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     },
     transDate: {
         fontSize: 11,
-        color: "#AAAAAA",
+        color: COLORS.gray,
         marginTop: 4,
     },
 });

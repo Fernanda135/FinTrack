@@ -12,6 +12,7 @@ import BottomNav from "@/components/BottomNav";
 import { useTransacoes } from "@/hooks/useTransacoes";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
+import { COLORS } from "@/constants/colors";
 
 
 
@@ -43,9 +44,9 @@ export default function Transferencias() {
                                     <View key={item.id} style={styles.transItem}>
                                         <View>
                                             {item.tipo === "receita" ? (
-                                                <SquareArrowDown size={47} strokeWidth={0.8} color="#383A39" />
+                                                <SquareArrowDown size={47} strokeWidth={0.8} color={COLORS.darkGray} />
                                             ) : (
-                                                <SquareArrowUp size={47} strokeWidth={0.8} color="#383A39" />
+                                                <SquareArrowUp size={47} strokeWidth={0.8} color={COLORS.darkGray} />
                                             )}
                                         </View>
 
@@ -82,7 +83,7 @@ export default function Transferencias() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#222222",
+        backgroundColor: COLORS.darkBackground,
     },
     contentContainer: {
         flex: 1,
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
     },
     header: {
-        color: "#9CFF19",
+        color: COLORS.primary,
         fontWeight: "bold",
         fontSize: 30,
         padding: 20,
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     transfContainer: {
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         width: "100%",
         flex: 1,
         borderTopLeftRadius: 30,
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         marginHorizontal: 16,
         marginBottom: 10,
-        borderBottomColor: "#383A39",
+        borderBottomColor: COLORS.darkGray,
         borderBottomWidth: 1,
         gap: 10,
     },
@@ -125,12 +126,12 @@ const styles = StyleSheet.create({
     },
     transTitulo: {
         fontSize: 16,
-        color: "#383A39",
+        color: COLORS.darkGray,
         marginBottom: 4,
     },
     transSub: {
         fontSize: 12,
-        color: "#AAAAAA",
+        color: COLORS.gray,
     },
     valorContainer: {
         flexDirection: "row",
@@ -141,13 +142,13 @@ const styles = StyleSheet.create({
     },
     transDate: {
         fontSize: 11,
-        color: "#AAAAAA",
+        color: COLORS.gray,
         marginTop: 4,
     },
     valorReceita: {
-        color: "#116e1f",
+        color: COLORS.success,
     },
     valorDespesa: {
-        color: "#a70205",
+        color: COLORS.danger,
     },
 });

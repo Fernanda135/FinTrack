@@ -7,6 +7,7 @@ import BottomNav from "@/components/BottomNav";
 import Header from "@/components/Header";
 import GastCateg from "@/components/GastCateg";
 import UltTransac from "@/components/UltTransac";
+import { COLORS } from "@/constants/colors";
 
 export default function Home() {
 
@@ -31,7 +32,7 @@ export default function Home() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F8F8',
+        backgroundColor: COLORS.background,
     },
     contentContainer: {
         flex: 1,

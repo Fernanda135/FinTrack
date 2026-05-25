@@ -4,6 +4,7 @@ import { X, ChevronDown } from "lucide-react-native";
 
 import { contas, categories } from "@/data/data";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { COLORS } from "@/constants/colors";
 
 
 export default function NovaTransacaoModal({ visible, onClose }: any) {
@@ -70,7 +71,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Nova Transação</Text>
                             <TouchableOpacity onPress={onClose}>
-                                <X size={24} color="#222222" />
+                                <X size={24} color={COLORS.darkBackground} />
                             </TouchableOpacity>
                         </View>
 
@@ -103,7 +104,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                 <TextInput
                                     style={styles.valueInput}
                                     placeholder="R$ 0,00"
-                                    placeholderTextColor="#AAAAAA"
+                                    placeholderTextColor={COLORS.gray}
                                     keyboardType="numeric"
                                     value={valor}
                                     onChangeText={handleValorChange}
@@ -115,7 +116,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                 <TextInput
                                     style={styles.titleInput}
                                     placeholder="título da transação"
-                                    placeholderTextColor="#AAAAAA"
+                                    placeholderTextColor={COLORS.gray}
                                     value={titulo}
                                     onChangeText={setTitulo}
                                 />
@@ -128,7 +129,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                         styles.selectText,
                                         !conta && styles.placeholderText
                                     ]}>{getContaLabel()}</Text>
-                                    <ChevronDown size={20} color="#AAAAAA" />
+                                    <ChevronDown size={20} color={COLORS.gray} />
                                 </View>
                             </TouchableOpacity>
 
@@ -139,7 +140,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                         styles.selectText,
                                         !categoria && styles.placeholderText
                                     ]}>{getCategoriaLabel()}</Text>
-                                    <ChevronDown size={20} color="#AAAAAA" />
+                                    <ChevronDown size={20} color={COLORS.gray} />
                                 </View>
                             </TouchableOpacity>
 
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-end",
     },
     modalContent: {
-        backgroundColor: "#ffffff",
+        backgroundColor: COLORS.white,
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         height: "80%",
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     modalTitle: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 20,
         fontWeight: "bold",
     },
@@ -237,7 +238,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         gap: 10,
         marginBottom: 30,
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         borderRadius: 10,
         padding: 4,
     },
@@ -248,31 +249,31 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     typeButtonActive: {
-        backgroundColor: "#FFFFFF",
+        backgroundColor: COLORS.white,
     },
     typeText: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 14,
         fontWeight: "500",
     },
     typeTextActive: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontWeight: "bold",
     },
     valueContainer: {
         marginBottom: 30,
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         borderRadius: 10,
         padding: 10,
         alignItems: 'center'
     },
     valueLabel: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 12,
         marginBottom: 5,
     },
     valueInput: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 32,
         fontWeight: "bold",
         padding: 0,
@@ -281,7 +282,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     selectLabel: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 14,
         marginBottom: 5,
         fontWeight: 'bold'
@@ -290,35 +291,35 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         padding: 15,
         borderRadius: 10,
     },
     selectText: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 14,
     },
     placeholderText: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
     },
     titleContainer: {
         marginBottom: 30,
     },
     titleLabel: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 14,
         marginBottom: 5,
         fontWeight: 'bold'
     },
     titleInput: {
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         padding: 15,
         borderRadius: 10,
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 14,
     },
     confirmButton: {
-        backgroundColor: "#9CFF19",
+        backgroundColor: COLORS.primary,
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: "center",
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
         elevation: 1
     },
     confirmText: {
-        color: "#1A1A1A",
+        color: COLORS.black,
         fontSize: 16,
         fontWeight: "bold",
         textTransform: "lowercase",
@@ -338,14 +339,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     selectModalContent: {
-        backgroundColor: "#F8F8F8",
+        backgroundColor: COLORS.background,
         borderRadius: 15,
         padding: 20,
         width: "80%",
         maxHeight: "70%",
     },
     selectModalTitle: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 18,
         fontWeight: "bold",
         marginBottom: 15,
@@ -354,10 +355,10 @@ const styles = StyleSheet.create({
     selectOption: {
         paddingVertical: 15,
         borderBottomWidth: 1,
-        borderBottomColor: "#D9D9D9",
+        borderBottomColor: COLORS.lightGray,
     },
     selectOptionText: {
-        color: "#222222",
+        color: COLORS.darkBackground,
         fontSize: 16,
         textAlign: "center",
     },
