@@ -3,6 +3,8 @@ import { Link } from "expo-router";
 
 import { contas, categories } from "@/data/data";
 import { useDashboard } from "@/hooks/useDashboard";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { formatDate } from "@/utils/formatDate";
 
 
 export default function UltTransac() {
@@ -29,13 +31,7 @@ export default function UltTransac() {
                         <View>
                             <Text style={styles.transactionTitle}>{item.titulo}</Text>
                             <Text style={styles.transactionCategory}>{categoria?.label}</Text>
-                            <Text style={styles.transDate}>
-                                {conta?.label} | {" "}
-                                {new Date(item.data).toLocaleDateString("pt-BR", {
-                                    day: "2-digit",
-                                    month: "short",
-                                })}
-                            </Text>
+                            <Text style={styles.transDate}>{conta?.label} | {formatDate(item.data)}</Text>
                         </View>
 
                         <Text style={[
@@ -43,10 +39,7 @@ export default function UltTransac() {
                             { color: item.tipo === "receita" ? "#116e1f" : "#a70205" },
                         ]} >
                             {item.tipo === "receita" ? "+" : "-"}
-                            {item.valor.toLocaleString("pt-BR", {
-                                style: "currency",
-                                currency: "BRL",
-                            })}
+                            {formatCurrency(item.valor)}
                         </Text>
                     </View>
                 );

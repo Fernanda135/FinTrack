@@ -14,6 +14,8 @@ import BottomNav from "@/components/BottomNav";
 import NovaContaModal from "@/components/NovaContaModal";
 import { contas } from "@/data/data";
 import { useDashboard } from "@/hooks/useDashboard";
+import { formatCurrency } from "@/utils/formatCurrency";
+
 
 
 export default function Contas() {
@@ -34,7 +36,7 @@ export default function Contas() {
                         <View style={styles.header}>
                             <Text style={styles.title}>Contas</Text>
                             <Text style={styles.subtitle}>Saldo total consolidado</Text>
-                            <Text style={styles.totalBalance}>{saldoTotal}</Text>
+                            <Text style={styles.totalBalance}>{formatCurrency(saldoTotal)}</Text>
                         </View>
 
                         {/* CARDS DAS CONTAS */}
@@ -50,10 +52,7 @@ export default function Contas() {
                                             </View>
                                         </View>
                                         <Text style={styles.balance}>
-                                            {conta.saldo.toLocaleString("pt-BR", {
-                                                style: "currency",
-                                                currency: "BRL",
-                                            })}
+                                            {formatCurrency(conta.saldo)}
                                         </Text>
                                     </View>
                                     <View style={styles.line} />

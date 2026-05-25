@@ -11,6 +11,7 @@ import { useRouter } from "expo-router";
 
 import BottomNav from "@/components/BottomNav";
 import { useCategorias } from "@/hooks/useCategorias";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 
 export default function Categorias() {
@@ -39,10 +40,7 @@ export default function Categorias() {
                         <View style={styles.totalContainer}>
                             <Text style={styles.totalLabel}>Total de gastos</Text>
                             <Text style={styles.totalValue}>
-                                {totalGastos.toLocaleString("pt-BR", {
-                                    style: "currency",
-                                    currency: "BRL",
-                                })}
+                                {formatCurrency(totalGastos)}
                             </Text>
                         </View>
 
@@ -59,12 +57,7 @@ export default function Categorias() {
                                             </View>
                                         </View>
 
-                                        <Text style={styles.cardValue}>
-                                            {item.valor.toLocaleString("pt-BR", {
-                                                style: "currency",
-                                                currency: "BRL",
-                                            })}
-                                        </Text>
+                                        <Text style={styles.cardValue}> {formatCurrency(item.valor)}</Text>
                                     </View>
 
                                     <View style={styles.progressArea}>

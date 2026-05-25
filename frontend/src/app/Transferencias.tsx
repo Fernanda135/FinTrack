@@ -10,6 +10,9 @@ import {
 
 import BottomNav from "@/components/BottomNav";
 import { useTransacoes } from "@/hooks/useTransacoes";
+import { formatCurrency } from "@/utils/formatCurrency";
+import { formatDate } from "@/utils/formatDate";
+
 
 
 export default function Transferencias() {
@@ -49,12 +52,7 @@ export default function Transferencias() {
                                         <View style={styles.transInfo}>
                                             <Text style={styles.transTitulo}>{item.titulo}</Text>
                                             <Text style={styles.transSub}>{item.categoria?.label}</Text>
-                                            <Text style={styles.transDate}>
-                                                {item.categoria?.label} | {new Date(item.data).toLocaleDateString("pt-BR", {
-                                                    day: "2-digit",
-                                                    month: "short",
-                                                })}
-                                            </Text>
+                                            <Text style={styles.transDate}>{item.categoria?.label} | {formatDate(item.data)}</Text>
                                         </View>
 
                                         <View style={styles.valorContainer}>
@@ -66,10 +64,7 @@ export default function Transferencias() {
                                             ]}
                                             >
                                                 {item.tipo === "receita" ? "+" : "-"}
-                                                {item.valor.toLocaleString("pt-BR", {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                })}
+                                                {formatCurrency(item.valor)}
                                             </Text>
                                         </View>
                                     </View>

@@ -13,6 +13,7 @@ import { X, ChevronDown } from "lucide-react-native";
 import ColorPicker from "react-native-wheel-color-picker";
 
 import { tiposConta } from "@/data/data";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export default function NovaContaModal({ visible, onClose }: any) {
 
@@ -34,7 +35,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
     const formatarValor = (text: string) => {
         let value = text.replace(/\D/g, "");
         if (value === "") return "";
-        value = (parseInt(value) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+        value = formatCurrency((parseInt(value) / 100));
         return value;
     };
 

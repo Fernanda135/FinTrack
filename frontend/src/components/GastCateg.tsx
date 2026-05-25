@@ -3,6 +3,7 @@ import { Link } from "expo-router";
 import Svg, { Circle } from "react-native-svg";
 
 import { categories } from "@/data/data";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 export default function GastCateg() {
 
@@ -79,15 +80,7 @@ export default function GastCateg() {
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.legendText}>{item.label}</Text>
                             </View>
-                            <Text style={styles.legendValue} >
-                                {item.valor.toLocaleString(
-                                    "pt-BR",
-                                    {
-                                        style: "currency",
-                                        currency: "BRL",
-                                    }
-                                )}
-                            </Text>
+                            <Text style={styles.legendValue} >{formatCurrency(item.valor)}</Text>
 
                         </View>
                     ))}

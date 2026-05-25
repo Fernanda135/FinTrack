@@ -3,6 +3,7 @@ import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList } 
 import { X, ChevronDown } from "lucide-react-native";
 
 import { contas, categories } from "@/data/data";
+import { formatCurrency } from "@/utils/formatCurrency";
 
 
 export default function NovaTransacaoModal({ visible, onClose }: any) {
@@ -47,7 +48,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
     const formatarValor = (text: string) => {
         let value = text.replace(/\D/g, '');
         if (value === '') return '';
-        value = (parseInt(value) / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL", });
+        value = formatCurrency((parseInt(value) / 100));
         return value;
     };
 

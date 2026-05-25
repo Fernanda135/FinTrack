@@ -16,12 +16,14 @@ import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
 import { orcamentos } from "@/data/data";
 import { useOrcamentos } from "@/hooks/userOrcamentos";
 import { useDashboard } from "@/hooks/useDashboard";
+import { formatCurrency } from "@/utils/formatCurrency";
+
 
 
 export default function Orcamentos() {
 
     const [modalVisible, setModalVisible] = useState(false);
-    const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<any>(null);
+    const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<typeof orcamentos[number] | null>(null);
     const [novoModalVisible, setNovoModalVisible] = useState(false);
 
     const { getPorcentagem, getColor } = useOrcamentos();
@@ -40,8 +42,8 @@ export default function Orcamentos() {
                         <Text style={styles.title}>Orçamentos</Text>
                         <View style={styles.cardsContainer}>
                             <View style={styles.topCard}>
-                                <Text style={styles.topCardText}>{gastoOrcaTotal} de</Text>
-                                <Text style={styles.topCardText}>{limiteOrcTotal}</Text>
+                                <Text style={styles.topCardText}>{formatCurrency(gastoOrcaTotal)} de</Text>
+                                <Text style={styles.topCardText}>{formatCurrency(limiteOrcTotal)}</Text>
                             </View>
                             <View style={styles.topCard}>
                                 <Text style={styles.topCardText}>{orcamentos.length} ativos</Text>
@@ -66,19 +68,8 @@ export default function Orcamentos() {
                                         </View>
 
                                         <View style={styles.infoArea}>
-                                            <Text style={styles.value}>
-                                                {item.gasto.toLocaleString("pt-BR", {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                })}
-                                            </Text>
-                                            <Text style={styles.limit}>
-                                                de{" "}
-                                                {item.limite.toLocaleString("pt-BR", {
-                                                    style: "currency",
-                                                    currency: "BRL",
-                                                })}
-                                            </Text>
+                                            <Text style={styles.value}>{formatCurrency(item.gasto)}</Text>
+                                            <Text style={styles.limit}>de {formatCurrency(item.limite)}</Text>
                                         </View>
                                     </View>
 
@@ -154,22 +145,12 @@ export default function Orcamentos() {
                             <View style={styles.modalBody}>
                                 <View style={styles.infoCard}>
                                     <Text style={styles.infoLabel}>Gasto Atual</Text>
-                                    <Text style={styles.infoValue}>
-                                        {orcamentoSelecionado?.gasto?.toLocaleString("pt-BR", {
-                                            style: "currency",
-                                            currency: "BRL",
-                                        })}
-                                    </Text>
+                                    <Text style={styles.infoValue}>{formatCurrency(orcamentoSelecionado?.gasto ?? 0)}</Text>
                                 </View>
 
                                 <View style={styles.infoCard}>
                                     <Text style={styles.infoLabel}>Limite</Text>
-                                    <Text style={styles.infoValue}>
-                                        {orcamentoSelecionado?.limite?.toLocaleString("pt-BR", {
-                                            style: "currency",
-                                            currency: "BRL",
-                                        })}
-                                    </Text>
+                                    <Text style={styles.infoValue}>{formatCurrency(orcamentoSelecionado?.limite ?? 0)}</Text>
                                 </View>
 
                                 <View style={styles.infoCard}>

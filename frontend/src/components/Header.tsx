@@ -1,5 +1,7 @@
 import { Text, View, StyleSheet, Image } from 'react-native';
+
 import { useDashboard } from '@/hooks/useDashboard';
+import { formatCurrency } from '@/utils/formatCurrency';
 
 
 export default function Header() {
@@ -19,16 +21,16 @@ export default function Header() {
 
             <View style={styles.card}>
                 <Text style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 'bold' }} >SALDO TOTAL</Text>
-                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >{saldoTotal}</Text>
+                <Text style={{ color: '#ffffff', fontWeight: 'bold', fontSize: 34 }} >{formatCurrency(saldoTotal)}</Text>
                 
                 <View style={styles.infoContainer}>
                     <View style={styles.infoCard}>
                         <Text style={styles.infoLabel}>Receitas</Text>
-                        <Text style={styles.infoValue}>{receitaTotal}</Text>
+                        <Text style={styles.infoValue}>{formatCurrency(receitaTotal)}</Text>
                     </View>
                     <View style={styles.infoCard}>
                         <Text style={styles.infoLabel}>Gastos</Text>
-                        <Text style={styles.infoValue}>{gastoTotal}</Text>
+                        <Text style={styles.infoValue}>{formatCurrency(gastoTotal)}</Text>
                     </View>
                 </View>
             </View>
