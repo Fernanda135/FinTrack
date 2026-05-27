@@ -15,6 +15,7 @@ import ColorPicker from "react-native-wheel-color-picker";
 import { tiposConta } from "@/data/data";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
+import { showInfo, showSuccess } from "./Toast/toast";
 
 export default function NovaContaModal({ visible, onClose }: any) {
 
@@ -58,6 +59,11 @@ export default function NovaContaModal({ visible, onClose }: any) {
         setSaldo("");
         setTipo("");
         setCor(cor);
+
+        setTimeout(() => {
+            showInfo("Conta criada  com sucesso!");
+        }, 400);
+
         onClose()
     };
 

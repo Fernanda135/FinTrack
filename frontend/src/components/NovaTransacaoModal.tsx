@@ -5,6 +5,8 @@ import { X, ChevronDown } from "lucide-react-native";
 import { contas, categories } from "@/data/data";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
+import { showError, showSuccess, showInfo } from "@/components/Toast/toast";
+
 
 
 export default function NovaTransacaoModal({ visible, onClose }: any) {
@@ -39,10 +41,16 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
         };
         // console.log('Nova transação:', transacao);
 
+
         setValor("");
         setConta("");
         setCategoria("");
         setTitulo("");
+        
+        setTimeout(() => {
+            showSuccess("Transação realizada com sucesso!");
+        }, 400);
+        
         onClose();
     };
 

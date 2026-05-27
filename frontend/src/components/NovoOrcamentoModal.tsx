@@ -13,7 +13,7 @@ import { X, ChevronDown } from "lucide-react-native";
 import { categories } from "@/data/data";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
-
+import { showError, showSuccess } from "./Toast/toast";
 
 export default function NovoOrcamentoModal({ visible, onClose }: any) {
 
@@ -51,6 +51,11 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
         setCategoria("");
         setLimite("");
         setDescricao("");
+
+        setTimeout(() => {
+            showError("Orçamento criado com sucesso!");
+        }, 400);
+
         onClose();
     };
 
@@ -102,7 +107,7 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                                     {
                                         height: 100,
                                         textAlignVertical: "top",
-                                    },                                ]}
+                                    },]}
                                     multiline
                                     placeholder="descrição do orçamento..."
                                     placeholderTextColor={COLORS.gray}

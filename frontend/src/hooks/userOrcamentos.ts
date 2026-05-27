@@ -2,6 +2,7 @@ import { COLORS } from "@/constants/colors";
 
 export function useOrcamentos() {
 
+    // calcula a porcentagem do gasto em relação ao limite
     const getPorcentagem = (
         gasto: number,
         limite: number

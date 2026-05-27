@@ -17,6 +17,8 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
 
+import { showSuccess } from "@/components/Toast/toast";
+
 
 
 export default function Contas() {
@@ -58,7 +60,7 @@ export default function Contas() {
                                     </View>
                                     <View style={styles.line} />
                                     <View style={{ flexDirection: "row", justifyContent: "space-between" }} >
-                                        <TouchableOpacity>
+                                        <TouchableOpacity onPress={() => showSuccess('teste!!!!!!!!!!')}>
                                             <Trash2 size={18} color={COLORS.gray} />
                                         </TouchableOpacity>
                                         <TouchableOpacity>
