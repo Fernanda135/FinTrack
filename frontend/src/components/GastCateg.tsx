@@ -2,17 +2,17 @@ import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import Svg, { Circle } from "react-native-svg";
 
-import { categories } from "@/data/data";
+import { useCategorias } from "@/hooks/useCategorias";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
 
 export default function GastCateg() {
 
-    const categorias = [...categories]
-        .sort((a, b) => b.valor - a.valor)
-        .slice(0, 3);
+    const { categoriasComPorcentagem } = useCategorias();
 
-    const total = categorias.reduce((sum, item) => sum + item.valor, 0);
+    const categorias = categoriasComPorcentagem.slice(0, 3);
+
+    const total = categorias.reduce((sum, item) => sum + item.valor, 0) || 1;
     const colors = [COLORS.black, COLORS.primary, COLORS.gray];
     const radius = 38;
     const strokeWidth = 14;

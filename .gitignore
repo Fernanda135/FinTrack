@@ -1,0 +1,27 @@
+# ── Claude / local agent tooling (must never be pushed) ──
+.claude/
+.remember/
+
+# ── Dependencies ──
+node_modules/
+
+# ── Build / compiled output ──
+dist/
+build/
+web-build/
+
+# ── Backend secrets ──
+# (the frontend .env holds only a public EXPO_PUBLIC_ URL and IS committed)
+backend/.env
+*.env.local
+.env.*.local
+
+# ── Logs ──
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# ── OS / editor ──
+.DS_Store
+*.swp

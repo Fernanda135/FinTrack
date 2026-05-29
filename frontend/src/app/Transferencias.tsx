@@ -34,12 +34,6 @@ export default function Transferencias() {
                         {/* LISTA DE TRANSFERÊNCIAS */}
                         <View style={styles.transfContainer}>
                             {transacoes.map((item) => {
-                                const categoria = transacoes.find(
-                                    (cat) => cat.id === item.categoriaId,
-                                );
-
-                                const conta = transacoes.find((conta) => conta.id === item.contaId);
-
                                 return (
                                     <View key={item.id} style={styles.transItem}>
                                         <View>
@@ -53,7 +47,7 @@ export default function Transferencias() {
                                         <View style={styles.transInfo}>
                                             <Text style={styles.transTitulo}>{item.titulo}</Text>
                                             <Text style={styles.transSub}>{item.categoria?.label}</Text>
-                                            <Text style={styles.transDate}>{item.categoria?.label} | {formatDate(item.data)}</Text>
+                                            <Text style={styles.transDate}>{item.conta?.label} | {formatDate(item.data)}</Text>
                                         </View>
 
                                         <View style={styles.valorContainer}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Modal,
     View,
@@ -12,10 +12,11 @@ import {
 import { X, ChevronDown } from "lucide-react-native";
 import ColorPicker from "react-native-wheel-color-picker";
 
-import { tiposConta } from "@/data/data";
-import { formatCurrency } from "@/utils/formatCurrency";
+import { Accounts } from "@/api/endpoints";
+import { formatCurrency, parseMoney } from "@/utils/formatCurrency";
+import { emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
-import { showInfo, showSuccess } from "./Toast/toast";
+import { showError, showInfo } from "./Toast/toast";
 
 export default function NovaContaModal({ visible, onClose }: any) {
 
@@ -24,6 +25,14 @@ export default function NovaContaModal({ visible, onClose }: any) {
     const [tipo, setTipo] = useState("");
     const [cor, setCor] = useState(COLORS.gray);
     const [tipoModal, setTipoModal] = useState(false);
+    const [tiposConta, setTiposConta] = useState<{ label: string; value: string }[]>([]);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        Accounts.types()
+            .then(setTiposConta)
+            .catch(() => setTiposConta([]));
+    }, []);
 
     const getTipoLabel = () => {
         const tipoEncontrado = tiposConta.find(
@@ -46,25 +55,30 @@ export default function NovaContaModal({ visible, onClose }: any) {
         setSaldo(formatted);
     };
 
-    const handleConfirmar = () => {
-        const novaConta = {
-            nome,
-            saldo,
-            tipo,
-            cor,
-        };
-        // console.log(novaConta);
-
-        setNome("");
-        setSaldo("");
-        setTipo("");
-        setCor(cor);
-
-        setTimeout(() => {
-            showInfo("Conta criada  com sucesso!");
-        }, 400);
-
-        onClose()
+    const handleConfirmar = async () => {
+        if (!nome.trim() || !tipo) {
+            showError("Preencha o nome e o tipo da conta");
+            return;
+        }
+        setSaving(true);
+        try {
+            await Accounts.create({
+                label: nome.trim(),
+                type: tipo,
+                balance: parseMoney(saldo),
+                color: cor,
+            });
+            setNome("");
+            setSaldo("");
+            setTipo("");
+            showInfo("Conta criada com sucesso!");
+            emitDataChanged();
+            onClose();
+        } catch (e: any) {
+            showError(e?.message ?? "Não foi possível criar a conta");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -145,8 +159,9 @@ export default function NovaContaModal({ visible, onClose }: any) {
 
                             <TouchableOpacity
                                 style={styles.confirmButton}
-                                onPress={handleConfirmar} >
-                                <Text style={styles.confirmText}>confirmar</Text>
+                                onPress={handleConfirmar}
+                                disabled={saving} >
+                                <Text style={styles.confirmText}>{saving ? "salvando..." : "confirmar"}</Text>
                             </TouchableOpacity>
 
                         </ScrollView>
@@ -166,7 +181,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
                         <Text style={styles.selectModalTitle}>Selecione um tipo</Text>
                         <FlatList
                             data={tiposConta}
-                            keyExtractor={(item) => item.id}
+                            keyExtractor={(item) => item.value}
                             renderItem={({ item }) => (
                                 <TouchableOpacity style={styles.selectOption} onPress={() => {
                                     setTipo(item.value);

@@ -1,7 +1,6 @@
 import { Text, View, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 
-import { contas, categories } from "@/data/data";
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
@@ -20,19 +19,12 @@ export default function UltTransac() {
             </View>
 
             <View style={{ width: "100%" }}>{ultimasTransacoes.map((item) => {
-                const categoria = categories.find(
-                    (cat) => cat.id === item.categoriaId,
-                );
-                const conta = contas.find(
-                    (contaItem) => contaItem.id === item.contaId,
-                );
-
                 return (
                     <View key={item.id} style={styles.transactionCard}>
                         <View>
                             <Text style={styles.transactionTitle}>{item.titulo}</Text>
-                            <Text style={styles.transactionCategory}>{categoria?.label}</Text>
-                            <Text style={styles.transDate}>{conta?.label} | {formatDate(item.data)}</Text>
+                            <Text style={styles.transactionCategory}>{item.categoria?.label}</Text>
+                            <Text style={styles.transDate}>{item.conta?.label} | {formatDate(item.data)}</Text>
                         </View>
 
                         <Text style={[

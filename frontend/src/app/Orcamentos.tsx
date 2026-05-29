@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useRouter } from "expo-router";
+import React, { useCallback, useEffect, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -13,10 +12,11 @@ import { Plus, X } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
 import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
-import { orcamentos } from "@/data/data";
+import { Budgets } from "@/api/endpoints";
 import { useOrcamentos } from "@/hooks/userOrcamentos";
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { onDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
 
 
@@ -24,11 +24,23 @@ import { COLORS } from "@/constants/colors";
 export default function Orcamentos() {
 
     const [modalVisible, setModalVisible] = useState(false);
-    const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<typeof orcamentos[number] | null>(null);
+    const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<any | null>(null);
     const [novoModalVisible, setNovoModalVisible] = useState(false);
+    const [orcamentos, setOrcamentos] = useState<any[]>([]);
 
     const { getPorcentagem, getColor } = useOrcamentos();
     const { gastoOrcaTotal, limiteOrcTotal } = useDashboard();
+
+    const reload = useCallback(() => {
+        Budgets.list()
+            .then(setOrcamentos)
+            .catch(() => setOrcamentos([]));
+    }, []);
+
+    useEffect(() => {
+        reload();
+        return onDataChanged(reload);
+    }, [reload]);
 
     return (
         <SafeAreaProvider>
@@ -170,7 +182,10 @@ export default function Orcamentos() {
                     </View>
                 </Modal>
 
-                <NovoOrcamentoModal visible={novoModalVisible} onClose={() => setNovoModalVisible(false)} />
+                <NovoOrcamentoModal
+                    visible={novoModalVisible}
+                    onClose={() => setNovoModalVisible(false)}
+                />
             </SafeAreaView>
         </SafeAreaProvider>
     );

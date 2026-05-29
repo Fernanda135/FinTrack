@@ -1,33 +1,35 @@
-import { categories } from "@/data/data";
+import { useCallback, useEffect, useState } from "react";
+import { Categories } from "@/api/endpoints";
+import { onDataChanged } from "@/utils/events";
 
 export function useCategorias() {
+    const [raw, setRaw] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // separa a renda das demais categorias de gastos
-    const categoriasGastos = categories.filter(
-        (item) => item.value !== "renda"
-    );
+    const reload = useCallback(() => {
+        setLoading(true);
+        Categories.list()
+            .then(setRaw)
+            .catch(() => setRaw([]))
+            .finally(() => setLoading(false));
+    }, []);
 
-    // calcula o gasto total das categorias
-    const totalGastos = categoriasGastos.reduce(
-        (total, item) => total + item.valor,
-        0
-    );
+    useEffect(() => {
+        reload();
+        return onDataChanged(reload);
+    }, [reload]);
 
-    // calcula a porcentagem de cada categoria em relação ao total
+    // income categories ("renda") are excluded from the gastos breakdown
+    const categoriasGastos = raw.filter((c) => !c.isIncome);
+    const totalGastos = categoriasGastos.reduce((t, c) => t + (c.valor ?? 0), 0);
+
     const categoriasComPorcentagem = categoriasGastos
-        .map((item) => ({
-            ...item,
-            porcentagem: Number(
-                ((item.valor / totalGastos) * 100).toFixed(1)
-            ),
-            progresso: item.valor / totalGastos,
+        .map((c) => ({
+            ...c,
+            porcentagem: totalGastos ? Number(((c.valor / totalGastos) * 100).toFixed(1)) : 0,
+            progresso: totalGastos ? c.valor / totalGastos : 0,
         }))
-        .sort((a, b) => b.valor - a.valor); // organiza da maior para a menor
+        .sort((a, b) => b.valor - a.valor);
 
-    return {
-        categoriasComPorcentagem,
-        totalGastos,
-    };
+    return { categoriasComPorcentagem, totalGastos, loading, reload };
 }
-
-console.log(categories)

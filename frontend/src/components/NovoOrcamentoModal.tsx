@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Modal,
     View,
@@ -10,20 +10,28 @@ import {
     ScrollView,
 } from "react-native";
 import { X, ChevronDown } from "lucide-react-native";
-import { categories } from "@/data/data";
-import { formatCurrency } from "@/utils/formatCurrency";
+import { Budgets, Categories } from "@/api/endpoints";
+import { formatCurrency, parseMoney } from "@/utils/formatCurrency";
+import { emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
 import { showError, showSuccess } from "./Toast/toast";
 
 export default function NovoOrcamentoModal({ visible, onClose }: any) {
 
-    const [categoria, setCategoria] = useState("");
+    const [categoria, setCategoria] = useState(""); // categoryId
     const [limite, setLimite] = useState("");
     const [descricao, setDescricao] = useState("");
     const [categoriaModal, setCategoriaModal] = useState(false);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        if (!visible) return;
+        Categories.list().then(setCategories).catch(() => setCategories([]));
+    }, [visible]);
 
     const getCategoriaLabel = () => {
-        const categoriaEncontrada = categories.find((c) => c.value === categoria);
+        const categoriaEncontrada = categories.find((c) => c.id === categoria);
         return categoriaEncontrada ? categoriaEncontrada.label : "selecione uma categoria";
     };
 
@@ -39,24 +47,32 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
         setLimite(formatted);
     };
 
-    const handleConfirmar = () => {
-        const novoOrcamento = {
-            categoria,
-            limite,
-            descricao,
-        };
-
-        // console.log(novoOrcamento);
-
-        setCategoria("");
-        setLimite("");
-        setDescricao("");
-
-        setTimeout(() => {
-            showError("Orçamento criado com sucesso!");
-        }, 400);
-
-        onClose();
+    const handleConfirmar = async () => {
+        const limit = parseMoney(limite);
+        const cat = categories.find((c) => c.id === categoria);
+        if (!cat || limit <= 0) {
+            showError("Selecione uma categoria e informe um limite válido");
+            return;
+        }
+        setSaving(true);
+        try {
+            await Budgets.create({
+                title: cat.label,
+                description: descricao,
+                limit,
+                categoryId: categoria,
+            });
+            setCategoria("");
+            setLimite("");
+            setDescricao("");
+            showSuccess("Orçamento criado com sucesso!");
+            emitDataChanged();
+            onClose();
+        } catch (e: any) {
+            showError(e?.message ?? "Não foi possível criar o orçamento");
+        } finally {
+            setSaving(false);
+        }
     };
 
     return (
@@ -116,8 +132,8 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                                 />
                             </View>
 
-                            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar} >
-                                <Text style={styles.confirmText}>confirmar</Text>
+                            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar} disabled={saving} >
+                                <Text style={styles.confirmText}>{saving ? "salvando..." : "confirmar"}</Text>
                             </TouchableOpacity>
                         </ScrollView>
                     </View>
@@ -137,7 +153,7 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
                                 <TouchableOpacity style={styles.selectOption} onPress={() => {
-                                    setCategoria(item.value);
+                                    setCategoria(item.id);
                                     setCategoriaModal(false);
                                 }}
                                 >

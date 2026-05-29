@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  RECEITA
+  DESPESA
+}
+
+enum AccountType {
+  CONTA_CORRENTE
+  CONTA_POUPANCA
+  CARTEIRA
+  CARTAO_CREDITO
+  INVESTIMENTOS
+  OUTROS
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  refreshHash  String?
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  accounts     Account[]
+  categories   Category[]
+  transactions Transaction[]
+  budgets      Budget[]
+}
+
+model Category {
+  id     String  @id @default(cuid())
+  userId String
+  label  String
+  value  String
+  isIncome Boolean @default(false)
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@unique([userId, value])
+  @@index([userId])
+}
+
+model Account {
+  id     String      @id @default(cuid())
+  userId String
+  label  String
+  type   AccountType
+  balance Decimal    @default(0) @db.Decimal(14, 2)
+  color  String      @default("#AAAAAA")
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([userId])
+}
+
+model Transaction {
+  id         String          @id @default(cuid())
+  userId     String
+  title      String
+  amount     Decimal         @db.Decimal(14, 2)
+  type       TransactionType
+  date       DateTime        @db.Timestamptz(3)
+  accountId  String
+  categoryId String
+  createdAt  DateTime        @default(now()) @db.Timestamptz(3)
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account  Account  @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@index([userId, date])
+  @@index([accountId])
+  @@index([categoryId])
+}
+
+model Budget {
+  id          String  @id @default(cuid())
+  userId      String
+  title       String
+  description String  @default("")
+  limit       Decimal @db.Decimal(14, 2)
+  categoryId  String
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, categoryId])
+  @@index([userId])
+}

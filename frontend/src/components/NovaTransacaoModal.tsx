@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList } from "react-native";
 import { X, ChevronDown } from "lucide-react-native";
 
-import { contas, categories } from "@/data/data";
-import { formatCurrency } from "@/utils/formatCurrency";
+import { Accounts, Categories, Transactions } from "@/api/endpoints";
+import { formatCurrency, parseMoney } from "@/utils/formatCurrency";
+import { emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
-import { showError, showSuccess, showInfo } from "@/components/Toast/toast";
+import { showError, showSuccess } from "@/components/Toast/toast";
 
 
 
@@ -13,45 +14,60 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
 
     const [tipo, setTipo] = useState("entrada");
     const [valor, setValor] = useState("");
-    const [conta, setConta] = useState("");
-    const [categoria, setCategoria] = useState("");
+    const [conta, setConta] = useState("");      // accountId
+    const [categoria, setCategoria] = useState(""); // categoryId
     const [titulo, setTitulo] = useState("");
     const [contaModal, setContaModal] = useState(false);
     const [categoriaModal, setCategoriaModal] = useState(false);
+    const [contas, setContas] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
+    const [saving, setSaving] = useState(false);
 
+    useEffect(() => {
+        if (!visible) return;
+        Accounts.list().then(setContas).catch(() => setContas([]));
+        Categories.list().then(setCategories).catch(() => setCategories([]));
+    }, [visible]);
 
     const getContaLabel = () => {
-        const contaEncontrada = contas.find(c => c.value === conta);
+        const contaEncontrada = contas.find((c) => c.id === conta);
         return contaEncontrada ? contaEncontrada.label : "selecione uma conta";
     };
 
     const getCategoriaLabel = () => {
-        const categoriaEncontrada = categories.find(c => c.value === categoria);
+        const categoriaEncontrada = categories.find((c) => c.id === categoria);
         return categoriaEncontrada ? categoriaEncontrada.label : "selecione uma categoria";
     };
 
-    const handleConfirmar = () => {
-        const transacao = {
-            tipo,
-            valor: parseFloat(valor.replace(',', '.')) || 0,
-            conta,
-            categoria,
-            titulo,
-            data: new Date().toISOString()
-        };
-        // console.log('Nova transação:', transacao);
-
-
-        setValor("");
-        setConta("");
-        setCategoria("");
-        setTitulo("");
-        
-        setTimeout(() => {
+    const handleConfirmar = async () => {
+        const amount = parseMoney(valor);
+        if (!titulo.trim() || !conta || !categoria || amount <= 0) {
+            showError("Preencha título, valor, conta e categoria");
+            return;
+        }
+        setSaving(true);
+        try {
+            await Transactions.create({
+                title: titulo.trim(),
+                amount,
+                type: tipo === "entrada" ? "RECEITA" : "DESPESA",
+                accountId: conta,
+                categoryId: categoria,
+                date: new Date().toISOString(),
+            });
+            setValor("");
+            setConta("");
+            setCategoria("");
+            setTitulo("");
+            setTipo("entrada");
             showSuccess("Transação realizada com sucesso!");
-        }, 400);
-        
-        onClose();
+            emitDataChanged();
+            onClose();
+        } catch (e: any) {
+            showError(e?.message ?? "Não foi possível salvar a transação");
+        } finally {
+            setSaving(false);
+        }
     };
 
     const formatarValor = (text: string) => {
@@ -152,8 +168,8 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar} >
-                                <Text style={styles.confirmText}>confirmar</Text>
+                            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar} disabled={saving} >
+                                <Text style={styles.confirmText}>{saving ? "salvando..." : "confirmar"}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -174,7 +190,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
                                 <TouchableOpacity style={styles.selectOption} onPress={() => {
-                                    setConta(item.value);
+                                    setConta(item.id);
                                     setContaModal(false);
                                 }}
                                 >
@@ -200,7 +216,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
                                 <TouchableOpacity style={styles.selectOption} onPress={() => {
-                                    setCategoria(item.value);
+                                    setCategoria(item.id);
                                     setCategoriaModal(false);
                                 }}
                                 >

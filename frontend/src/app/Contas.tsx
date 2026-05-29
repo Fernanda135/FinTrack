@@ -1,5 +1,4 @@
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     StyleSheet,
     Text,
@@ -8,24 +7,54 @@ import {
     TouchableOpacity,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Plus, SquarePen, Trash2 } from "lucide-react-native";
+import { Plus, Trash2 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
 import NovaContaModal from "@/components/NovaContaModal";
-import { contas } from "@/data/data";
+import { Accounts } from "@/api/endpoints";
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { onDataChanged, emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
 
-import { showSuccess } from "@/components/Toast/toast";
+import { showError, showSuccess } from "@/components/Toast/toast";
 
-
+const TIPO_LABELS: Record<string, string> = {
+    CONTA_CORRENTE: "Conta Corrente",
+    CONTA_POUPANCA: "Conta Poupança",
+    CARTEIRA: "Carteira",
+    CARTAO_CREDITO: "Cartão de Crédito",
+    INVESTIMENTOS: "Investimentos",
+    OUTROS: "Outros",
+};
 
 export default function Contas() {
 
     const { saldoTotal } = useDashboard();
 
     const [modalVisible, setModalVisible] = useState(false);
+    const [contas, setContas] = useState<any[]>([]);
+
+    const reload = useCallback(() => {
+        Accounts.list()
+            .then(setContas)
+            .catch(() => setContas([]));
+    }, []);
+
+    useEffect(() => {
+        reload();
+        return onDataChanged(reload);
+    }, [reload]);
+
+    const handleDelete = async (id: string) => {
+        try {
+            await Accounts.remove(id);
+            showSuccess("Conta excluída!");
+            emitDataChanged();
+        } catch (e: any) {
+            showError(e?.message ?? "Não foi possível excluir a conta");
+        }
+    };
 
     return (
         <SafeAreaProvider>
@@ -45,26 +74,23 @@ export default function Contas() {
                         {/* CARDS DAS CONTAS */}
                         <View style={styles.cardsContainer}>
                             {contas.map((conta) => (
-                                <View key={conta.id} style={[styles.card, { backgroundColor: conta.cor }]} >
+                                <View key={conta.id} style={[styles.card, { backgroundColor: conta.color }]} >
                                     <View style={styles.cardTop}>
                                         <View style={styles.leftContent}>
                                             <View style={styles.iconBox} />
                                             <View>
                                                 <Text style={styles.cardTitle}>{conta.label}</Text>
-                                                <Text style={styles.cardSubtitle}>{conta.tipo}</Text>
+                                                <Text style={styles.cardSubtitle}>{TIPO_LABELS[conta.type] ?? conta.type}</Text>
                                             </View>
                                         </View>
                                         <Text style={styles.balance}>
-                                            {formatCurrency(conta.saldo)}
+                                            {formatCurrency(conta.balance)}
                                         </Text>
                                     </View>
                                     <View style={styles.line} />
-                                    <View style={{ flexDirection: "row", justifyContent: "space-between" }} >
-                                        <TouchableOpacity onPress={() => showSuccess('teste!!!!!!!!!!')}>
-                                            <Trash2 size={18} color={COLORS.gray} />
-                                        </TouchableOpacity>
-                                        <TouchableOpacity>
-                                            <SquarePen size={18} color={COLORS.gray} />
+                                    <View style={{ flexDirection: "row", justifyContent: "flex-end" }} >
+                                        <TouchableOpacity onPress={() => handleDelete(conta.id)}>
+                                            <Trash2 size={18} color={COLORS.white} />
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -79,7 +105,10 @@ export default function Contas() {
 
                 <BottomNav />
 
-                <NovaContaModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+                <NovaContaModal
+                    visible={modalVisible}
+                    onClose={() => setModalVisible(false)}
+                />
 
             </SafeAreaView>
         </SafeAreaProvider>

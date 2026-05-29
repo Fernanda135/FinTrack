@@ -1,46 +1,49 @@
-import {
-    contas,
-    transacoes,
-    orcamentos,
-} from "@/data/data";
+import { useCallback, useEffect, useState } from "react";
+import { Dashboard } from "@/api/endpoints";
+import { onDataChanged } from "@/utils/events";
+
+// The backend returns transactions with joined account/category and English
+// field names; the UI expects the legacy Portuguese shape. Map it here once.
+function mapTransacao(t: any) {
+    return {
+        id: t.id,
+        titulo: t.title,
+        valor: t.amount,
+        tipo: t.type === "RECEITA" ? "receita" : "despesa",
+        data: t.date,
+        categoria: t.category ? { label: t.category.label, value: t.category.value } : undefined,
+        conta: t.account ? { label: t.account.label } : undefined,
+    };
+}
+
+const EMPTY = {
+    saldoTotal: 0,
+    gastoTotal: 0,
+    receitaTotal: 0,
+    gastoOrcaTotal: 0,
+    limiteOrcTotal: 0,
+    orcAtivos: 0,
+    ultimasTransacoes: [] as any[],
+};
 
 export function useDashboard() {
+    const [data, setData] = useState(EMPTY);
+    const [loading, setLoading] = useState(true);
 
-    // calcula o saldo total de todas as contas
-    const saldoTotal = contas.reduce(
-        (total, conta) => total + conta.saldo,
-        0
-    );
+    const reload = useCallback(() => {
+        setLoading(true);
+        Dashboard.summary()
+            .then((d) =>
+                setData({ ...d, ultimasTransacoes: (d.ultimasTransacoes ?? []).map(mapTransacao) }),
+            )
+            .catch(() => setData(EMPTY))
+            .finally(() => setLoading(false));
+    }, []);
 
-    // calcula o gasto total de todas as contas
-    const gastoTotal = transacoes
-        .filter((t) => t.tipo === "despesa")
-        .reduce((total, t) => total + t.valor, 0);
+    useEffect(() => {
+        reload();
+        return onDataChanged(reload);
+    }, [reload]);
 
-    // calcula a receita total de todas as contas
-    const receitaTotal = transacoes
-        .filter((t) => t.tipo === "receita")
-        .reduce((total, t) => total + t.valor, 0);
-
-    // calcula o gasto total de todas os orçamentos
-    const gastoOrcaTotal = orcamentos.reduce(
-        (total, orc) => total + orc.gasto,
-        0
-    );
-
-    // calcula o limite total de todas os orçamentos
-    const limiteOrcTotal = orcamentos.reduce(
-        (total, orc) => total + orc.limite,
-        0
-    );
-
-    return {
-        saldoTotal,
-        gastoTotal,
-        receitaTotal,
-        gastoOrcaTotal,
-        limiteOrcTotal,
-        ultimasTransacoes: transacoes.slice(0, 5),  // separa as cinco últimas transações
-        orcAtivos: orcamentos.length,   // quantidade de orçamentos
-    };
+    return { ...data, loading, reload };
 }
