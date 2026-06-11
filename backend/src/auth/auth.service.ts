@@ -6,7 +6,6 @@ import * as argon2 from 'argon2';
 import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +18,6 @@ export class AuthService {
     private users: UsersService,
     private jwt: JwtService,
     private config: ConfigService,
-    private prisma: PrismaService,
   ) {}
 
   async register(dto: RegisterDto) {
@@ -27,21 +25,6 @@ export class AuthService {
     if (existing) throw new ConflictException('Email já cadastrado');
     const passwordHash = await argon2.hash(dto.password);
     const user = await this.users.create({ email: dto.email, name: dto.name, passwordHash });
-
-    await this.prisma.category.createMany({
-      data: [
-        { userId: user.id, label: 'Alimentação', value: 'alimentacao', isIncome: false },
-        { userId: user.id, label: 'Transporte', value: 'transporte', isIncome: false },
-        { userId: user.id, label: 'Moradia', value: 'moradia', isIncome: false },
-        { userId: user.id, label: 'Assinaturas', value: 'assinaturas', isIncome: false },
-        { userId: user.id, label: 'Saúde', value: 'saude', isIncome: false },
-        { userId: user.id, label: 'Lazer', value: 'lazer', isIncome: false },
-        { userId: user.id, label: 'Educação', value: 'educacao', isIncome: false },
-
-        { userId: user.id, label: 'Renda', value: 'renda', isIncome: true },
-      ],
-    });
-
     return this.issueTokens(user.id, user.email);
   }
 
