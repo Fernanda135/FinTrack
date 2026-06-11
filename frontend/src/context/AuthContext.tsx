@@ -2,13 +2,22 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { tokens } from "@/api/client";
 import { Auth } from "@/api/endpoints";
 
+
+type User = {
+    id: string;
+    name: string;
+    email: string;
+};
+
 type AuthState = {
     ready: boolean;
     signedIn: boolean;
+    user: User | null;
     login: (email: string, password: string) => Promise<void>;
     register: (email: string, name: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
 };
+
 
 const Ctx = createContext<AuthState>(null as any);
 export const useAuth = () => useContext(Ctx);
@@ -16,17 +25,39 @@ export const useAuth = () => useContext(Ctx);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [ready, setReady] = useState(false);
     const [signedIn, setSignedIn] = useState(false);
+    const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        tokens.access().then((t) => {
-            setSignedIn(!!t);
+        const init = async () => {
+            const t = await tokens.access();
+
+            if (t) {
+                try {
+                    const me = await Auth.me();
+                    console.log("ME DATA:", me);
+                    setUser(me);
+                    setSignedIn(true);
+                } catch (err) {
+                    await tokens.clear();
+                    setUser(null);
+                    setSignedIn(false);
+                    console.log("ME ERROR:", err);
+                }
+            } else {
+                setUser(null);
+                setSignedIn(false);
+            }
+
             setReady(true);
-        });
+        };
+
+        init();
     }, []);
 
     const value: AuthState = {
         ready,
         signedIn,
+        user,
         login: async (e, p) => {
             await Auth.login(e, p);
             setSignedIn(true);
@@ -37,6 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         logout: async () => {
             await Auth.logout();
+            await tokens.clear?.(); 
             setSignedIn(false);
         },
     };

@@ -16,6 +16,7 @@ export const Auth = {
         await tokens.save(d.accessToken, d.refreshToken);
     },
     logout: () => api("/auth/logout", { method: "POST" }).finally(tokens.clear),
+    me: () => api<{ id: string; name: string; email: string }>("/auth/me"),
 };
 
 export const Accounts = {

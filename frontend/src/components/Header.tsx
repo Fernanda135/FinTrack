@@ -1,23 +1,39 @@
-import { Text, View, StyleSheet, Image } from 'react-native';
+import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import { useDashboard } from '@/hooks/useDashboard';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { COLORS } from '@/constants/colors';
+import { useAuth } from "@/context/AuthContext";
+import { LogOut } from 'lucide-react-native';
 
 
 export default function Header() {
 
+    const { user, logout } = useAuth();
     const { saldoTotal, receitaTotal, gastoTotal } = useDashboard();
+
+    console.log("USER STATE:", user);
+
+    const displayName = user?.name || "Usuário";
+    const userInitial = displayName.charAt(0).toUpperCase();
 
     return (
         <View style={styles.container}>
 
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7 }} >
-                <View style={styles.user} />
-                <View>
-                    <Text style={{ color: COLORS.gray, fontSize: 14 }} >Bem Vindo,</Text>
-                    <Text style={{ color: COLORS.white, fontWeight: 'bold', fontSize: 18 }} >Fulano</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 7 }} >
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 7 }} >
+                    <View style={styles.user}>
+                        <Text style={styles.userInitial}>{userInitial}</Text>
+                    </View>
+                    <View>
+                        <Text style={{ color: COLORS.gray, fontSize: 14 }} >Bem Vindo,</Text>
+                        <Text style={{ color: COLORS.white, fontWeight: 'bold', fontSize: 18 }} >{displayName}</Text>
+                    </View>
                 </View>
+                
+                <TouchableOpacity onPress={logout} >
+                    <LogOut color={COLORS.error} />
+                </TouchableOpacity>
             </View>
 
             <View style={styles.card}>
@@ -54,7 +70,14 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.white,
         width: 51,
         height: 51,
-        borderRadius: 50
+        borderRadius: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    userInitial: {
+        color: COLORS.darkBackground,
+        fontSize: 24,
+        fontWeight: 'bold',
     },
     card: {
         justifyContent: 'center',
