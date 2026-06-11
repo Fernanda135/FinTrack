@@ -13,6 +13,8 @@ import { AccountsModule } from './accounts/accounts.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { BudgetsModule } from './budgets/budgets.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { HealthModule } from './health/health.module';
+
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     TransactionsModule,
     BudgetsModule,
     DashboardModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [
