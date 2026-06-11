@@ -10,10 +10,7 @@ async function bootstrap() {
   const config = app.get(ConfigService);
 
   app.use(helmet());
-  app.enableCors({
-    origin: config.get<string>('CORS_ORIGINS')!.split(','),
-    credentials: true,
-  });
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.setGlobalPrefix('api');
   app.enableShutdownHooks(); // ensures Prisma onModuleDestroy ($disconnect) fires on SIGTERM/SIGINT
