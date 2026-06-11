@@ -1,7 +1,9 @@
 import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 
-const BASE = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3333/api";
+// const BASE = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3333/api";
+const BASE = process.env.EXPO_PUBLIC_API_URL ?? "https://fintrack-qize.onrender.com/api";
+// console.log("BASE =", BASE);
 const ACCESS = "ft_access";
 const REFRESH = "ft_refresh";
 
@@ -35,6 +37,7 @@ export const tokens = {
 };
 
 async function raw(path: string, init: RequestInit, useRefresh = false): Promise<Response> {
+    console.log("REQUEST:", `${BASE}${path}`);
     const token = await (useRefresh ? tokens.refresh() : tokens.access());
     return fetch(`${BASE}${path}`, {
         ...init,
@@ -44,6 +47,7 @@ async function raw(path: string, init: RequestInit, useRefresh = false): Promise
             ...(init.headers ?? {}),
         },
     });
+
 }
 
 /**
