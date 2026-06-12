@@ -20,11 +20,35 @@ export class AuthService {
     private config: ConfigService,
   ) {}
 
+  private async createDefaultCategories(userId: string) {
+    const DEFAULT_CATEGORIES = [
+      { label: 'Alimentação', value: 'alimentacao', isIncome: false },
+      { label: 'Transporte', value: 'transporte', isIncome: false },
+      { label: 'Moradia', value: 'moradia', isIncome: false },
+      { label: 'Assinaturas', value: 'assinaturas', isIncome: false },
+      { label: 'Renda', value: 'renda', isIncome: true },
+      { label: 'Saúde', value: 'saude', isIncome: false },
+      { label: 'Lazer', value: 'lazer', isIncome: false },
+      { label: 'Educação', value: 'educacao', isIncome: false },
+    ];
+
+    for (const category of DEFAULT_CATEGORIES) {
+      await this.users.createCategory(userId, category);
+    }
+  }
+
   async register(dto: RegisterDto) {
     const existing = await this.users.findByEmail(dto.email);
     if (existing) throw new ConflictException('Email já cadastrado');
+    
     const passwordHash = await argon2.hash(dto.password);
-    const user = await this.users.create({ email: dto.email, name: dto.name, passwordHash });
+    const user = await this.users.create({ 
+      email: dto.email, 
+      name: dto.name, 
+      passwordHash });
+
+    await this.users.createDefaultCategories(user.id);
+
     return this.issueTokens(user.id, user.email);
   }
 

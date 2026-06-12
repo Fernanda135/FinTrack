@@ -59,6 +59,10 @@ export class AuthController {
     const fullUser = await this.users.findById(user.userId);
     if (!fullUser) throw new UnauthorizedException();
     
-    return { name: fullUser.name };
+    return {
+      id: fullUser.id,
+      name: fullUser.name,
+      email: fullUser.email,
+    };
   }
 }

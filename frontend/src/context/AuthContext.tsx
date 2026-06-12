@@ -29,26 +29,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const init = async () => {
+            console.log("1. Iniciando auth...");
             const t = await tokens.access();
+            console.log("2. Token encontrado:", !!t);
 
             if (t) {
                 try {
+                    console.log("3. Buscando dados do usuário...");
                     const me = await Auth.me();
-                    console.log("ME DATA:", me);
+                    console.log("4. Dados recebidos:", me); // <-- VERIFICAR SE AQUI VEM OS DADOS
                     setUser(me);
                     setSignedIn(true);
+                    console.log("5. User setado no estado");
                 } catch (err) {
+                    console.log("Erro no me():", err);
                     await tokens.clear();
                     setUser(null);
                     setSignedIn(false);
-                    console.log("ME ERROR:", err);
                 }
             } else {
+                console.log("Sem token, usuário não autenticado");
                 setUser(null);
                 setSignedIn(false);
             }
 
             setReady(true);
+            console.log("6. Ready finalizado");
         };
 
         init();
