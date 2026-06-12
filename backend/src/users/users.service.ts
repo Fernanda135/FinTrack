@@ -51,10 +51,11 @@ export class UsersService {
       { label: 'Saúde', value: 'saude', isIncome: false },
       { label: 'Lazer', value: 'lazer', isIncome: false },
       { label: 'Educação', value: 'educacao', isIncome: false },
+      { label: 'Outros', value: 'outros', isIncome: false }
     ];
 
     const categories: Category[] = [];
-    
+
       for (const category of DEFAULT_CATEGORIES) {
         const created = await this.prisma.category.create({
           data: {

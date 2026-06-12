@@ -14,12 +14,12 @@ import { useCategorias } from "@/hooks/useCategorias";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
 
-
 export default function Categorias() {
-
     const router = useRouter();
-
     const { categoriasComPorcentagem, totalGastos } = useCategorias();
+
+    // Ordena por maior gasto
+    const categoriasOrdenadas = [...categoriasComPorcentagem].sort((a, b) => b.valor - a.valor);
 
     return (
         <SafeAreaProvider>
@@ -29,7 +29,6 @@ export default function Categorias() {
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContainer}
                     >
-
                         {/* HEADER */}
                         <View style={styles.header}>
                             <TouchableOpacity onPress={() => router.back()}>
@@ -45,35 +44,57 @@ export default function Categorias() {
                             </Text>
                         </View>
 
-                        {/* CARDS DE CATEGORIAS */}
-                        <View style={styles.cardsContainer}>
-                            {categoriasComPorcentagem.map((item) => (
-                                <View key={item.id} style={styles.card} >
-                                    <View style={styles.cardTop}>
-                                        <View style={styles.leftContent}>
-                                            <View style={styles.icon} />
-                                            <View>
-                                                <Text style={styles.cardCateg}>{item.label}</Text>
-                                                <Text style={styles.cardQtd}>{item.transacoes} transações</Text>
+                        {/* MENSAGEM QUANDO NÃO HÁ GASTOS */}
+                        {totalGastos === 0 || categoriasOrdenadas.length === 0 ? (
+                            <View style={styles.emptyContainer}>
+                                <Text style={styles.emptyTitle}>Nenhum gasto registrado</Text>
+                                <Text style={styles.emptyText}>
+                                    Comece a adicionar suas despesas para acompanhar seus gastos por categoria
+                                </Text>
+                            </View>
+                        ) : (
+                            /* CARDS DE CATEGORIAS */
+                            <View style={styles.cardsContainer}>
+                                {categoriasOrdenadas.map((item) => (
+                                    <View key={item.id} style={styles.card}>
+                                        <View style={styles.cardTop}>
+                                            <View style={styles.leftContent}>
+                                                <View style={[
+                                                    styles.icon,
+                                                    { backgroundColor: getCategoryColor(item.label) }
+                                                ]}>
+                                                </View>
+                                                <View>
+                                                    <Text style={styles.cardCateg}>{item.label}</Text>
+                                                    <Text style={styles.cardQtd}>
+                                                        {item.transacoes} {item.transacoes === 1 ? 'transação' : 'transações'}
+                                                    </Text>
+                                                </View>
                                             </View>
+
+                                            <Text style={styles.cardValue}>
+                                                {formatCurrency(item.valor)}
+                                            </Text>
                                         </View>
 
-                                        <Text style={styles.cardValue}> {formatCurrency(item.valor)}</Text>
-                                    </View>
-
-                                    <View style={styles.progressArea}>
-                                        <View style={styles.progressBar}>
-                                            <View style={[
-                                                styles.progress,
-                                                { width: `${item.progresso * 100}%` }
-                                            ]}
-                                            />
+                                        <View style={styles.progressArea}>
+                                            <View style={styles.progressBar}>
+                                                <View
+                                                    style={[
+                                                        styles.progress,
+                                                        { 
+                                                            width: `${item.progresso * 100}%`,
+                                                            backgroundColor: getCategoryProgressColor(item.label)
+                                                        }
+                                                    ]}
+                                                />
+                                            </View>
+                                            <Text style={styles.percent}>{item.porcentagem}%</Text>
                                         </View>
-                                        <Text style={styles.percent}>{item.porcentagem}%</Text>
                                     </View>
-                                </View>
-                            ))}
-                        </View>
+                                ))}
+                            </View>
+                        )}
                     </ScrollView>
                 </View>
 
@@ -81,6 +102,34 @@ export default function Categorias() {
             </SafeAreaView>
         </SafeAreaProvider>
     );
+}
+
+function getCategoryColor(category: string): string {
+    const colors: Record<string, string> = {
+        'Alimentação': '#FF6B6B',
+        'Transporte': '#4ECDC4',
+        'Moradia': '#45B7D1',
+        'Assinaturas': '#96CEB4',
+        'Renda': '#FFEAA7',
+        'Saúde': '#DDA0DD',
+        'Lazer': '#98D8C8',
+        'Educação': '#F7B731',
+    };
+    return colors[category] || COLORS.lightGray;
+}
+
+function getCategoryProgressColor(category: string): string {
+    const colors: Record<string, string> = {
+        'Alimentação': '#FF6B6B',
+        'Transporte': '#4ECDC4',
+        'Moradia': '#45B7D1',
+        'Assinaturas': '#96CEB4',
+        'Renda': '#FFEAA7',
+        'Saúde': '#DDA0DD',
+        'Lazer': '#98D8C8',
+        'Educação': '#F7B731',
+    };
+    return colors[category] || COLORS.progressGreen;
 }
 
 const styles = StyleSheet.create({
@@ -143,10 +192,14 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     icon: {
-        width: 34,
-        height: 34,
+        width: 40,
+        height: 40,
         borderRadius: 10,
-        backgroundColor: COLORS.lightGray,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    iconText: {
+        fontSize: 20,
     },
     cardCateg: {
         color: COLORS.black,
@@ -170,21 +223,49 @@ const styles = StyleSheet.create({
     },
     progressBar: {
         flex: 1,
-        height: 5,
+        height: 8,
         backgroundColor: COLORS.borderGray,
         borderRadius: 999,
         overflow: "hidden",
     },
     progress: {
         height: "100%",
-        backgroundColor: COLORS.progressGreen,
         borderRadius: 999,
     },
     percent: {
         color: "#AAAAAA",
-        fontSize: 11,
+        fontSize: 12,
         fontWeight: "600",
-        width: 40,
+        width: 45,
         textAlign: "right",
+    },
+    emptyContainer: {
+        backgroundColor: COLORS.white,
+        borderRadius: 10,
+        padding: 40,
+        alignItems: "center",
+    },
+    emptyTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: COLORS.black,
+        marginBottom: 8,
+    },
+    emptyText: {
+        fontSize: 14,
+        color: COLORS.gray,
+        textAlign: "center",
+        lineHeight: 20,
+    },
+    addButton: {
+        backgroundColor: COLORS.primary,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 10,
+    },
+    addButtonText: {
+        color: COLORS.white,
+        fontWeight: "bold",
+        fontSize: 14,
     },
 });

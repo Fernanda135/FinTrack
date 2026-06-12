@@ -8,12 +8,34 @@ import { COLORS } from "@/constants/colors";
 
 export default function GastCateg() {
 
-    const { categoriasComPorcentagem } = useCategorias();
+    const { categoriasComPorcentagem, totalGastos } = useCategorias();
 
-    const categorias = categoriasComPorcentagem.slice(0, 3);
+    // Verifica se não há gastos
+    if (totalGastos === 0 || categoriasComPorcentagem.length === 0) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <Text style={styles.title}>Gastos por categoria</Text>
+                    <Link href={"/Categorias"} style={styles.link}>Ver tudo</Link>
+                </View>
 
-    const total = categorias.reduce((sum, item) => sum + item.valor, 0) || 1;
-    const colors = [COLORS.black, COLORS.primary, COLORS.gray];
+                <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyTitle}>Nenhum gasto registrado</Text>
+                    <Text style={styles.emptyText}>
+                        Adicione suas primeiras despesas para ver os gastos por categoria
+                    </Text>
+                </View>
+            </View>
+        );
+    }
+
+    // Pega apenas as 3 categorias com maiores gastos
+    const categorias = [...categoriasComPorcentagem]
+        .sort((a, b) => b.valor - a.valor)
+        .slice(0, 3);
+
+    const total = categorias.reduce((sum, item) => sum + item.valor, 0);
+    const colors = [COLORS.primary, COLORS.gray, COLORS.black];
     const radius = 38;
     const strokeWidth = 14;
     const circumference = 2 * Math.PI * radius;
@@ -24,70 +46,70 @@ export default function GastCateg() {
 
             <View style={styles.header}>
                 <Text style={styles.title}>Gastos por categoria</Text>
-                <Link href={"/Categorias"} style={styles.link} >Ver tudo</Link>
+                <Link href={"/Categorias"} style={styles.link}>Ver tudo</Link>
             </View>
 
             <View style={styles.categoryCard}>
                 
                 {/* GRÁFICO COM TOP 3 CATEGORIAS */}
                 <View style={styles.chartContainer}>
-                    <Svg width={110} height={110}>
+                    <Svg width={110} height={110} viewBox="0 0 100 100">
                         {categorias.map((item, index) => {
+                            const percentage = item.valor / total;
+                            const strokeDashoffset = circumference * (1 - percentage);
+                            const rotation = cumulativePercentage * 360;
 
-                            const percentage =
-                                item.valor / total;
-
-                            const strokeDashoffset =
-                                circumference *
-                                (1 - percentage);
-
-                            const rotation =
-                                cumulativePercentage * 360;
-
-                            cumulativePercentage +=
-                                percentage;
+                            cumulativePercentage += percentage;
 
                             return (
                                 <Circle
                                     key={item.id}
-                                    cx="55"
-                                    cy="55"
+                                    cx="50"
+                                    cy="50"
                                     r={radius}
-                                    stroke={colors[index]}
+                                    stroke={colors[index % colors.length]}
                                     strokeWidth={strokeWidth}
                                     fill="transparent"
                                     strokeDasharray={circumference}
                                     strokeDashoffset={strokeDashoffset}
-                                    origin="55,55"
+                                    originX="50"
+                                    originY="50"
                                     rotation={rotation - 90}
                                 />
                             );
                         })}
                     </Svg>
+                    
+                    {/* Texto central do gráfico */}
+                    <View style={styles.chartCenter}>
+                        <Text style={styles.chartTotal}>{formatCurrency(total)}</Text>
+                    </View>
                 </View>
 
                 <View style={styles.legendContainer}>
                     {categorias.map((item, index) => (
-                        <View key={item.id} style={styles.legendItem} >
+                        <View key={item.id} style={styles.legendItem}>
                             <View
-                                style={[styles.legendColor,
-                                {
-                                    backgroundColor:
-                                        colors[index],
-                                },
+                                style={[
+                                    styles.legendColor,
+                                    { backgroundColor: colors[index % colors.length] }
                                 ]}
                             />
-
                             <View style={{ flex: 1 }}>
-                                <Text style={styles.legendText}>{item.label}</Text>
+                                <Text style={styles.legendText} numberOfLines={1}>
+                                    {item.label}
+                                </Text>
+                                <Text style={styles.legendPercent}>
+                                    {item.porcentagem}%
+                                </Text>
                             </View>
-                            <Text style={styles.legendValue} >{formatCurrency(item.valor)}</Text>
-
+                            <Text style={styles.legendValue}>
+                                {formatCurrency(item.valor)}
+                            </Text>
                         </View>
                     ))}
-
+                    
                 </View>
-
             </View>
         </View>
     );
@@ -129,35 +151,82 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
     },
     chartContainer: {
-        width: 120,
-        height: 120,
+        width: 110,
+        height: 110,
         justifyContent: "center",
         alignItems: "center",
         position: "relative",
     },
+    chartCenter: {
+        position: "absolute",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    chartTotal: {
+        fontSize: 12,
+        fontWeight: "bold",
+        color: COLORS.black,
+    },
     legendContainer: {
         flex: 1,
         marginLeft: 10,
-        gap: 14,
+        gap: 10,
     },
     legendItem: {
         flexDirection: "row",
         alignItems: "center",
+        gap: 8,
     },
     legendColor: {
         width: 10,
         height: 10,
         borderRadius: 50,
-        marginRight: 10,
     },
     legendText: {
         fontSize: 12,
         fontWeight: "bold",
         color: COLORS.black,
     },
+    legendPercent: {
+        fontSize: 10,
+        color: COLORS.gray,
+        marginTop: 2,
+    },
     legendValue: {
         fontSize: 12,
         fontWeight: "bold",
         color: COLORS.black,
+    },
+    otherContainer: {
+        marginTop: 8,
+        paddingTop: 8,
+        borderTopWidth: 1,
+        borderTopColor: COLORS.borderGray,
+    },
+    otherText: {
+        fontSize: 11,
+        color: COLORS.gray,
+        textAlign: "center",
+    },
+    emptyContainer: {
+        width: "100%",
+        backgroundColor: COLORS.white,
+        borderRadius: 10,
+        padding: 30,
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: COLORS.borderGray,
+    },
+    emptyTitle: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: COLORS.black,
+        marginBottom: 8,
+    },
+    emptyText: {
+        fontSize: 12,
+        color: COLORS.gray,
+        textAlign: "center",
+        lineHeight: 18,
     },
 });

@@ -64,13 +64,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ready,
         signedIn,
         user,
+        // AuthContext.tsx
         login: async (e, p) => {
-            await Auth.login(e, p);
-            setSignedIn(true);
+            console.log("Tentando login:", e);
+            try {
+                await Auth.login(e, p);
+                console.log("Login realizado, verificando tokens...");
+                const access = await tokens.access();
+                const refresh = await tokens.refresh();
+                console.log("Access token existe?", !!access);
+                console.log("Refresh token existe?", !!refresh);
+                
+                // Buscar dados do usuário
+                const me = await Auth.me();
+                console.log("Dados do usuário:", me);
+                setUser(me);
+                setSignedIn(true);
+            } catch (err) {
+                console.log("Erro no login:", err);
+                throw err;
+            }
         },
+        // AuthContext.tsx
         register: async (e, n, p) => {
-            await Auth.register(e, n, p);
-            setSignedIn(true);
+            console.log("Tentando registrar:", e);
+            try {
+                await Auth.register(e, n, p);
+                console.log("Registro realizado, verificando tokens...");
+                const access = await tokens.access();
+                const refresh = await tokens.refresh();
+                console.log("Access token existe?", !!access);
+                console.log("Refresh token existe?", !!refresh);
+                
+                // Buscar dados do usuário APÓS o registro
+                const me = await Auth.me();
+                console.log("Dados do usuário registrado:", me);
+                setUser(me);
+                setSignedIn(true);
+            } catch (err) {
+                console.log("Erro no registro:", err);
+                throw err;
+            }
         },
         logout: async () => {
             await Auth.logout();
