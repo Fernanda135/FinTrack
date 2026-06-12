@@ -10,7 +10,7 @@ export default function GastCateg() {
 
     const { categoriasComPorcentagem, totalGastos } = useCategorias();
 
-    // Verifica se não há gastos
+    // verifica se há gastos
     if (totalGastos === 0 || categoriasComPorcentagem.length === 0) {
         return (
             <View style={styles.container}>
@@ -29,7 +29,7 @@ export default function GastCateg() {
         );
     }
 
-    // Pega apenas as 3 categorias com maiores gastos
+    // pega as 3 categorias com maiores gastos
     const categorias = [...categoriasComPorcentagem]
         .sort((a, b) => b.valor - a.valor)
         .slice(0, 3);
@@ -51,7 +51,7 @@ export default function GastCateg() {
 
             <View style={styles.categoryCard}>
                 
-                {/* GRÁFICO COM TOP 3 CATEGORIAS */}
+                {/* OP 3 CATEGORIAS */}
                 <View style={styles.chartContainer}>
                     <Svg width={110} height={110} viewBox="0 0 100 100">
                         {categorias.map((item, index) => {
@@ -80,7 +80,6 @@ export default function GastCateg() {
                         })}
                     </Svg>
                     
-                    {/* Texto central do gráfico */}
                     <View style={styles.chartCenter}>
                         <Text style={styles.chartTotal}>{formatCurrency(total)}</Text>
                     </View>

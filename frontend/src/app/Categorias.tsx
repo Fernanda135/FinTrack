@@ -18,7 +18,6 @@ export default function Categorias() {
     const router = useRouter();
     const { categoriasComPorcentagem, totalGastos } = useCategorias();
 
-    // Ordena por maior gasto
     const categoriasOrdenadas = [...categoriasComPorcentagem].sort((a, b) => b.valor - a.valor);
 
     return (
@@ -44,7 +43,6 @@ export default function Categorias() {
                             </Text>
                         </View>
 
-                        {/* MENSAGEM QUANDO NÃO HÁ GASTOS */}
                         {totalGastos === 0 || categoriasOrdenadas.length === 0 ? (
                             <View style={styles.emptyContainer}>
                                 <Text style={styles.emptyTitle}>Nenhum gasto registrado</Text>

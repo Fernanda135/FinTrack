@@ -18,9 +18,9 @@ import { showError, showSuccess } from "./Toast/toast";
 
 export default function NovoOrcamentoModal({ visible, onClose }: any) {
 
-    const [categoria, setCategoria] = useState(""); // categoryId
+    const [categoria, setCategoria] = useState("");
     const [limite, setLimite] = useState("");
-    const [titulo, setTitulo] = useState(""); // ← NOVO CAMPO
+    const [titulo, setTitulo] = useState("");
     const [descricao, setDescricao] = useState("");
     const [categoriaModal, setCategoriaModal] = useState(false);
     const [categories, setCategories] = useState<any[]>([]);
@@ -29,7 +29,6 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
     useEffect(() => {
         if (!visible) return;
         Categories.list().then(setCategories).catch(() => setCategories([]));
-        // Resetar formulário quando abrir
         setTitulo("");
         setCategoria("");
         setLimite("");
@@ -71,7 +70,7 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
         setSaving(true);
         try {
             await Budgets.create({
-                title: titulo.trim(), // ← USA O TÍTULO DIGITADO
+                title: titulo.trim(),
                 description: descricao,
                 limit,
                 categoryId: categoria,
@@ -223,7 +222,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.white,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
-        height: "80%", // Aumentado para acomodar o novo campo
+        height: "80%",
         padding: 20,
     },
     modalHeader: {

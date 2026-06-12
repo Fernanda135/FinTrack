@@ -56,27 +56,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ready,
         signedIn,
         user,
-        // AuthContext.tsx - Adicione logs
 login: async (e, p) => {
-    console.log("📝 Login iniciado para:", e);
     try {
         await Auth.login(e, p);
-        console.log("✅ Auth.login concluído");
         
         const access = await tokens.access();
         const refresh = await tokens.refresh();
-        console.log("🔑 Access token salvo?", !!access);
-        console.log("🔄 Refresh token salvo?", !!refresh);
         
-        console.log("👤 Buscando dados do usuário...");
         const me = await Auth.me();
-        console.log("✅ Usuário carregado:", me);
         
         setUser(me);
         setSignedIn(true);
-        console.log("🎉 Login completo");
     } catch (err) {
-        console.log("❌ Erro no login:", err);
         throw err;
     }
 },
