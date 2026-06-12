@@ -196,17 +196,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: COLORS.black,
     },
-    otherContainer: {
-        marginTop: 8,
-        paddingTop: 8,
-        borderTopWidth: 1,
-        borderTopColor: COLORS.borderGray,
-    },
-    otherText: {
-        fontSize: 11,
-        color: COLORS.gray,
-        textAlign: "center",
-    },
     emptyContainer: {
         width: "100%",
         backgroundColor: COLORS.white,

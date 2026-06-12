@@ -11,6 +11,24 @@ export default function UltTransac() {
 
     const { ultimasTransacoes } = useDashboard();
 
+    if (ultimasTransacoes.length === 0) {
+            return (
+                <View style={styles.container}>
+                    <View style={styles.header}>
+                        <Text style={styles.title}>Gastos por categoria</Text>
+                        <Link href={"/Categorias"} style={styles.link}>Ver tudo</Link>
+                    </View>
+    
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyTitle}>Nenhuma transação encontrada</Text>
+                        <Text style={styles.emptyText}>
+                            Comece a registrar suas receitas e despesas para acompanhar seu fluxo financeiro
+                        </Text>
+                    </View>
+                </View>
+            );
+        }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -93,5 +111,26 @@ const styles = StyleSheet.create({
         fontSize: 11,
         color: COLORS.gray,
         marginTop: 4,
+    },
+    emptyContainer: {
+        width: "100%",
+        backgroundColor: COLORS.white,
+        borderRadius: 10,
+        padding: 30,
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: COLORS.borderGray,
+    },
+    emptyTitle: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: COLORS.black,
+        marginBottom: 8,
+    },
+    emptyText: {
+        fontSize: 12,
+        color: COLORS.gray,
+        textAlign: "center",
+        lineHeight: 18,
     },
 });
