@@ -56,19 +56,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         ready,
         signedIn,
         user,
-        login: async (e, p) => {
-            try {
-                await Auth.login(e, p);
-                const access = await tokens.access();
-                const refresh = await tokens.refresh();
-                
-                const me = await Auth.me();
-                setUser(me);
-                setSignedIn(true);
-            } catch (err) {
-                throw err;
-            }
-        },
+        // AuthContext.tsx - Adicione logs
+login: async (e, p) => {
+    console.log("📝 Login iniciado para:", e);
+    try {
+        await Auth.login(e, p);
+        console.log("✅ Auth.login concluído");
+        
+        const access = await tokens.access();
+        const refresh = await tokens.refresh();
+        console.log("🔑 Access token salvo?", !!access);
+        console.log("🔄 Refresh token salvo?", !!refresh);
+        
+        console.log("👤 Buscando dados do usuário...");
+        const me = await Auth.me();
+        console.log("✅ Usuário carregado:", me);
+        
+        setUser(me);
+        setSignedIn(true);
+        console.log("🎉 Login completo");
+    } catch (err) {
+        console.log("❌ Erro no login:", err);
+        throw err;
+    }
+},
         register: async (e, n, p) => {
             try {
                 await Auth.register(e, n, p);

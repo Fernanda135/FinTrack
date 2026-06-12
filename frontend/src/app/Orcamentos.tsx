@@ -59,7 +59,7 @@ export default function Orcamentos() {
                             await Budgets.remove(orcamentoSelecionado.id);
                             showSuccess("Orçamento excluído com sucesso!");
                             setModalVisible(false);
-                            reload(); // Recarrega a lista
+                            reload();
                         } catch (error) {
                             showError("Não foi possível excluir o orçamento");
                             console.error(error);
@@ -166,7 +166,7 @@ export default function Orcamentos() {
 
                 <BottomNav />
 
-                {/* MODAL COM DETALHES DO CARD */}
+                {/* DETALHES DO CARD */}
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -196,7 +196,6 @@ export default function Orcamentos() {
                                         <X size={22} color={COLORS.white} />
                                     </TouchableOpacity>
                                     
-                                    {/* Botão de excluir */}
                                     <TouchableOpacity
                                         style={styles.deleteIcon}
                                         onPress={handleDeleteBudget}
