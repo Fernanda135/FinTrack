@@ -20,6 +20,7 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
 
     const [categoria, setCategoria] = useState(""); // categoryId
     const [limite, setLimite] = useState("");
+    const [titulo, setTitulo] = useState(""); // ← NOVO CAMPO
     const [descricao, setDescricao] = useState("");
     const [categoriaModal, setCategoriaModal] = useState(false);
     const [categories, setCategories] = useState<any[]>([]);
@@ -28,6 +29,11 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
     useEffect(() => {
         if (!visible) return;
         Categories.list().then(setCategories).catch(() => setCategories([]));
+        // Resetar formulário quando abrir
+        setTitulo("");
+        setCategoria("");
+        setLimite("");
+        setDescricao("");
     }, [visible]);
 
     const getCategoriaLabel = () => {
@@ -50,18 +56,28 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
     const handleConfirmar = async () => {
         const limit = parseMoney(limite);
         const cat = categories.find((c) => c.id === categoria);
+        
+        // Validações
+        if (!titulo.trim()) {
+            showError("Por favor, informe um título para o orçamento");
+            return;
+        }
+        
         if (!cat || limit <= 0) {
             showError("Selecione uma categoria e informe um limite válido");
             return;
         }
+        
         setSaving(true);
         try {
             await Budgets.create({
-                title: cat.label,
+                title: titulo.trim(), // ← USA O TÍTULO DIGITADO
                 description: descricao,
                 limit,
                 categoryId: categoria,
             });
+            
+            setTitulo("");
             setCategoria("");
             setLimite("");
             setDescricao("");
@@ -92,7 +108,21 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false} >
+                        <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+                            
+                            {/* NOVO CAMPO: TÍTULO */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.label}>Título</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Ex: Mercado do mês"
+                                    placeholderTextColor={COLORS.gray}
+                                    value={titulo}
+                                    onChangeText={setTitulo}
+                                    maxLength={50}
+                                />
+                            </View>
+
                             <View style={styles.valueContainer}>
                                 <Text style={styles.valueLabel}>limite do orçamento</Text>
                                 <TextInput
@@ -105,25 +135,27 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                                 />
                             </View>
 
-                            <TouchableOpacity style={styles.selectContainer} onPress={() => setCategoriaModal(true)} >
+                            <TouchableOpacity style={styles.selectContainer} onPress={() => setCategoriaModal(true)}>
                                 <Text style={styles.selectLabel}>Categoria</Text>
                                 <View style={styles.selectButton}>
                                     <Text style={[
                                         styles.selectText,
                                         !categoria && styles.placeholderText,
-                                    ]} >{getCategoriaLabel()}</Text>
+                                    ]}>{getCategoriaLabel()}</Text>
                                     <ChevronDown size={20} color={COLORS.gray} />
                                 </View>
                             </TouchableOpacity>
 
                             <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Descrição</Text>
-                                <TextInput style={[
-                                    styles.input,
-                                    {
-                                        height: 100,
-                                        textAlignVertical: "top",
-                                    },]}
+                                <Text style={styles.label}>Descrição (opcional)</Text>
+                                <TextInput
+                                    style={[
+                                        styles.input,
+                                        {
+                                            height: 100,
+                                            textAlignVertical: "top",
+                                        },
+                                    ]}
                                     multiline
                                     placeholder="descrição do orçamento..."
                                     placeholderTextColor={COLORS.gray}
@@ -132,8 +164,14 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                                 />
                             </View>
 
-                            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar} disabled={saving} >
-                                <Text style={styles.confirmText}>{saving ? "salvando..." : "confirmar"}</Text>
+                            <TouchableOpacity 
+                                style={styles.confirmButton} 
+                                onPress={handleConfirmar} 
+                                disabled={saving}
+                            >
+                                <Text style={styles.confirmText}>
+                                    {saving ? "salvando..." : "confirmar"}
+                                </Text>
                             </TouchableOpacity>
                         </ScrollView>
                     </View>
@@ -144,18 +182,25 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
                 transparent={true}
                 visible={categoriaModal}
                 animationType="fade"
+                onRequestClose={() => setCategoriaModal(false)}
             >
-                <TouchableOpacity style={styles.selectModalOverlay} >
+                <TouchableOpacity 
+                    style={styles.selectModalOverlay} 
+                    activeOpacity={1} 
+                    onPress={() => setCategoriaModal(false)}
+                >
                     <View style={styles.selectModalContent}>
                         <Text style={styles.selectModalTitle}>Selecione uma categoria</Text>
                         <FlatList
                             data={categories}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-                                <TouchableOpacity style={styles.selectOption} onPress={() => {
-                                    setCategoria(item.id);
-                                    setCategoriaModal(false);
-                                }}
+                                <TouchableOpacity 
+                                    style={styles.selectOption} 
+                                    onPress={() => {
+                                        setCategoria(item.id);
+                                        setCategoriaModal(false);
+                                    }}
                                 >
                                     <Text style={styles.selectOptionText}>{item.label}</Text>
                                 </TouchableOpacity>
@@ -178,7 +223,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.white,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
-        height: "72%",
+        height: "80%", // Aumentado para acomodar o novo campo
         padding: 20,
     },
     modalHeader: {
@@ -237,7 +282,7 @@ const styles = StyleSheet.create({
         color: COLORS.gray,
     },
     inputContainer: {
-        marginBottom: 30,
+        marginBottom: 25,
     },
     label: {
         color: COLORS.darkBackground,

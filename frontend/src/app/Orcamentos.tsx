@@ -6,9 +6,10 @@ import {
     ScrollView,
     TouchableOpacity,
     Modal,
+    Alert,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Plus, X } from "lucide-react-native";
+import { Plus, X, Trash2 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
 import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
@@ -18,15 +19,14 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { onDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
-
-
+import { showError, showSuccess } from "@/components/Toast/toast";
 
 export default function Orcamentos() {
-
     const [modalVisible, setModalVisible] = useState(false);
     const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<any | null>(null);
     const [novoModalVisible, setNovoModalVisible] = useState(false);
     const [orcamentos, setOrcamentos] = useState<any[]>([]);
+    const [deletando, setDeletando] = useState(false);
 
     const { getPorcentagem, getColor } = useOrcamentos();
     const { gastoOrcaTotal, limiteOrcTotal } = useDashboard();
@@ -42,6 +42,36 @@ export default function Orcamentos() {
         return onDataChanged(reload);
     }, [reload]);
 
+    const handleDeleteBudget = async () => {
+        if (!orcamentoSelecionado) return;
+
+        Alert.alert(
+            "Excluir Orçamento",
+            `Tem certeza que deseja excluir o orçamento "${orcamentoSelecionado.title}"?`,
+            [
+                { text: "Cancelar", style: "cancel" },
+                {
+                    text: "Excluir",
+                    style: "destructive",
+                    onPress: async () => {
+                        setDeletando(true);
+                        try {
+                            await Budgets.remove(orcamentoSelecionado.id);
+                            showSuccess("Orçamento excluído com sucesso!");
+                            setModalVisible(false);
+                            reload(); // Recarrega a lista
+                        } catch (error) {
+                            showError("Não foi possível excluir o orçamento");
+                            console.error(error);
+                        } finally {
+                            setDeletando(false);
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
@@ -49,7 +79,6 @@ export default function Orcamentos() {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContainer}
                 >
-
                     {/* HEADER */}
                     <View style={styles.header}>
                         <Text style={styles.title}>Orçamentos</Text>
@@ -77,6 +106,11 @@ export default function Orcamentos() {
                                             <View style={styles.iconPlaceholder} />
                                             <View>
                                                 <Text style={styles.cardTitle}>{item.title}</Text>
+                                                {item.description ? (
+                                                    <Text style={styles.cardDescription} numberOfLines={1}>
+                                                        {item.description}
+                                                    </Text>
+                                                ) : null}
                                             </View>
                                         </View>
 
@@ -87,30 +121,34 @@ export default function Orcamentos() {
                                     </View>
 
                                     <View style={styles.progressLine}>
-                                        <View style={[
-                                            styles.progressBar,
-                                            {
-                                                width: `${Math.min(percentage, 100)}%`,
-                                                backgroundColor: color,
-                                            },]}
+                                        <View
+                                            style={[
+                                                styles.progressBar,
+                                                {
+                                                    width: `${Math.min(percentage, 100)}%`,
+                                                    backgroundColor: color,
+                                                },
+                                            ]}
                                         />
                                     </View>
 
                                     <View style={styles.cardFooter}>
-                                        <TouchableOpacity onPress={() => {
-                                            setOrcamentoSelecionado(item);
-                                            setModalVisible(true);
-                                        }}
+                                        <TouchableOpacity
+                                            onPress={() => {
+                                                setOrcamentoSelecionado(item);
+                                                setModalVisible(true);
+                                            }}
                                         >
                                             <Text style={styles.details}>Ver Detalhes</Text>
                                         </TouchableOpacity>
 
-                                        <Text style={[
-                                            styles.percent,
-                                            percentage >= 100 && {
-                                                color: COLORS.error,
-                                            },
-                                        ]}
+                                        <Text
+                                            style={[
+                                                styles.percent,
+                                                percentage >= 100 && {
+                                                    color: COLORS.error,
+                                                },
+                                            ]}
                                         >
                                             {percentage >= 100 ? "Limite Excedido! " : ""}
                                             {percentage}%
@@ -137,33 +175,57 @@ export default function Orcamentos() {
                 >
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContainer}>
-                            <View style={[
-                                styles.modalHeader,
-                                {
-                                    backgroundColor: getColor(
-                                        getPorcentagem(
-                                            orcamentoSelecionado?.gasto || 0,
-                                            orcamentoSelecionado?.limite || 1,
+                            <View
+                                style={[
+                                    styles.modalHeader,
+                                    {
+                                        backgroundColor: getColor(
+                                            getPorcentagem(
+                                                orcamentoSelecionado?.gasto || 0,
+                                                orcamentoSelecionado?.limite || 1
+                                            )
                                         ),
-                                    ),
-                                }
-                            ]} >
-                                <TouchableOpacity style={styles.closeIcon} onPress={() => setModalVisible(false)} >
-                                    <X size={22} color={COLORS.white} />
-                                </TouchableOpacity>
+                                    },
+                                ]}
+                            >
+                                <View style={styles.modalHeaderTop}>
+                                    <TouchableOpacity
+                                        style={styles.closeIcon}
+                                        onPress={() => setModalVisible(false)}
+                                    >
+                                        <X size={22} color={COLORS.white} />
+                                    </TouchableOpacity>
+                                    
+                                    {/* Botão de excluir */}
+                                    <TouchableOpacity
+                                        style={styles.deleteIcon}
+                                        onPress={handleDeleteBudget}
+                                        disabled={deletando}
+                                    >
+                                        <Trash2 size={22} color={COLORS.white} />
+                                    </TouchableOpacity>
+                                </View>
                                 <Text style={styles.modalTitle}>{orcamentoSelecionado?.title}</Text>
-                                <Text style={styles.modalDescription}>{orcamentoSelecionado?.descricao}</Text>
+                                {orcamentoSelecionado?.description ? (
+                                    <Text style={styles.modalDescription}>
+                                        {orcamentoSelecionado?.description}
+                                    </Text>
+                                ) : null}
                             </View>
 
                             <View style={styles.modalBody}>
                                 <View style={styles.infoCard}>
                                     <Text style={styles.infoLabel}>Gasto Atual</Text>
-                                    <Text style={styles.infoValue}>{formatCurrency(orcamentoSelecionado?.gasto ?? 0)}</Text>
+                                    <Text style={styles.infoValue}>
+                                        {formatCurrency(orcamentoSelecionado?.gasto ?? 0)}
+                                    </Text>
                                 </View>
 
                                 <View style={styles.infoCard}>
                                     <Text style={styles.infoLabel}>Limite</Text>
-                                    <Text style={styles.infoValue}>{formatCurrency(orcamentoSelecionado?.limite ?? 0)}</Text>
+                                    <Text style={styles.infoValue}>
+                                        {formatCurrency(orcamentoSelecionado?.limite ?? 0)}
+                                    </Text>
                                 </View>
 
                                 <View style={styles.infoCard}>
@@ -171,12 +233,36 @@ export default function Orcamentos() {
                                     <Text style={styles.infoValue}>
                                         {getPorcentagem(
                                             orcamentoSelecionado?.gasto || 0,
-                                            orcamentoSelecionado?.limite || 1,
+                                            orcamentoSelecionado?.limite || 1
                                         )}
                                         %
                                     </Text>
                                 </View>
 
+                                <View style={styles.infoCard}>
+                                    <Text style={styles.infoLabel}>Status</Text>
+                                    <Text
+                                        style={[
+                                            styles.infoValue,
+                                            {
+                                                color:
+                                                    getPorcentagem(
+                                                        orcamentoSelecionado?.gasto || 0,
+                                                        orcamentoSelecionado?.limite || 1
+                                                    ) >= 100
+                                                        ? COLORS.error
+                                                        : COLORS.success,
+                                            },
+                                        ]}
+                                    >
+                                        {getPorcentagem(
+                                            orcamentoSelecionado?.gasto || 0,
+                                            orcamentoSelecionado?.limite || 1
+                                        ) >= 100
+                                            ? "Limite Excedido"
+                                            : "Dentro do Limite"}
+                                    </Text>
+                                </View>
                             </View>
                         </View>
                     </View>
@@ -184,7 +270,10 @@ export default function Orcamentos() {
 
                 <NovoOrcamentoModal
                     visible={novoModalVisible}
-                    onClose={() => setNovoModalVisible(false)}
+                    onClose={() => {
+                        setNovoModalVisible(false);
+                        reload();
+                    }}
                 />
             </SafeAreaView>
         </SafeAreaProvider>
@@ -344,9 +433,17 @@ const styles = StyleSheet.create({
     modalHeader: {
         padding: 24,
     },
-    closeIcon: {
-        alignSelf: "flex-end",
+    modalHeaderTop: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
         marginBottom: 15,
+    },
+    closeIcon: {
+        padding: 5,
+    },
+    deleteIcon: {
+        padding: 5,
     },
     modalTitle: {
         color: COLORS.white,

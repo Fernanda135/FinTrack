@@ -12,7 +12,6 @@ export default function Header() {
     const { user, logout } = useAuth();
     const { saldoTotal, receitaTotal, gastoTotal } = useDashboard();
 
-    console.log("USER STATE:", user);
 
     const displayName = user?.name || "Usuário";
     const userInitial = displayName.charAt(0).toUpperCase();

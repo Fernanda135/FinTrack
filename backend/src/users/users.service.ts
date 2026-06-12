@@ -47,11 +47,17 @@ export class UsersService {
       { label: 'Transporte', value: 'transporte', isIncome: false },
       { label: 'Moradia', value: 'moradia', isIncome: false },
       { label: 'Assinaturas', value: 'assinaturas', isIncome: false },
-      { label: 'Renda', value: 'renda', isIncome: true },
       { label: 'Saúde', value: 'saude', isIncome: false },
       { label: 'Lazer', value: 'lazer', isIncome: false },
       { label: 'Educação', value: 'educacao', isIncome: false },
-      { label: 'Outros', value: 'outros', isIncome: false }
+      { label: 'Outros', value: 'outros', isIncome: false },
+
+      { label: 'Salário', value: 'salario', isIncome: true },
+      { label: 'Freelancer', value: 'freelancer', isIncome: true },
+      { label: 'Investimentos', value: 'investimentos', isIncome: true },
+      { label: 'Presentes', value: 'presentes', isIncome: true },
+      { label: 'Reembolsos', value: 'reembolsos', isIncome: true },
+      { label: 'Outras Receitas', value: 'outras-receitas', isIncome: true },
     ];
 
     const categories: Category[] = [];
