@@ -33,7 +33,14 @@ export default function Transferencias() {
 
                         {/* LISTA DE TRANSFERÊNCIAS */}
                         <View style={styles.transfContainer}>
-                            {transacoes.map((item) => {
+                            {transacoes.length == 0 ? (
+                                <View style={styles.emptyContainer}>
+                                    <Text style={styles.emptyTitle}>Nenhuma transação encontrad</Text>
+                                    <Text style={styles.emptyText}>
+                                        Comece a adicionar suas receitas e despesas para acompanhar seu histórico financeiro
+                                    </Text>
+                                </View>
+                            ) : (transacoes.map((item) => {
                                 return (
                                     <View key={item.id} style={styles.transItem}>
                                         <View>
@@ -64,7 +71,7 @@ export default function Transferencias() {
                                         </View>
                                     </View>
                                 );
-                            })}
+                            }))}
                         </View>
                     </ScrollView>
                 </View>
@@ -144,5 +151,23 @@ const styles = StyleSheet.create({
     },
     valorDespesa: {
         color: COLORS.danger,
+    },
+    emptyContainer: {
+        backgroundColor: COLORS.white,
+        borderRadius: 10,
+        padding: 40,
+        alignItems: "center",
+    },
+    emptyTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: COLORS.black,
+        marginBottom: 8,
+    },
+    emptyText: {
+        fontSize: 14,
+        color: COLORS.gray,
+        textAlign: "center",
+        lineHeight: 20,
     },
 });
