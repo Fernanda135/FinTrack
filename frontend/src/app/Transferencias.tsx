@@ -1,11 +1,9 @@
-import { usePathname, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, ScrollView } from "react-native";
+import React, { useState, useMemo } from "react";
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import {
     SquareArrowUp,
     SquareArrowDown,
-    ArrowBigDown,
 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
@@ -13,12 +11,49 @@ import { useTransacoes } from "@/hooks/useTransacoes";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
 import { COLORS } from "@/constants/colors";
-
-
+import FiltroMensal from "@/components/FiltroMensal";
 
 export default function Transferencias() {
 
-    const { transacoes } = useTransacoes();
+    const { transacoes, carregando } = useTransacoes();
+    const [mesSelecionado, setMesSelecionado] = useState(new Date().getMonth());
+    const [anoSelecionado, setAnoSelecionado] = useState(new Date().getFullYear());
+
+    const transacoesFiltradas = useMemo(() => {
+        return transacoes.filter(t => {
+            const data = new Date(t.data);
+            return data.getMonth() === mesSelecionado &&
+                data.getFullYear() === anoSelecionado;
+        });
+    }, [transacoes, mesSelecionado, anoSelecionado]);
+
+    const transacoesOrdenadas = useMemo(() => {
+        return [...transacoesFiltradas].sort((a, b) => {
+            return new Date(b.data).getTime() - new Date(a.data).getTime();
+        });
+    }, [transacoesFiltradas]);
+
+    const totalReceitas = transacoesOrdenadas
+        .filter(t => t.tipo === "receita")
+        .reduce((soma, t) => soma + t.valor, 0);
+    
+    const totalDespesas = transacoesOrdenadas
+        .filter(t => t.tipo === "despesa")
+        .reduce((soma, t) => soma + t.valor, 0);
+    
+    const saldo = totalReceitas - totalDespesas;
+
+    if (carregando) {
+        return (
+            <SafeAreaProvider>
+                <SafeAreaView style={styles.container}>
+                    <View style={styles.contentContainer}>
+                        <Text style={styles.loadingText}>Carregando transações...</Text>
+                    </View>
+                </SafeAreaView>
+            </SafeAreaProvider>
+        );
+    }
 
     return (
         <SafeAreaProvider>
@@ -28,54 +63,118 @@ export default function Transferencias() {
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContainer}
                     >
-                        {/* HEADER */}
-                        <Text style={styles.header} >Transações</Text>
 
-                        {/* LISTA DE TRANSFERÊNCIAS */}
+                        <Text style={styles.header}>Transações</Text>
+
+                        <FiltroMensal
+                            transacoes={transacoes}
+                            mesInicial={mesSelecionado}
+                            anoInicial={anoSelecionado}
+                            aoMudarMes={(ano: number, mes: number) => {
+                                setAnoSelecionado(ano);
+                                setMesSelecionado(mes);
+                            }}
+                        />
+
+                        <View style={styles.resumoContainer}>
+                            <View style={styles.resumoItem}>
+                                <Text style={styles.resumoLabel}>Receitas</Text>
+                                <Text style={[styles.resumoValor, styles.receitaValor]}>
+                                    +{formatCurrency(totalReceitas)}
+                                </Text>
+                            </View>
+                            <View style={styles.resumoDivider} />
+                            <View style={styles.resumoItem}>
+                                <Text style={styles.resumoLabel}>Despesas</Text>
+                                <Text style={[styles.resumoValor, styles.despesaValor]}>
+                                    -{formatCurrency(totalDespesas)}
+                                </Text>
+                            </View>
+                            <View style={styles.resumoDivider} />
+                            <View style={styles.resumoItem}>
+                                <Text style={styles.resumoLabel}>Saldo</Text>
+                                <Text style={[
+                                    styles.resumoValor,
+                                    saldo >= 0 ? styles.saldoPositivo : styles.saldoNegativo
+                                ]}>
+                                    {formatCurrency(saldo)}
+                                </Text>
+                            </View>
+                        </View>
+
                         <View style={styles.transfContainer}>
-                            {transacoes.length == 0 ? (
+                            <View style={styles.listHeader}>
+                                <Text style={styles.listTitle}>Histórico</Text>
+                                <Text style={styles.listCount}>
+                                    {transacoesOrdenadas.length} transações
+                                </Text>
+                            </View>
+
+                            {transacoesOrdenadas.length === 0 ? (
                                 <View style={styles.emptyContainer}>
-                                    <Text style={styles.emptyTitle}>Nenhuma transação encontrad</Text>
+                                    <Text style={styles.emptyTitle}>Nenhuma transação encontrada</Text>
                                     <Text style={styles.emptyText}>
-                                        Comece a adicionar suas receitas e despesas para acompanhar seu histórico financeiro
+                                        Não há transações para o período selecionado.
+                                        Comece a adicionar suas receitas e despesas para acompanhar seu histórico financeiro.
                                     </Text>
                                 </View>
-                            ) : (transacoes.map((item) => {
-                                return (
-                                    <View key={item.id} style={styles.transItem}>
-                                        <View>
-                                            {item.tipo === "receita" ? (
-                                                <SquareArrowDown size={47} strokeWidth={0.8} color={COLORS.darkGray} />
-                                            ) : (
-                                                <SquareArrowUp size={47} strokeWidth={0.8} color={COLORS.darkGray} />
-                                            )}
-                                        </View>
+                            ) : (
+                                transacoesOrdenadas.map((item) => {
+                                    const Icon = item.tipo === "receita" ? SquareArrowDown : SquareArrowUp;
+                                    const iconColor = item.tipo === "receita" ? COLORS.success : COLORS.danger;
+                                    
+                                    return (
+                                        <TouchableOpacity 
+                                            key={item.id} 
+                                            style={styles.transItem}
+                                            activeOpacity={0.7}
+                                        >
+                                            <View style={[
+                                                styles.iconContainer,
+                                                { backgroundColor: item.tipo === "receita" ? COLORS.chart_income + '15' : COLORS.chart_expense + '15' }
+                                            ]}>
+                                                <Icon 
+                                                    size={28} 
+                                                    color={iconColor}
+                                                    strokeWidth={1.5}
+                                                />
+                                            </View>
 
-                                        <View style={styles.transInfo}>
-                                            <Text style={styles.transTitulo}>{item.titulo}</Text>
-                                            <Text style={styles.transSub}>{item.categoria?.label}</Text>
-                                            <Text style={styles.transDate}>{item.conta?.label} | {formatDate(item.data)}</Text>
-                                        </View>
+                                            <View style={styles.transInfo}>
+                                                <Text style={styles.transTitulo} numberOfLines={1}>
+                                                    {item.titulo}
+                                                </Text>
+                                                <Text style={styles.transSub}>
+                                                    {item.categoria?.label || "Sem categoria"}
+                                                </Text>
+                                                <Text style={styles.transDate}>
+                                                    {item.conta?.label || "Conta"} | {formatDate(item.data)}
+                                                </Text>
+                                            </View>
 
-                                        <View style={styles.valorContainer}>
-                                            <Text style={[
-                                                styles.transValor,
-                                                item.tipo === "receita"
-                                                    ? styles.valorReceita
-                                                    : styles.valorDespesa,
-                                            ]}
-                                            >
-                                                {item.tipo === "receita" ? "+" : "-"}
-                                                {formatCurrency(item.valor)}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                );
-                            }))}
+                                            <View style={styles.valorContainer}>
+                                                <Text style={[
+                                                    styles.transValor,
+                                                    item.tipo === "receita"
+                                                        ? styles.valorReceita
+                                                        : styles.valorDespesa,
+                                                ]}
+                                                >
+                                                    {item.tipo === "receita" ? "+" : "-"}
+                                                    {formatCurrency(item.valor)}
+                                                </Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    );
+                                })
+                            )}
                         </View>
+
                     </ScrollView>
                 </View>
+
                 <BottomNav />
+                
             </SafeAreaView>
         </SafeAreaProvider>
     );
@@ -92,6 +191,7 @@ const styles = StyleSheet.create({
     },
     scrollContainer: {
         flexGrow: 1,
+        paddingBottom: 20,
     },
     header: {
         color: COLORS.primary,
@@ -102,49 +202,151 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: "center",
     },
+    loadingText: {
+        color: COLORS.white,
+        fontSize: 16,
+        textAlign: 'center',
+        marginTop: 50,
+    },
+    resumoContainer: {
+        flexDirection: "row",
+        backgroundColor: COLORS.white,
+        marginHorizontal: 20,
+        marginBottom: 20,
+        borderRadius: 16,
+        borderWidth: 2,
+        borderColor: COLORS.borderGray,
+        paddingVertical: 16,
+        paddingHorizontal: 12,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    resumoItem: {
+        flex: 1,
+        alignItems: "center",
+        gap: 4,
+    },
+    resumoDivider: {
+        width: 2,
+        backgroundColor: COLORS.borderGray,
+        marginHorizontal: 4,
+    },
+    resumoLabel: {
+        fontSize: 12,
+        color: COLORS.gray,
+        fontWeight: "500",
+        letterSpacing: 0.3,
+    },
+    resumoValor: {
+        fontSize: 16,
+        fontWeight: "bold",
+        letterSpacing: 0.2,
+    },
+    receitaValor: {
+        color: COLORS.success,
+    },
+    despesaValor: {
+        color: COLORS.danger,
+    },
+    saldoPositivo: {
+        color: COLORS.success,
+    },
+    saldoNegativo: {
+        color: COLORS.danger,
+    },
     transfContainer: {
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.white,
         width: "100%",
         flex: 1,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         paddingTop: 20,
+        paddingBottom: 30,
+        minHeight: 400,
+    },
+    listHeader: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingHorizontal: 24,
+        paddingBottom: 16,
+    },
+    listTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: COLORS.black,
+        letterSpacing: 0.3,
+    },
+    listCount: {
+        fontSize: 13,
+        color: COLORS.gray,
     },
     transItem: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 20,
-        paddingVertical: 15,
+        paddingVertical: 14,
         marginHorizontal: 16,
-        marginBottom: 10,
-        borderBottomColor: COLORS.darkGray,
-        borderBottomWidth: 1,
-        gap: 10,
+        marginBottom: 6,
+        backgroundColor: COLORS.white,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: COLORS.borderGray,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.03,
+        shadowRadius: 2,
+        elevation: 1,
+    },
+    iconContainer: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        alignItems: "center",
+        justifyContent: "center",
+        marginRight: 14,
+        flexShrink: 0,
     },
     transInfo: {
         flex: 1,
+        minWidth: 0,
     },
     transTitulo: {
-        fontSize: 16,
-        color: COLORS.darkGray,
-        marginBottom: 4,
+        fontSize: 15,
+        fontWeight: "600",
+        color: COLORS.black,
+        marginBottom: 2,
+        letterSpacing: 0.2,
     },
     transSub: {
         fontSize: 12,
         color: COLORS.gray,
-    },
-    valorContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    transValor: {
-        fontSize: 16,
+        marginBottom: 2,
     },
     transDate: {
         fontSize: 11,
         color: COLORS.gray,
-        marginTop: 4,
+        letterSpacing: 0.1,
+    },
+    valorContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginLeft: 8,
+        flexShrink: 0,
+    },
+    transValor: {
+        fontSize: 16,
+        fontWeight: "bold",
     },
     valorReceita: {
         color: COLORS.success,
@@ -154,9 +356,18 @@ const styles = StyleSheet.create({
     },
     emptyContainer: {
         backgroundColor: COLORS.white,
-        borderRadius: 10,
+        borderRadius: 16,
         padding: 40,
         alignItems: "center",
+        marginHorizontal: 20,
+        marginTop: 20,
+        borderWidth: 1,
+        borderColor: COLORS.borderGray,
+        borderStyle: "dashed",
+    },
+    emptyIcon: {
+        fontSize: 48,
+        marginBottom: 16,
     },
     emptyTitle: {
         fontSize: 18,

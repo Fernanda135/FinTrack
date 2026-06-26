@@ -14,7 +14,7 @@ import { Budgets, Categories } from "@/api/endpoints";
 import { formatCurrency, parseMoney } from "@/utils/formatCurrency";
 import { emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
-import { showError, showSuccess } from "./Toast/toast";
+import { showError, showInfo, showSuccess } from "./Toast/toast";
 
 export default function NovoOrcamentoModal({ visible, onClose }: any) {
 
@@ -56,14 +56,13 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
         const limit = parseMoney(limite);
         const cat = categories.find((c) => c.id === categoria);
         
-        // Validações
         if (!titulo.trim()) {
-            showError("Por favor, informe um título para o orçamento");
+            showInfo("Por favor, informe um título para o orçamento");
             return;
         }
         
         if (!cat || limit <= 0) {
-            showError("Selecione uma categoria e informe um limite válido");
+            showInfo("Selecione uma categoria e informe um limite válido");
             return;
         }
         
@@ -109,7 +108,6 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
 
                         <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
                             
-                            {/* NOVO CAMPO: TÍTULO */}
                             <View style={styles.inputContainer}>
                                 <Text style={styles.label}>Título</Text>
                                 <TextInput
@@ -212,132 +210,196 @@ export default function NovoOrcamentoModal({ visible, onClose }: any) {
     );
 }
 
+
 const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
         justifyContent: "flex-end",
     },
     modalContent: {
         backgroundColor: COLORS.white,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        height: "80%",
-        padding: 20,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        height: "85%",
+        padding: 24,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 10,
     },
     modalHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 20,
+        marginBottom: 24,
+        paddingBottom: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.lightGray || "#f0f0f0",
     },
     modalTitle: {
         color: COLORS.darkBackground,
         fontSize: 24,
-        fontWeight: "bold",
+        fontWeight: "700",
+        letterSpacing: 0.5,
     },
     modalBody: {
         flex: 1,
-    },
-    valueContainer: {
-        marginBottom: 25,
-        backgroundColor: COLORS.background,
-        borderRadius: 18,
-        padding: 20,
-        alignItems: "center",
-    },
-    valueLabel: {
-        color: COLORS.gray,
-        fontSize: 14,
-        marginBottom: 5,
-    },
-    valueInput: {
-        color: COLORS.darkBackground,
-        fontSize: 34,
-        fontWeight: "bold",
-    },
-    selectContainer: {
-        marginBottom: 25,
-    },
-    selectLabel: {
-        color: COLORS.darkBackground,
-        fontSize: 14,
-        marginBottom: 8,
-        fontWeight: "bold",
-    },
-    selectButton: {
-        backgroundColor: COLORS.background,
-        borderRadius: 14,
-        padding: 15,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-    },
-    selectText: {
-        color: COLORS.darkBackground,
-        fontSize: 14,
-    },
-    placeholderText: {
-        color: COLORS.gray,
+        paddingBottom: 10,
     },
     inputContainer: {
-        marginBottom: 25,
+        marginBottom: 24,
     },
     label: {
         color: COLORS.darkBackground,
         fontSize: 14,
         marginBottom: 8,
-        fontWeight: "bold",
+        fontWeight: "600",
     },
     input: {
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.background || "#f5f5f5",
         borderRadius: 14,
-        padding: 15,
+        padding: 16,
+        color: COLORS.darkBackground,
+        fontSize: 15,
+        borderWidth: 1,
+        borderColor: "transparent",
+    },
+    inputFocused: {
+        borderColor: COLORS.primary,
+        backgroundColor: COLORS.white,
+    },
+    textArea: {
+        height: 120,
+        textAlignVertical: "top",
+        paddingTop: 16,
+    },
+    valueContainer: {
+        marginBottom: 24,
+        backgroundColor: COLORS.background || "#f5f5f5",
+        borderRadius: 18,
+        padding: 20,
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: COLORS.lightGray || "#f0f0f0",
+    },
+    valueLabel: {
+        color: COLORS.gray || "#999",
+        fontSize: 13,
+        marginBottom: 8,
+        fontWeight: "500",
+        letterSpacing: 0.5,
+        textTransform: "uppercase",
+    },
+    valueInput: {
+        color: COLORS.darkBackground,
+        fontSize: 36,
+        fontWeight: "700",
+        padding: 0,
+        textAlign: "center",
+        minWidth: 200,
+    },
+    selectContainer: {
+        marginBottom: 24,
+    },
+    selectLabel: {
         color: COLORS.darkBackground,
         fontSize: 14,
+        marginBottom: 8,
+        fontWeight: "600",
+    },
+    selectButton: {
+        backgroundColor: COLORS.background || "#f5f5f5",
+        borderRadius: 14,
+        padding: 16,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "transparent",
+    },
+    selectButtonActive: {
+        borderColor: COLORS.primary,
+        backgroundColor: COLORS.white,
+    },
+    selectText: {
+        color: COLORS.darkBackground,
+        fontSize: 15,
+    },
+    placeholderText: {
+        color: COLORS.gray || "#999",
     },
     confirmButton: {
         backgroundColor: COLORS.primary,
-        paddingVertical: 16,
+        paddingVertical: 18,
         borderRadius: 14,
         alignItems: "center",
-        marginBottom: 30,
-        elevation: 2,
+        marginTop: 10,
+        marginBottom: 20,
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    confirmButtonDisabled: {
+        opacity: 0.7,
     },
     confirmText: {
-        color: COLORS.black,
-        fontSize: 16,
-        fontWeight: "bold",
-        textTransform: "lowercase",
+        color: COLORS.white || "#fff",
+        fontSize: 17,
+        fontWeight: "700",
+        textTransform: "uppercase",
+        letterSpacing: 1,
     },
     selectModalOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
         justifyContent: "center",
         alignItems: "center",
+        padding: 20,
     },
     selectModalContent: {
-        width: "80%",
+        width: "90%",
         backgroundColor: COLORS.white,
-        borderRadius: 20,
-        padding: 20,
+        borderRadius: 24,
+        padding: 24,
         maxHeight: "70%",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+        elevation: 8,
     },
     selectModalTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 15,
+        fontSize: 20,
+        fontWeight: "700",
+        marginBottom: 20,
         textAlign: "center",
         color: COLORS.darkBackground,
+        letterSpacing: 0.5,
     },
     selectOption: {
         paddingVertical: 16,
+        paddingHorizontal: 12,
         borderBottomWidth: 1,
-        borderBottomColor: COLORS.borderGray,
+        borderBottomColor: COLORS.lightGray || "#f0f0f0",
+    },
+    selectOptionLast: {
+        borderBottomWidth: 0,
     },
     selectOptionText: {
         textAlign: "center",
         color: COLORS.darkBackground,
         fontSize: 16,
+        fontWeight: "500",
+    },
+    selectOptionActive: {
+        backgroundColor: COLORS.primary,
+        borderRadius: 8,
+    },
+    selectOptionTextActive: {
+        color: COLORS.white,
     },
 });

@@ -2,16 +2,15 @@ import { useCallback, useEffect, useState } from "react";
 import { Transactions } from "@/api/endpoints";
 import { onDataChanged } from "@/utils/events";
 
-export function useTransacoes(limit?: number) {
+export function useTransacoes(limite?: number) {
     const [transacoes, setTransacoes] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [carregando, setCarregando] = useState(true);
 
-    const reload = useCallback(() => {
-        setLoading(true);
-        Transactions.list(limit)
-            // backend returns title/amount/account/category — map to the shape the UI expects
-            .then((rows) =>
-                rows.map((t) => ({
+    const recarregar = useCallback(() => {
+        setCarregando(true);
+        Transactions.list(limite)
+            .then((linhas) =>
+                linhas.map((t) => ({
                     id: t.id,
                     titulo: t.title,
                     valor: t.amount,
@@ -23,13 +22,23 @@ export function useTransacoes(limit?: number) {
             )
             .then(setTransacoes)
             .catch(() => setTransacoes([]))
-            .finally(() => setLoading(false));
-    }, [limit]);
+            .finally(() => setCarregando(false));
+    }, [limite]);
 
     useEffect(() => {
-        reload();
-        return onDataChanged(reload);
-    }, [reload]);
+        recarregar();
+        return onDataChanged(recarregar);
+    }, [recarregar]);
 
-    return { transacoes, loading, reload };
+
+    const receitas = transacoes.filter(t => t.tipo === "receita");
+    const despesas = transacoes.filter(t => t.tipo === "despesa");
+
+    return { 
+        transacoes, 
+        receitas,
+        despesas,
+        carregando, 
+        recarregar 
+    };
 }

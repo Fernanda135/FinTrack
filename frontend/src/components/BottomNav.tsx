@@ -8,6 +8,8 @@ import {
     Plus,
     PieChart,
     ArrowLeftRight,
+    ChartColumn,
+    Tag
 } from "lucide-react-native";
 import NovaTransacaoModal from "./NovaTransacaoModal";
 import { COLORS } from "@/constants/colors";
@@ -20,8 +22,10 @@ export default function BottomNav() {
     const routes = [
         { key: "home", title: "Inicio", path: "/", icon: Home },
         { key: "contas", title: "Contas", path: "/Contas", icon: Landmark },
-        { key: "nova", title: "", path: null, icon: Plus, isPlus: true },
         { key: "orcamentos", title: "Orçame.", path: "/Orcamentos", icon: PieChart },
+        { key: "nova", title: "", path: null, icon: Plus, isPlus: true },
+        { key: "categorias", title: "Categ.", path: "/Categorias", icon: Tag },
+        { key: "estatisticas", title: "Estat.", path: "/Estatisticas", icon: ChartColumn },
         { key: "transferencias", title: "Transf.", path: "/Transferencias", icon: ArrowLeftRight },
     ];
 
@@ -55,7 +59,7 @@ export default function BottomNav() {
     };
 
     const handleTabPress = (route: any) => {
-        if (route.isPlus) return setModalVisible(true); 
+        if (route.isPlus) return setModalVisible(true);
         return router.push(route.path);
     };
 

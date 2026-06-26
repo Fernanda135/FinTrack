@@ -5,9 +5,10 @@ import {
     View,
     ScrollView,
     TouchableOpacity,
+    Alert,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { Plus, Trash2 } from "lucide-react-native";
+import { Plus, Trash2, CreditCard, Wallet, PiggyBank, Building2, TrendingUp, MoreHorizontal, SquarePen } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
 import NovaContaModal from "@/components/NovaContaModal";
@@ -16,8 +17,9 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { onDataChanged, emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
-
 import { showError, showSuccess } from "@/components/Toast/toast";
+
+
 
 const TIPO_LABELS: Record<string, string> = {
     CONTA_CORRENTE: "Conta Corrente",
@@ -27,6 +29,16 @@ const TIPO_LABELS: Record<string, string> = {
     INVESTIMENTOS: "Investimentos",
     OUTROS: "Outros",
 };
+
+const TIPO_ICONS: Record<string, any> = {
+    CONTA_CORRENTE: Building2,
+    CONTA_POUPANCA: PiggyBank,
+    CARTEIRA: Wallet,
+    CARTAO_CREDITO: CreditCard,
+    INVESTIMENTOS: TrendingUp,
+    OUTROS: MoreHorizontal,
+};
+
 
 export default function Contas() {
 
@@ -46,14 +58,30 @@ export default function Contas() {
         return onDataChanged(reload);
     }, [reload]);
 
-    const handleDelete = async (id: string) => {
-        try {
-            await Accounts.remove(id);
-            showSuccess("Conta excluída!");
-            emitDataChanged();
-        } catch (e: any) {
-            showError(e?.message ?? "Não foi possível excluir a conta");
-        }
+    const handleDelete = async (id: string, label: string) => {
+        Alert.alert(
+            "Excluir conta",
+            `Tem certeza que deseja excluir a conta "${label}"?`,
+            [
+                {
+                    text: "Cancelar",
+                    style: "cancel",
+                },
+                {
+                    text: "Excluir",
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await Accounts.remove(id);
+                            showSuccess("Conta excluída com sucesso!");
+                            emitDataChanged();
+                        } catch (e: any) {
+                            showError(e?.message ?? "Não foi possível excluir a conta");
+                        }
+                    },
+                },
+            ]
+        );
     };
 
     return (
@@ -64,40 +92,81 @@ export default function Contas() {
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContainer}
                     >
-                        {/* HEADER */}
+
                         <View style={styles.header}>
-                            <Text style={styles.title}>Contas</Text>
-                            <Text style={styles.subtitle}>Saldo total consolidado</Text>
-                            <Text style={styles.totalBalance}>{formatCurrency(saldoTotal)}</Text>
+                            <View>
+                                <Text style={styles.title}>Minhas Contas</Text>
+                            </View>
                         </View>
 
-                        {/* CARDS DAS CONTAS */}
-                        <View style={styles.cardsContainer}>
-                            {contas.map((conta) => (
-                                <View key={conta.id} style={[styles.card, { backgroundColor: conta.color }]} >
-                                    <View style={styles.cardTop}>
-                                        <View style={styles.leftContent}>
-                                            <View style={styles.iconBox} />
-                                            <View>
-                                                <Text style={styles.cardTitle}>{conta.label}</Text>
-                                                <Text style={styles.cardSubtitle}>{TIPO_LABELS[conta.type] ?? conta.type}</Text>
-                                            </View>
-                                        </View>
-                                        <Text style={styles.balance}>
-                                            {formatCurrency(conta.balance)}
-                                        </Text>
-                                    </View>
-                                    <View style={styles.line} />
-                                    <View style={{ flexDirection: "row", justifyContent: "flex-end" }} >
-                                        <TouchableOpacity onPress={() => handleDelete(conta.id)}>
-                                            <Trash2 size={18} color={COLORS.white} />
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            ))}
+                        <View style={styles.balanceContainer}>
+                            <View>
+                                <Text style={styles.subtitle}>Saldo total consolidado</Text>
+                                <Text style={styles.totalBalance}>{formatCurrency(saldoTotal)}</Text>
+                            </View>
+                            <View style={styles.balanceBadge}>
+                                <Text style={styles.balanceBadgeText}>
+                                    {contas.length} {contas.length === 1 ? "conta" : "contas"}
+                                </Text>
+                            </View>
+                        </View>
 
-                            <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)} >
-                                <Plus size={30} color={COLORS.gray} />
+                        <View style={styles.cardsContainer}>
+                            {contas.map((conta) => {
+                                const IconComponent = TIPO_ICONS[conta.type] || MoreHorizontal;
+                                const isNegative = conta.balance < 0;
+                                
+                                return (
+                                    <View key={conta.id} style={[styles.card, { backgroundColor: conta.color }]}>
+                                        <View style={styles.cardTop}>
+                                            <View style={styles.leftContent}>
+                                                <View style={[styles.iconBox, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                                                    <IconComponent size={20} color={COLORS.white} />
+                                                </View>
+                                                <View>
+                                                    <Text style={styles.cardTitle} numberOfLines={1}>
+                                                        {conta.label}
+                                                    </Text>
+                                                    <Text style={styles.cardSubtitle}>
+                                                        {TIPO_LABELS[conta.type] ?? conta.type}
+                                                    </Text>
+                                                </View>
+                                            </View>
+
+                                            <TouchableOpacity style={styles.deleteButton} >
+                                                <SquarePen size={18} color={COLORS.white} />
+                                            </TouchableOpacity>
+                                            
+                                        </View>
+                                        
+                                        <View style={styles.line} />
+                                        
+                                        <View style={styles.cardBottom}>
+                                            <Text style={[
+                                                styles.balance,
+                                                isNegative && styles.balanceNegative
+                                            ]}>
+                                                {formatCurrency(conta.balance)}
+                                            </Text>
+
+                                            <TouchableOpacity 
+                                                style={styles.deleteButton}
+                                                onPress={() => handleDelete(conta.id, conta.label)}
+                                            >
+                                                <Trash2 size={18} color={COLORS.white}/>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                );
+                            })}
+
+                            <TouchableOpacity 
+                                style={styles.addButton} 
+                                onPress={() => setModalVisible(true)}
+                                activeOpacity={0.7}
+                            >
+                                <Plus size={32} color={COLORS.gray} />
+                                <Text style={styles.addButtonText}>Adicionar nova conta</Text>
                             </TouchableOpacity>
                         </View>
                     </ScrollView>
@@ -115,6 +184,8 @@ export default function Contas() {
     );
 }
 
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -127,84 +198,159 @@ const styles = StyleSheet.create({
         paddingBottom: 50,
     },
     header: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-start",
         paddingHorizontal: 24,
         paddingTop: 30,
-        marginBottom: 10,
+        marginBottom: 8,
     },
     title: {
         color: COLORS.black,
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: "bold",
-        marginBottom: 20,
+        letterSpacing: 0.3,
+        marginBottom: 4,
     },
     subtitle: {
         color: COLORS.gray,
-        fontSize: 12,
-        fontWeight: "bold",
-        textTransform: "uppercase",
-        marginBottom: 4,
+        fontSize: 13,
+        fontWeight: "500",
+        letterSpacing: 0.5,
+    },
+    addHeaderButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: COLORS.primary,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: COLORS.primary,
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    balanceContainer: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        justifyContent: "space-between",
+        paddingHorizontal: 24,
+        paddingVertical: 16,
+        marginBottom: 8,
     },
     totalBalance: {
         color: COLORS.black,
-        fontSize: 30,
+        fontSize: 34,
         fontWeight: "bold",
+        letterSpacing: 0.5,
+    },
+    balanceBadge: {
+        backgroundColor: COLORS.primary + '15',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: COLORS.primary,
+    },
+    balanceBadgeText: {
+        color: COLORS.primary,
+        fontSize: 13,
+        fontWeight: "bold",
+        letterSpacing: 0.3,
     },
     cardsContainer: {
         paddingHorizontal: 16,
-        gap: 18,
-        marginTop: 50,
+        gap: 16,
+        marginTop: 10,
     },
     card: {
-        borderRadius: 22,
-        padding: 18,
-        elevation: 5,
+        borderRadius: 20,
+        padding: 20,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        elevation: 6,
     },
     cardTop: {
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "flex-start",
     },
     leftContent: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 12,
+        gap: 14,
         flex: 1,
     },
     iconBox: {
-        width: 40,
-        height: 40,
+        width: 44,
+        height: 44,
         borderRadius: 12,
-        backgroundColor: "#aaaaaa5f",
+        alignItems: "center",
+        justifyContent: "center",
     },
     cardTitle: {
         color: COLORS.white,
-        fontSize: 16,
+        fontSize: 17,
         fontWeight: "bold",
+        letterSpacing: 0.3,
     },
     cardSubtitle: {
-        color: COLORS.white,
-        fontSize: 11,
+        color: 'rgba(255,255,255,0.8)',
+        fontSize: 12,
         marginTop: 2,
+        letterSpacing: 0.2,
     },
-    balance: {
-        color: COLORS.white,
-        fontSize: 20,
-        fontWeight: "bold",
+    deleteButton: {
+        padding: 6,
+        borderRadius: 8,
+        backgroundColor: 'rgba(0,0,0,0.1)',
     },
     line: {
         height: 1,
-        backgroundColor: "rgba(255,255,255,0.25)",
+        backgroundColor: 'rgba(255,255,255,0.2)',
         marginVertical: 16,
     },
+    cardBottom: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+    },
+    balance: {
+        color: COLORS.white,
+        fontSize: 24,
+        fontWeight: "bold",
+        letterSpacing: 0.3,
+    },
+    balanceNegative: {
+        color: '#FF6B6B',
+    },
     addButton: {
-        height: 75,
+        height: 80,
         borderRadius: 20,
         borderWidth: 2,
         borderStyle: "dashed",
-        borderColor: COLORS.gray,
+        borderColor: COLORS.borderGray,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 25,
+        marginTop: 10,
         marginBottom: 20,
+        backgroundColor: COLORS.white,
+        gap: 6,
+        flexDirection: "row",
+    },
+    addButtonText: {
+        color: COLORS.gray,
+        fontSize: 15,
+        fontWeight: "500",
+        letterSpacing: 0.3,
     },
 });

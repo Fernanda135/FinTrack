@@ -1,6 +1,4 @@
-import { usePathname, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import BottomNav from "@/components/BottomNav";
@@ -23,7 +21,9 @@ export default function Home() {
 
                     </ScrollView>
                 </View>
+
                 <BottomNav />
+
             </SafeAreaView>
         </SafeAreaProvider>
     );
@@ -32,7 +32,7 @@ export default function Home() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.white,
     },
     contentContainer: {
         flex: 1,

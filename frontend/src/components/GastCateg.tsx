@@ -10,7 +10,6 @@ export default function GastCateg() {
 
     const { categoriasComPorcentagem, totalGastos } = useCategorias();
 
-    // verifica se há gastos
     if (totalGastos === 0 || categoriasComPorcentagem.length === 0) {
         return (
             <View style={styles.container}>
@@ -29,15 +28,14 @@ export default function GastCateg() {
         );
     }
 
-    // pega as 3 categorias com maiores gastos
     const categorias = [...categoriasComPorcentagem]
         .sort((a, b) => b.valor - a.valor)
         .slice(0, 3);
 
     const total = categorias.reduce((sum, item) => sum + item.valor, 0);
     const colors = [COLORS.primary, COLORS.gray, COLORS.black];
-    const radius = 38;
-    const strokeWidth = 14;
+    const radius = 40;
+    const strokeWidth = 12;
     const circumference = 2 * Math.PI * radius;
     let cumulativePercentage = 0;
 
@@ -51,7 +49,6 @@ export default function GastCateg() {
 
             <View style={styles.categoryCard}>
                 
-                {/* OP 3 CATEGORIAS */}
                 <View style={styles.chartContainer}>
                     <Svg width={110} height={110} viewBox="0 0 100 100">
                         {categorias.map((item, index) => {
@@ -94,7 +91,7 @@ export default function GastCateg() {
                                     { backgroundColor: colors[index % colors.length] }
                                 ]}
                             />
-                            <View style={{ flex: 1 }}>
+                            <View style={styles.legendTextContainer}>
                                 <Text style={styles.legendText} numberOfLines={1}>
                                     {item.label}
                                 </Text>
@@ -120,6 +117,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         paddingHorizontal: 24,
         marginTop: 10,
+        width: "100%",
     },
     header: {
         flexDirection: "row",
@@ -128,26 +126,39 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         width: "100%",
         marginTop: 20,
+        paddingHorizontal: 4,
     },
     title: {
         fontSize: 18,
         fontWeight: "bold",
         color: COLORS.black,
+        letterSpacing: 0.3,
     },
     link: {
         fontSize: 14,
         color: COLORS.gray,
+        fontWeight: "500",
+        paddingVertical: 4,
+        paddingHorizontal: 8,
     },
     categoryCard: {
         width: "100%",
         borderWidth: 1,
         borderColor: COLORS.borderGray,
-        borderRadius: 10,
-        padding: 18,
+        borderRadius: 12,
+        padding: 20,
         backgroundColor: COLORS.white,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 3.84,
+        elevation: 2,
     },
     chartContainer: {
         width: 110,
@@ -155,66 +166,93 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         position: "relative",
+        flexShrink: 0,
     },
     chartCenter: {
         position: "absolute",
         alignItems: "center",
         justifyContent: "center",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
     chartTotal: {
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: "bold",
         color: COLORS.black,
+        textAlign: "center",
     },
     legendContainer: {
         flex: 1,
-        marginLeft: 10,
-        gap: 10,
+        marginLeft: 16,
+        gap: 12,
+        justifyContent: "center",
     },
     legendItem: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 8,
+        gap: 10,
+        paddingVertical: 2,
     },
     legendColor: {
         width: 10,
         height: 10,
         borderRadius: 50,
+        flexShrink: 0,
+    },
+    legendTextContainer: {
+        flex: 1,
+        minWidth: 0,
     },
     legendText: {
-        fontSize: 12,
-        fontWeight: "bold",
+        fontSize: 13,
+        fontWeight: "600",
         color: COLORS.black,
+        letterSpacing: 0.2,
     },
     legendPercent: {
-        fontSize: 10,
+        fontSize: 11,
         color: COLORS.gray,
-        marginTop: 2,
+        marginTop: 1,
+        letterSpacing: 0.1,
     },
     legendValue: {
-        fontSize: 12,
-        fontWeight: "bold",
+        fontSize: 13,
+        fontWeight: "600",
         color: COLORS.black,
+        flexShrink: 0,
+        marginLeft: 4,
     },
     emptyContainer: {
         width: "100%",
         backgroundColor: COLORS.white,
-        borderRadius: 10,
-        padding: 30,
+        borderRadius: 12,
+        padding: 32,
         alignItems: "center",
         borderWidth: 1,
         borderColor: COLORS.borderGray,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 3.84,
+        elevation: 2,
     },
     emptyTitle: {
         fontSize: 16,
         fontWeight: "bold",
         color: COLORS.black,
         marginBottom: 8,
+        letterSpacing: 0.2,
     },
     emptyText: {
-        fontSize: 12,
+        fontSize: 13,
         color: COLORS.gray,
         textAlign: "center",
-        lineHeight: 18,
+        lineHeight: 20,
+        maxWidth: "80%",
     },
 });

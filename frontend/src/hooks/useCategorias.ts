@@ -1,35 +1,60 @@
-import { useCallback, useEffect, useState } from "react";
-import { Categories } from "@/api/endpoints";
-import { onDataChanged } from "@/utils/events";
+import { useMemo } from 'react';
+import { useTransacoesFiltradas } from './useTransacoesFiltradas';
 
-export function useCategorias() {
-    const [raw, setRaw] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
+interface UseCategoriasProps {
+    mes?: number;
+    ano?: number;
+}
 
-    const reload = useCallback(() => {
-        setLoading(true);
-        Categories.list()
-            .then(setRaw)
-            .catch(() => setRaw([]))
-            .finally(() => setLoading(false));
-    }, []);
+export function useCategorias({ mes, ano }: UseCategoriasProps = {}) {
+    const { despesas, carregando } = useTransacoesFiltradas({
+        mes,
+        ano,
+        tipo: 'despesa'
+    });
 
-    useEffect(() => {
-        reload();
-        return onDataChanged(reload);
-    }, [reload]);
+    const categorias = useMemo(() => {
 
-    // income categories ("renda") are excluded from the gastos breakdown
-    const categoriasGastos = raw.filter((c) => !c.isIncome);
-    const totalGastos = categoriasGastos.reduce((t, c) => t + (c.valor ?? 0), 0);
+        const categoriasMap = new Map();
 
-    const categoriasComPorcentagem = categoriasGastos
-        .map((c) => ({
-            ...c,
-            porcentagem: totalGastos ? Number(((c.valor / totalGastos) * 100).toFixed(1)) : 0,
-            progresso: totalGastos ? c.valor / totalGastos : 0,
-        }))
-        .sort((a, b) => b.valor - a.valor);
+        despesas.forEach(transacao => {
+            const categoriaLabel = transacao.categoria?.label || 'Outros';
+            const valor = transacao.valor || 0;
 
-    return { categoriasComPorcentagem, totalGastos, loading, reload };
+            if (categoriasMap.has(categoriaLabel)) {
+                const existente = categoriasMap.get(categoriaLabel);
+                existente.valor += valor;
+                existente.transacoes += 1;
+            } else {
+                categoriasMap.set(categoriaLabel, {
+                    id: categoriaLabel.toLowerCase().replace(/\s/g, '_'),
+                    label: categoriaLabel,
+                    valor: valor,
+                    transacoes: 1,
+                    progresso: 0,
+                    porcentagem: 0,
+                });
+            }
+        });
+
+        const categoriasArray = Array.from(categoriasMap.values());
+        const totalGastos = categoriasArray.reduce((soma, cat) => soma + cat.valor, 0);
+
+
+        return categoriasArray.map(cat => ({
+            ...cat,
+            progresso: totalGastos > 0 ? cat.valor / totalGastos : 0,
+            porcentagem: totalGastos > 0 ? Math.round((cat.valor / totalGastos) * 100) : 0,
+        }));
+    }, [despesas]);
+
+    const totalGastos = useMemo(() => {
+        return categorias.reduce((soma, cat) => soma + cat.valor, 0);
+    }, [categorias]);
+
+    return {
+        categoriasComPorcentagem: categorias,
+        totalGastos,
+        carregando,
+    };
 }

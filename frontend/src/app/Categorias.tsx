@@ -3,20 +3,77 @@ import {
     Text,
     View,
     ScrollView,
-    TouchableOpacity,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { ArrowLeft } from "lucide-react-native";
-import { useRouter } from "expo-router";
+import { 
+    Utensils,
+    Bus,
+    Home,
+    CreditCard,
+    TrendingUp,
+    Activity,
+    Gamepad2,
+    GraduationCap,
+    Circle,
+} from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
 import { useCategorias } from "@/hooks/useCategorias";
+import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
 
+
+
+export function getCategoryIcon(category: string, size: number, color: string) {
+    const icons: Record<string, React.ReactNode> = {
+        'Alimentação': <Utensils size={size} color={color} />,
+        'Transporte': <Bus size={size} color={color} />,
+        'Moradia': <Home size={size} color={color} />,
+        'Assinaturas': <CreditCard size={size} color={color} />,
+        'Renda': <TrendingUp size={size} color={color} />,
+        'Saúde': <Activity size={size} color={color} />,
+        'Lazer': <Gamepad2 size={size} color={color} />,
+        'Educação': <GraduationCap size={size} color={color} />,
+    };
+    return icons[category] || <Circle size={size} color={color} />;
+}
+
+function getCategoryColor(category: string): string {
+    const colors: Record<string, string> = {
+        'Alimentação': '#FF6B6B',
+        'Transporte': '#4ECDC4',
+        'Moradia': '#45B7D1',
+        'Assinaturas': '#96CEB4',
+        'Renda': '#FFEAA7',
+        'Saúde': '#DDA0DD',
+        'Lazer': '#98D8C8',
+        'Educação': '#F7B731',
+    };
+    return colors[category] || '#6C757D';
+}
+
+function getCategoryProgressColor(category: string): string {
+    const colors: Record<string, string> = {
+        'Alimentação': '#FF6B6B',
+        'Transporte': '#4ECDC4',
+        'Moradia': '#45B7D1',
+        'Assinaturas': '#96CEB4',
+        'Renda': '#FFEAA7',
+        'Saúde': '#DDA0DD',
+        'Lazer': '#98D8C8',
+        'Educação': '#F7B731',
+    };
+    return colors[category] || '#6C757D';
+}
+
+
+
 export default function Categorias() {
-    const router = useRouter();
-    const { categoriasComPorcentagem, totalGastos } = useCategorias();
+    
+    const { mesAtual, anoAtual, carregando } = useDashboard();
+
+    const { categoriasComPorcentagem, totalGastos } = useCategorias({ mes: mesAtual, ano: anoAtual });
 
     const categoriasOrdenadas = [...categoriasComPorcentagem].sort((a, b) => b.valor - a.valor);
 
@@ -28,19 +85,20 @@ export default function Categorias() {
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={styles.scrollContainer}
                     >
-                        {/* HEADER */}
+
                         <View style={styles.header}>
-                            <TouchableOpacity onPress={() => router.back()}>
-                                <ArrowLeft size={24} color={COLORS.primary} />
-                            </TouchableOpacity>
                             <Text style={styles.title}>Categorias</Text>
                         </View>
 
                         <View style={styles.totalContainer}>
-                            <Text style={styles.totalLabel}>Total de gastos</Text>
-                            <Text style={styles.totalValue}>
-                                {formatCurrency(totalGastos)}
-                            </Text>
+                            <Text style={styles.totalLabel}>Total de gastos do mês</Text>
+                            {!carregando ? (
+                                <Text style={styles.totalValue}>
+                                    {formatCurrency(totalGastos)}
+                                </Text>
+                            ) : (
+                                <Text style={styles.totalValue}>---</Text>
+                            )}
                         </View>
 
                         {totalGastos === 0 || categoriasOrdenadas.length === 0 ? (
@@ -51,7 +109,6 @@ export default function Categorias() {
                                 </Text>
                             </View>
                         ) : (
-                            /* CARDS DE CATEGORIAS */
                             <View style={styles.cardsContainer}>
                                 {categoriasOrdenadas.map((item) => (
                                     <View key={item.id} style={styles.card}>
@@ -61,6 +118,7 @@ export default function Categorias() {
                                                     styles.icon,
                                                     { backgroundColor: getCategoryColor(item.label) }
                                                 ]}>
+                                                    {getCategoryIcon(item.label, 20, COLORS.white)}
                                                 </View>
                                                 <View>
                                                     <Text style={styles.cardCateg}>{item.label}</Text>
@@ -89,46 +147,22 @@ export default function Categorias() {
                                             </View>
                                             <Text style={styles.percent}>{item.porcentagem}%</Text>
                                         </View>
+
                                     </View>
                                 ))}
                             </View>
                         )}
+
                     </ScrollView>
                 </View>
 
                 <BottomNav />
+
             </SafeAreaView>
         </SafeAreaProvider>
     );
 }
 
-function getCategoryColor(category: string): string {
-    const colors: Record<string, string> = {
-        'Alimentação': '#FF6B6B',
-        'Transporte': '#4ECDC4',
-        'Moradia': '#45B7D1',
-        'Assinaturas': '#96CEB4',
-        'Renda': '#FFEAA7',
-        'Saúde': '#DDA0DD',
-        'Lazer': '#98D8C8',
-        'Educação': '#F7B731',
-    };
-    return colors[category] || COLORS.lightGray;
-}
-
-function getCategoryProgressColor(category: string): string {
-    const colors: Record<string, string> = {
-        'Alimentação': '#FF6B6B',
-        'Transporte': '#4ECDC4',
-        'Moradia': '#45B7D1',
-        'Assinaturas': '#96CEB4',
-        'Renda': '#FFEAA7',
-        'Saúde': '#DDA0DD',
-        'Lazer': '#98D8C8',
-        'Educação': '#F7B731',
-    };
-    return colors[category] || COLORS.progressGreen;
-}
 
 const styles = StyleSheet.create({
     container: {
@@ -147,15 +181,20 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 12,
-        marginBottom: 35,
+        marginBottom: 20,
     },
     title: {
-        color: COLORS.primary,
-        fontSize: 32,
+        color: COLORS.white,
+        fontSize: 28,
         fontWeight: "bold",
     },
     totalContainer: {
-        marginBottom: 30,
+        marginBottom: 24,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 16,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
     },
     totalLabel: {
         color: COLORS.gray,
@@ -163,25 +202,34 @@ const styles = StyleSheet.create({
         textTransform: "uppercase",
         marginBottom: 6,
         fontWeight: "600",
+        letterSpacing: 1,
     },
     totalValue: {
         color: COLORS.white,
-        fontSize: 34,
+        fontSize: 32,
         fontWeight: "bold",
     },
     cardsContainer: {
-        gap: 16,
+        gap: 12,
     },
     card: {
         backgroundColor: COLORS.white,
-        borderRadius: 10,
+        borderRadius: 16,
         padding: 16,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     cardTop: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 16,
+        marginBottom: 12,
     },
     leftContent: {
         flexDirection: "row",
@@ -190,9 +238,9 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     icon: {
-        width: 40,
-        height: 40,
-        borderRadius: 10,
+        width: 44,
+        height: 44,
+        borderRadius: 12,
         justifyContent: "center",
         alignItems: "center",
     },
@@ -222,7 +270,7 @@ const styles = StyleSheet.create({
     progressBar: {
         flex: 1,
         height: 8,
-        backgroundColor: COLORS.borderGray,
+        backgroundColor: '#E9ECEF',
         borderRadius: 999,
         overflow: "hidden",
     },
@@ -231,22 +279,24 @@ const styles = StyleSheet.create({
         borderRadius: 999,
     },
     percent: {
-        color: "#AAAAAA",
+        color: COLORS.gray,
         fontSize: 12,
         fontWeight: "600",
         width: 45,
         textAlign: "right",
     },
     emptyContainer: {
-        backgroundColor: COLORS.white,
-        borderRadius: 10,
+        backgroundColor: 'rgba(255,255,255,0.05)',
+        borderRadius: 16,
         padding: 40,
         alignItems: "center",
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
     },
     emptyTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: COLORS.black,
+        color: COLORS.white,
         marginBottom: 8,
     },
     emptyText: {
@@ -254,16 +304,5 @@ const styles = StyleSheet.create({
         color: COLORS.gray,
         textAlign: "center",
         lineHeight: 20,
-    },
-    addButton: {
-        backgroundColor: COLORS.primary,
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        borderRadius: 10,
-    },
-    addButtonText: {
-        color: COLORS.white,
-        fontWeight: "bold",
-        fontSize: 14,
     },
 });

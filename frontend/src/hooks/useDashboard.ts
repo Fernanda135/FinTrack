@@ -1,49 +1,107 @@
 import { useCallback, useEffect, useState } from "react";
 import { Dashboard } from "@/api/endpoints";
 import { onDataChanged } from "@/utils/events";
+import { useTransacoesFiltradas } from "./useTransacoesFiltradas";
+import { useFiltroMes } from "./useFiltroMes";
 
-// The backend returns transactions with joined account/category and English
-// field names; the UI expects the legacy Portuguese shape. Map it here once.
-function mapTransacao(t: any) {
-    return {
-        id: t.id,
-        titulo: t.title,
-        valor: t.amount,
-        tipo: t.type === "RECEITA" ? "receita" : "despesa",
-        data: t.date,
-        categoria: t.category ? { label: t.category.label, value: t.category.value } : undefined,
-        conta: t.account ? { label: t.account.label } : undefined,
-    };
+interface UseDashboardProps {
+    mesInicial?: number;
+    anoInicial?: number;
+    aoMudarMes?: (ano: number, mes: number) => void;
 }
 
-const EMPTY = {
-    saldoTotal: 0,
-    gastoTotal: 0,
-    receitaTotal: 0,
-    gastoOrcaTotal: 0,
-    limiteOrcTotal: 0,
-    orcAtivos: 0,
-    ultimasTransacoes: [] as any[],
-};
+export function useDashboard({
+    mesInicial,
+    anoInicial,
+    aoMudarMes
+}: UseDashboardProps = {}) {
+    const [dados, setDados] = useState({
+        saldoTotal: 0,
+        gastoTotal: 0,
+        receitaTotal: 0,
+        gastoOrcamentoTotal: 0,
+        limiteOrcamentoTotal: 0,
+        orcamentosAtivos: 0,
+        ultimasTransacoes: [] as any[],
+    });
 
-export function useDashboard() {
-    const [data, setData] = useState(EMPTY);
-    const [loading, setLoading] = useState(true);
+    const [carregando, setCarregando] = useState(true);
 
-    const reload = useCallback(() => {
-        setLoading(true);
+    const {
+        mesAtual,
+        anoAtual,
+        exibicaoMes,
+        temMesAnterior,
+        temProximoMes,
+        mesAnterior,
+        proximoMes
+    } = useFiltroMes({
+        transacoes: dados.ultimasTransacoes,
+        mesInicial,
+        anoInicial,
+        aoMudarMes
+    });
+
+    const {
+        transacoes: transacoesDoMes,
+        totais: totaisDoMes,
+        carregando: carregandoTransacoes
+    } = useTransacoesFiltradas({
+        mes: mesAtual,
+        ano: anoAtual
+    });
+
+    const recarregar = useCallback(() => {
+        setCarregando(true);
+
         Dashboard.summary()
-            .then((d) =>
-                setData({ ...d, ultimasTransacoes: (d.ultimasTransacoes ?? []).map(mapTransacao) }),
-            )
-            .catch(() => setData(EMPTY))
-            .finally(() => setLoading(false));
+            .then(d => {
+                setDados({
+                    ...d,
+                    ultimasTransacoes: d.ultimasTransacoes ?? []
+                });
+            })
+            .catch(() => {
+                setDados({
+                    saldoTotal: 0,
+                    gastoTotal: 0,
+                    receitaTotal: 0,
+                    gastoOrcamentoTotal: 0,
+                    limiteOrcamentoTotal: 0,
+                    orcamentosAtivos: 0,
+                    ultimasTransacoes: []
+                });
+            })
+            .finally(() => {
+                setCarregando(false);
+            });
+
     }, []);
 
     useEffect(() => {
-        reload();
-        return onDataChanged(reload);
-    }, [reload]);
+        recarregar();
 
-    return { ...data, loading, reload };
+        return onDataChanged(recarregar);
+    }, [recarregar]);
+
+    return {
+        ...dados,
+
+        carregando: carregando || carregandoTransacoes,
+        recarregar,
+
+        mesAtual,
+        anoAtual,
+        exibicaoMes,
+        temMesAnterior,
+        temProximoMes,
+        mesAnterior,
+        proximoMes,
+
+        transacoesDoMes,
+        totaisDoMes,
+
+        receitaTotal: totaisDoMes.totalReceitas,
+        gastoTotal: totaisDoMes.totalDespesas
+    };
 }

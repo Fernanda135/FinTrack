@@ -16,7 +16,8 @@ import { Accounts } from "@/api/endpoints";
 import { formatCurrency, parseMoney } from "@/utils/formatCurrency";
 import { emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
-import { showError, showInfo } from "./Toast/toast";
+import { showError, showInfo, showSuccess } from "./Toast/toast";
+
 
 export default function NovaContaModal({ visible, onClose }: any) {
 
@@ -57,7 +58,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
 
     const handleConfirmar = async () => {
         if (!nome.trim() || !tipo) {
-            showError("Preencha o nome e o tipo da conta");
+            showInfo("Preencha o nome e o tipo da conta");
             return;
         }
         setSaving(true);
@@ -71,7 +72,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
             setNome("");
             setSaldo("");
             setTipo("");
-            showInfo("Conta criada com sucesso!");
+            showSuccess("Conta criada com sucesso!");
             emitDataChanged();
             onClose();
         } catch (e: any) {
@@ -91,7 +92,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
 
-                        {/* HEADER */}
+
                         <View style={styles.modalHeader}>
                             <Text style={styles.modalTitle}>Nova Conta</Text>
                             <TouchableOpacity onPress={onClose} >
@@ -169,7 +170,7 @@ export default function NovaContaModal({ visible, onClose }: any) {
                 </View>
             </Modal>
 
-            {/* TIPOS */}
+
             <Modal
                 transparent={true}
                 visible={tipoModal}
@@ -200,108 +201,152 @@ export default function NovaContaModal({ visible, onClose }: any) {
 }
 
 const styles = StyleSheet.create({
-
     modalOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
         justifyContent: "flex-end",
     },
     modalContent: {
         backgroundColor: COLORS.white,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        height: "75%",
-        padding: 20,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        height: "85%",
+        padding: 24,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 10,
     },
     modalHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 20,
+        marginBottom: 24,
+        paddingBottom: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.lightGray || "#f0f0f0",
     },
     modalTitle: {
         color: COLORS.darkBackground,
         fontSize: 24,
-        fontWeight: "bold",
+        fontWeight: "700",
+        letterSpacing: 0.5,
     },
     modalBody: {
         flex: 1,
+        paddingBottom: 20,
     },
     inputContainer: {
-        marginBottom: 25,
+        marginBottom: 24,
     },
     label: {
         color: COLORS.darkBackground,
         fontSize: 14,
         marginBottom: 8,
-        fontWeight: "bold",
+        fontWeight: "600",
     },
     input: {
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.background || "#f5f5f5",
         borderRadius: 14,
-        padding: 15,
+        padding: 16,
         color: COLORS.darkBackground,
-        fontSize: 14,
+        fontSize: 15,
+        borderWidth: 1,
+        borderColor: "transparent",
+    },
+    inputFocused: {
+        borderColor: COLORS.primary,
+        backgroundColor: COLORS.white,
     },
     valueContainer: {
-        marginBottom: 25,
-        backgroundColor: COLORS.background,
+        marginBottom: 24,
+        backgroundColor: COLORS.background || "#f5f5f5",
         borderRadius: 18,
         padding: 20,
         alignItems: "center",
+        borderWidth: 1,
+        borderColor: COLORS.lightGray || "#f0f0f0",
     },
     valueLabel: {
-        color: COLORS.gray,
-        fontSize: 14,
-        marginBottom: 5,
+        color: COLORS.gray || "#999",
+        fontSize: 13,
+        marginBottom: 8,
+        fontWeight: "500",
+        letterSpacing: 0.5,
+        textTransform: "uppercase",
     },
     valueInput: {
         color: COLORS.darkBackground,
-        fontSize: 34,
-        fontWeight: "bold",
+        fontSize: 36,
+        fontWeight: "700",
+        padding: 0,
+        textAlign: "center",
+        minWidth: 200,
     },
     selectContainer: {
-        marginBottom: 25,
+        marginBottom: 24,
     },
     selectLabel: {
         color: COLORS.darkBackground,
         fontSize: 14,
         marginBottom: 8,
-        fontWeight: "bold",
+        fontWeight: "600",
     },
     selectButton: {
-        backgroundColor: COLORS.background,
+        backgroundColor: COLORS.background || "#f5f5f5",
         borderRadius: 14,
-        padding: 15,
+        padding: 16,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        borderWidth: 1,
+        borderColor: "transparent",
+    },
+    selectButtonActive: {
+        borderColor: COLORS.primary,
+        backgroundColor: COLORS.white,
     },
     selectText: {
         color: COLORS.darkBackground,
-        fontSize: 14,
+        fontSize: 15,
     },
     placeholderText: {
-        color: COLORS.gray,
+        color: COLORS.gray || "#999",
     },
     colorContainer: {
-        marginBottom: 30,
+        marginBottom: 28,
+        backgroundColor: COLORS.background || "#f5f5f5",
+        borderRadius: 18,
+        padding: 16,
+        borderWidth: 1,
+        borderColor: COLORS.lightGray || "#f0f0f0",
     },
     colorHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 10,
+        marginBottom: 14,
+        paddingHorizontal: 4,
     },
     selectedColor: {
-        width: 42,
-        height: 42,
-        borderRadius: 12,
+        width: 44,
+        height: 44,
+        borderRadius: 14,
+        borderWidth: 2,
+        borderColor: COLORS.white,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
     colorPickerWrapper: {
         borderRadius: 18,
         justifyContent: "center",
         alignItems: "center",
+        paddingVertical: 4,
+        padding: 8,
     },
     colorPicker: {
         width: "100%",
@@ -309,47 +354,74 @@ const styles = StyleSheet.create({
     },
     confirmButton: {
         backgroundColor: COLORS.primary,
-        paddingVertical: 16,
+        paddingVertical: 18,
         borderRadius: 14,
         alignItems: "center",
-        marginTop: 10,
-        marginBottom: 30,
-        elevation: 2,
+        marginTop: 8,
+        marginBottom: 10,
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    confirmButtonDisabled: {
+        opacity: 0.7,
     },
     confirmText: {
-        color: COLORS.black,
-        fontSize: 16,
-        fontWeight: "bold",
-        textTransform: "lowercase",
+        color: COLORS.white || "#fff",
+        fontSize: 17,
+        fontWeight: "700",
+        textTransform: "uppercase",
+        letterSpacing: 1,
     },
     selectModalOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
         justifyContent: "center",
         alignItems: "center",
+        padding: 20,
     },
     selectModalContent: {
-        width: "80%",
+        width: "90%",
         backgroundColor: COLORS.white,
-        borderRadius: 20,
-        padding: 20,
+        borderRadius: 24,
+        padding: 24,
         maxHeight: "70%",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+        elevation: 8,
     },
     selectModalTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 15,
+        fontSize: 20,
+        fontWeight: "700",
+        marginBottom: 20,
         textAlign: "center",
         color: COLORS.darkBackground,
+        letterSpacing: 0.5,
     },
     selectOption: {
         paddingVertical: 16,
+        paddingHorizontal: 12,
         borderBottomWidth: 1,
-        borderBottomColor: "#EFEFEF",
+        borderBottomColor: COLORS.lightGray || "#f0f0f0",
+    },
+    selectOptionLast: {
+        borderBottomWidth: 0,
     },
     selectOptionText: {
         textAlign: "center",
         color: COLORS.darkBackground,
         fontSize: 16,
+        fontWeight: "500",
+    },
+    selectOptionActive: {
+        backgroundColor: COLORS.primary,
+        borderRadius: 8,
+    },
+    selectOptionTextActive: {
+        color: COLORS.white,
     },
 });

@@ -6,7 +6,7 @@ import { Accounts, Categories, Transactions } from "@/api/endpoints";
 import { formatCurrency, parseMoney } from "@/utils/formatCurrency";
 import { emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
-import { showError, showSuccess } from "@/components/Toast/toast";
+import { showError, showInfo, showSuccess } from "@/components/Toast/toast";
 
 
 
@@ -14,8 +14,8 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
 
     const [tipo, setTipo] = useState("entrada");
     const [valor, setValor] = useState("");
-    const [conta, setConta] = useState("");      // accountId
-    const [categoria, setCategoria] = useState(""); // categoryId
+    const [conta, setConta] = useState("");
+    const [categoria, setCategoria] = useState("");
     const [titulo, setTitulo] = useState("");
     const [contaModal, setContaModal] = useState(false);
     const [categoriaModal, setCategoriaModal] = useState(false);
@@ -42,7 +42,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
     const handleConfirmar = async () => {
         const amount = parseMoney(valor);
         if (!titulo.trim() || !conta || !categoria || amount <= 0) {
-            showError("Preencha título, valor, conta e categoria");
+            showInfo("Preencha título, valor, conta e categoria");
             return;
         }
         setSaving(true);
@@ -176,7 +176,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                 </View>
             </Modal>
 
-            {/* MODAL COM CONTAS */}
+
             <Modal
                 transparent={true}
                 visible={contaModal}
@@ -202,7 +202,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                 </TouchableOpacity>
             </Modal>
 
-            {/* MODAL COM CATEGORIAS */}
+
             <Modal
                 transparent={true}
                 visible={categoriaModal}
@@ -234,73 +234,112 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
 const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
         justifyContent: "flex-end",
     },
     modalContent: {
         backgroundColor: COLORS.white,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        height: "80%",
-        padding: 20,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        height: "85%",
+        padding: 24,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: -4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 10,
     },
     modalHeader: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 20,
+        marginBottom: 24,
+        paddingBottom: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.lightGray || "#f0f0f0",
     },
     modalTitle: {
         color: COLORS.darkBackground,
-        fontSize: 20,
-        fontWeight: "bold",
+        fontSize: 22,
+        fontWeight: "700",
+        letterSpacing: 0.5,
     },
     modalBody: {
         flex: 1,
     },
     typeContainer: {
         flexDirection: "row",
-        gap: 10,
-        marginBottom: 30,
-        backgroundColor: COLORS.background,
-        borderRadius: 10,
+        gap: 8,
+        marginBottom: 24,
+        backgroundColor: COLORS.background || "#f5f5f5",
+        borderRadius: 12,
         padding: 4,
     },
     typeButton: {
         flex: 1,
-        paddingVertical: 10,
-        borderRadius: 8,
+        paddingVertical: 12,
+        borderRadius: 10,
         alignItems: "center",
     },
     typeButtonActive: {
         backgroundColor: COLORS.white,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     typeText: {
-        color: COLORS.gray,
-        fontSize: 14,
-        fontWeight: "500",
+        color: COLORS.gray || "#999",
+        fontSize: 15,
+        fontWeight: "600",
     },
     typeTextActive: {
         color: COLORS.darkBackground,
-        fontWeight: "bold",
+        fontWeight: "700",
     },
     valueContainer: {
-        marginBottom: 30,
-        backgroundColor: COLORS.background,
-        borderRadius: 10,
-        padding: 10,
-        alignItems: 'center'
+        marginBottom: 24,
+        backgroundColor: COLORS.background || "#f5f5f5",
+        borderRadius: 16,
+        padding: 16,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: COLORS.lightGray || "#f0f0f0",
     },
     valueLabel: {
-        color: COLORS.gray,
-        fontSize: 12,
-        marginBottom: 5,
+        color: COLORS.gray || "#999",
+        fontSize: 13,
+        marginBottom: 8,
+        fontWeight: "500",
+        letterSpacing: 0.5,
+        textTransform: "uppercase",
     },
     valueInput: {
         color: COLORS.darkBackground,
-        fontSize: 32,
-        fontWeight: "bold",
+        fontSize: 36,
+        fontWeight: "700",
         padding: 0,
+        textAlign: "center",
+        minWidth: 200,
+    },
+    titleContainer: {
+        marginBottom: 20,
+    },
+    titleLabel: {
+        color: COLORS.darkBackground,
+        fontSize: 14,
+        marginBottom: 6,
+        fontWeight: "600",
+    },
+    titleInput: {
+        backgroundColor: COLORS.background || "#f5f5f5",
+        padding: 14,
+        borderRadius: 12,
+        color: COLORS.darkBackground,
+        fontSize: 15,
+        borderWidth: 1,
+        borderColor: "transparent",
     },
     selectContainer: {
         marginBottom: 20,
@@ -308,82 +347,95 @@ const styles = StyleSheet.create({
     selectLabel: {
         color: COLORS.darkBackground,
         fontSize: 14,
-        marginBottom: 5,
-        fontWeight: 'bold'
+        marginBottom: 6,
+        fontWeight: "600",
     },
     selectButton: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        backgroundColor: COLORS.background,
-        padding: 15,
-        borderRadius: 10,
+        backgroundColor: COLORS.background || "#f5f5f5",
+        padding: 14,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "transparent",
     },
     selectText: {
         color: COLORS.darkBackground,
-        fontSize: 14,
+        fontSize: 15,
     },
     placeholderText: {
-        color: COLORS.gray,
-    },
-    titleContainer: {
-        marginBottom: 30,
-    },
-    titleLabel: {
-        color: COLORS.darkBackground,
-        fontSize: 14,
-        marginBottom: 5,
-        fontWeight: 'bold'
-    },
-    titleInput: {
-        backgroundColor: COLORS.background,
-        padding: 15,
-        borderRadius: 10,
-        color: COLORS.darkBackground,
-        fontSize: 14,
+        color: COLORS.gray || "#999",
     },
     confirmButton: {
         backgroundColor: COLORS.primary,
-        paddingVertical: 15,
-        borderRadius: 10,
+        paddingVertical: 16,
+        borderRadius: 12,
         alignItems: "center",
-        marginTop: 20,
-        elevation: 1
+        marginTop: 15,
+        shadowColor: COLORS.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    confirmButtonDisabled: {
+        opacity: 0.7,
     },
     confirmText: {
-        color: COLORS.black,
-        fontSize: 16,
-        fontWeight: "bold",
-        textTransform: "lowercase",
+        color: COLORS.white || "#fff",
+        fontSize: 17,
+        fontWeight: "700",
+        textTransform: "uppercase",
+        letterSpacing: 1,
     },
     selectModalOverlay: {
         flex: 1,
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         justifyContent: "center",
         alignItems: "center",
+        padding: 20,
     },
     selectModalContent: {
-        backgroundColor: COLORS.background,
-        borderRadius: 15,
-        padding: 20,
-        width: "80%",
+        backgroundColor: COLORS.white,
+        borderRadius: 20,
+        padding: 24,
+        width: "90%",
         maxHeight: "70%",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+        elevation: 8,
     },
     selectModalTitle: {
         color: COLORS.darkBackground,
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 15,
+        fontSize: 20,
+        fontWeight: "700",
+        marginBottom: 20,
         textAlign: "center",
+        letterSpacing: 0.5,
     },
     selectOption: {
-        paddingVertical: 15,
+        paddingVertical: 16,
+        paddingHorizontal: 12,
         borderBottomWidth: 1,
-        borderBottomColor: COLORS.lightGray,
+        borderBottomColor: COLORS.lightGray || "#f0f0f0",
+    },
+    selectOptionLast: {
+        borderBottomWidth: 0,
     },
     selectOptionText: {
         color: COLORS.darkBackground,
         fontSize: 16,
         textAlign: "center",
+        fontWeight: "500",
+    },
+    selectOptionActive: {
+        backgroundColor: COLORS.primary,
+        borderRadius: 8,
+    },
+    selectOptionTextActive: {
+        color: COLORS.white,
     },
 });
