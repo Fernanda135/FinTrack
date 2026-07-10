@@ -374,6 +374,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: COLORS.black,
         marginBottom: 8,
+        textAlign: "center"
     },
     emptyText: {
         fontSize: 14,

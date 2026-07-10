@@ -12,6 +12,7 @@ import { Plus, Trash2, CreditCard, Wallet, PiggyBank, Building2, TrendingUp, Mor
 
 import BottomNav from "@/components/BottomNav";
 import NovaContaModal from "@/components/NovaContaModal";
+import EditarContaModal from "@/components/EditarContaModal";
 import { Accounts } from "@/api/endpoints";
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
@@ -46,6 +47,8 @@ export default function Contas() {
 
     const [modalVisible, setModalVisible] = useState(false);
     const [contas, setContas] = useState<any[]>([]);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [contaSelecionada, setContaSelecionada] = useState<any>(null);
 
     const reload = useCallback(() => {
         Accounts.list()
@@ -82,6 +85,11 @@ export default function Contas() {
                 },
             ]
         );
+    };
+
+    const handleEdit = (conta: any) => {
+        setContaSelecionada(conta);
+        setEditModalVisible(true);
     };
 
     return (
@@ -133,7 +141,10 @@ export default function Contas() {
                                                 </View>
                                             </View>
 
-                                            <TouchableOpacity style={styles.deleteButton} >
+                                            <TouchableOpacity 
+                                                style={styles.deleteButton} 
+                                                onPress={() => handleEdit(conta)}
+                                            >
                                                 <SquarePen size={18} color={COLORS.white} />
                                             </TouchableOpacity>
                                             
@@ -173,6 +184,15 @@ export default function Contas() {
                 </View>
 
                 <BottomNav />
+
+                <EditarContaModal
+                    visible={editModalVisible}
+                    onClose={() => {
+                        setEditModalVisible(false);
+                        setContaSelecionada(null);
+                    }}
+                    conta={contaSelecionada}
+                />
 
                 <NovaContaModal
                     visible={modalVisible}
