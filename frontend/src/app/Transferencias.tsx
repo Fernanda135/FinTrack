@@ -7,6 +7,8 @@ import {
 } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
+import DetalhesTransacaoModal from "@/components/DetalhesTransacaoModal";
+import EditarTransacaoModal from "@/components/EditarTransacaoModal";
 import { useTransacoes } from "@/hooks/useTransacoes";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
@@ -18,6 +20,26 @@ export default function Transferencias() {
     const { transacoes, carregando } = useTransacoes();
     const [mesSelecionado, setMesSelecionado] = useState(new Date().getMonth());
     const [anoSelecionado, setAnoSelecionado] = useState(new Date().getFullYear());
+    const [detalhesModalVisible, setDetalhesModalVisible] = useState(false);
+    const [transacaoSelecionada, setTransacaoSelecionada] = useState<any>(null);
+    const [editarModalVisible, setEditarModalVisible] = useState(false);
+
+
+    const handleOpenDetails = (transacao: any) => {
+        setTransacaoSelecionada(transacao);
+        setDetalhesModalVisible(true);
+    };
+
+    const handleDelete = () => {
+        setDetalhesModalVisible(false);
+        setTransacaoSelecionada(null);
+    };
+
+    const handleEdit = () => {
+        setDetalhesModalVisible(false);
+        setEditarModalVisible(true);
+    };
+
 
     const transacoesFiltradas = useMemo(() => {
         return transacoes.filter(t => {
@@ -128,6 +150,7 @@ export default function Transferencias() {
                                             key={item.id} 
                                             style={styles.transItem}
                                             activeOpacity={0.7}
+                                            onPress={() => handleOpenDetails(item)}
                                         >
                                             <View style={[
                                                 styles.iconContainer,
@@ -174,6 +197,26 @@ export default function Transferencias() {
                 </View>
 
                 <BottomNav />
+
+                <DetalhesTransacaoModal
+                    visible={detalhesModalVisible}
+                    onClose={() => {
+                        setDetalhesModalVisible(false);
+                        setTransacaoSelecionada(null);
+                    }}
+                    transacao={transacaoSelecionada}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                />
+
+                <EditarTransacaoModal
+                    visible={editarModalVisible}
+                    onClose={() => {
+                        setEditarModalVisible(false);
+                        setTransacaoSelecionada(null);
+                    }}
+                    transacao={transacaoSelecionada}
+                />
                 
             </SafeAreaView>
         </SafeAreaProvider>
