@@ -1,4 +1,4 @@
-// components/EditarContaModal.tsx
+// components/EditarOrcamentoModal.tsx
 import React, { useEffect, useState } from "react";
 import {
     Modal,
@@ -11,52 +11,46 @@ import {
     ScrollView,
 } from "react-native";
 import { X, ChevronDown } from "lucide-react-native";
-import ColorPicker from "react-native-wheel-color-picker";
-
-import { Accounts } from "@/api/endpoints";
+import { Budgets, Categories } from "@/api/endpoints";
 import { formatCurrency, parseMoney } from "@/utils/formatCurrency";
 import { emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
 import { showError, showInfo, showSuccess } from "./Toast/toast";
 
-interface EditarContaModalProps {
+interface EditarOrcamentoModalProps {
     visible: boolean;
     onClose: () => void;
-    conta: any;
+    orcamento: any;
 }
 
-export default function EditarContaModal({ visible, onClose, conta }: EditarContaModalProps) {
-    const [nome, setNome] = useState("");
-    const [saldo, setSaldo] = useState("");
-    const [tipo, setTipo] = useState("");
-    const [cor, setCor] = useState(COLORS.gray);
-    const [tipoModal, setTipoModal] = useState(false);
-    const [tiposConta, setTiposConta] = useState<{ label: string; value: string }[]>([]);
+export default function EditarOrcamentoModal({ visible, onClose, orcamento }: EditarOrcamentoModalProps) {
+    const [categoria, setCategoria] = useState("");
+    const [limite, setLimite] = useState("");
+    const [titulo, setTitulo] = useState("");
+    const [descricao, setDescricao] = useState("");
+    const [categoriaModal, setCategoriaModal] = useState(false);
+    const [categories, setCategories] = useState<any[]>([]);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
-        Accounts.types()
-            .then(setTiposConta)
-            .catch(() => setTiposConta([]));
+        Categories.list()
+            .then(setCategories)
+            .catch(() => setCategories([]));
     }, []);
 
-
+    // Preencher os campos com os dados do orçamento quando o modal abrir
     useEffect(() => {
-        if (visible && conta) {
-            setNome(conta.label || "");
-            setSaldo(formatCurrency(conta.balance || 0));
-            setTipo(conta.type || "");
-            setCor(conta.color || COLORS.gray);
+        if (visible && orcamento) {
+            setTitulo(orcamento.title || "");
+            setCategoria(orcamento.categoryId || "");
+            setLimite(formatCurrency(orcamento.limit || 0));
+            setDescricao(orcamento.description || "");
         }
-    }, [visible, conta]);
+    }, [visible, orcamento]);
 
-    const getTipoLabel = () => {
-        const tipoEncontrado = tiposConta.find(
-            (t) => t.value === tipo
-        );
-        return tipoEncontrado
-            ? tipoEncontrado.label
-            : "selecione o tipo de conta";
+    const getCategoriaLabel = () => {
+        const categoriaEncontrada = categories.find((c) => c.id === categoria);
+        return categoriaEncontrada ? categoriaEncontrada.label : "selecione uma categoria";
     };
 
     const formatarValor = (text: string) => {
@@ -66,29 +60,39 @@ export default function EditarContaModal({ visible, onClose, conta }: EditarCont
         return value;
     };
 
-    const handleSaldoChange = (text: string) => {
+    const handleLimiteChange = (text: string) => {
         const formatted = formatarValor(text);
-        setSaldo(formatted);
+        setLimite(formatted);
     };
 
     const handleConfirmar = async () => {
-        if (!nome.trim() || !tipo) {
-            showInfo("Preencha o nome e o tipo da conta");
+        const limit = parseMoney(limite);
+        const cat = categories.find((c) => c.id === categoria);
+        
+        if (!titulo.trim()) {
+            showInfo("Por favor, informe um título para o orçamento");
             return;
         }
+        
+        if (!cat || limit <= 0) {
+            showInfo("Selecione uma categoria e informe um limite válido");
+            return;
+        }
+        
         setSaving(true);
         try {
-            await Accounts.update(conta.id, {
-                label: nome.trim(),
-                type: tipo,
-                balance: parseMoney(saldo),
-                color: cor,
+            await Budgets.update(orcamento.id, {
+                title: titulo.trim(),
+                description: descricao,
+                limit,
+                categoryId: categoria,
             });
-            showSuccess("Conta atualizada com sucesso!");
+            
+            showSuccess("Orçamento atualizado com sucesso!");
             emitDataChanged();
             onClose();
         } catch (e: any) {
-            showError(e?.message ?? "Não foi possível atualizar a conta");
+            showError(e?.message ?? "Não foi possível atualizar o orçamento");
         } finally {
             setSaving(false);
         }
@@ -105,83 +109,72 @@ export default function EditarContaModal({ visible, onClose, conta }: EditarCont
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Editar Conta</Text>
+                            <Text style={styles.modalTitle}>Editar Orçamento</Text>
                             <TouchableOpacity onPress={onClose}>
-                                <X size={24} color="#222222" />
+                                <X size={24} color={COLORS.darkBackground} />
                             </TouchableOpacity>
                         </View>
 
-                        <ScrollView 
-                            style={styles.modalBody} 
-                            showsVerticalScrollIndicator={false}
-                        >
+                        <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+                            
                             <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Nome</Text>
+                                <Text style={styles.label}>Título</Text>
                                 <TextInput
                                     style={styles.input}
-                                    placeholder="nome da conta"
+                                    placeholder="Ex: Mercado do mês"
                                     placeholderTextColor={COLORS.gray}
-                                    value={nome}
-                                    onChangeText={setNome}
+                                    value={titulo}
+                                    onChangeText={setTitulo}
+                                    maxLength={50}
                                 />
                             </View>
 
                             <View style={styles.valueContainer}>
-                                <Text style={styles.valueLabel}>saldo atual</Text>
+                                <Text style={styles.valueLabel}>limite do orçamento</Text>
                                 <TextInput
                                     style={styles.valueInput}
                                     placeholder="R$ 0,00"
                                     placeholderTextColor={COLORS.gray}
                                     keyboardType="numeric"
-                                    value={saldo}
-                                    onChangeText={handleSaldoChange}
+                                    value={limite}
+                                    onChangeText={handleLimiteChange}
                                 />
                             </View>
 
-                            <TouchableOpacity
-                                style={styles.selectContainer}
-                                onPress={() => setTipoModal(true)}
+                            <TouchableOpacity 
+                                style={styles.selectContainer} 
+                                onPress={() => setCategoriaModal(true)}
                             >
-                                <Text style={styles.selectLabel}>Tipo</Text>
+                                <Text style={styles.selectLabel}>Categoria</Text>
                                 <View style={styles.selectButton}>
                                     <Text style={[
                                         styles.selectText,
-                                        !tipo && styles.placeholderText
+                                        !categoria && styles.placeholderText,
                                     ]}>
-                                        {getTipoLabel()}
+                                        {getCategoriaLabel()}
                                     </Text>
                                     <ChevronDown size={20} color={COLORS.gray} />
                                 </View>
                             </TouchableOpacity>
 
-                            <View style={styles.colorContainer}>
-                                <View style={styles.colorHeader}>
-                                    <Text style={styles.selectLabel}>Cor da conta</Text>
-                                    <View
-                                        style={[
-                                            styles.selectedColor,
-                                            { backgroundColor: cor },
-                                        ]}
-                                    />
-                                </View>
-                                <View style={styles.colorPickerWrapper}>
-                                    <ColorPicker
-                                        color={cor}
-                                        onColorChangeComplete={(color: string) =>
-                                            setCor(color)
-                                        }
-                                        thumbSize={20}
-                                        sliderSize={18}
-                                        noSnap={true}
-                                        row={true}
-                                        swatches={false}
-                                    />
-                                </View>
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.label}>Descrição (opcional)</Text>
+                                <TextInput
+                                    style={[
+                                        styles.input,
+                                        styles.textArea,
+                                    ]}
+                                    multiline
+                                    placeholder="descrição do orçamento..."
+                                    placeholderTextColor={COLORS.gray}
+                                    value={descricao}
+                                    onChangeText={setDescricao}
+                                />
                             </View>
 
-                            <TouchableOpacity
-                                style={styles.confirmButton}
-                                onPress={handleConfirmar}
+                            <TouchableOpacity 
+                                style={styles.confirmButton} 
+                                onPress={handleConfirmar} 
                                 disabled={saving}
                             >
                                 <Text style={styles.confirmText}>
@@ -195,29 +188,29 @@ export default function EditarContaModal({ visible, onClose, conta }: EditarCont
 
             <Modal
                 transparent={true}
-                visible={tipoModal}
+                visible={categoriaModal}
                 animationType="fade"
+                onRequestClose={() => setCategoriaModal(false)}
             >
                 <TouchableOpacity 
                     style={styles.selectModalOverlay} 
-                    onPress={() => setTipoModal(false)}
+                    activeOpacity={1} 
+                    onPress={() => setCategoriaModal(false)}
                 >
                     <View style={styles.selectModalContent}>
-                        <Text style={styles.selectModalTitle}>Selecione um tipo</Text>
+                        <Text style={styles.selectModalTitle}>Selecione uma categoria</Text>
                         <FlatList
-                            data={tiposConta}
-                            keyExtractor={(item) => item.value}
+                            data={categories}
+                            keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
                                 <TouchableOpacity 
                                     style={styles.selectOption} 
                                     onPress={() => {
-                                        setTipo(item.value);
-                                        setTipoModal(false);
+                                        setCategoria(item.id);
+                                        setCategoriaModal(false);
                                     }}
                                 >
-                                    <Text style={styles.selectOptionText}>
-                                        {item.label}
-                                    </Text>
+                                    <Text style={styles.selectOptionText}>{item.label}</Text>
                                 </TouchableOpacity>
                             )}
                         />
@@ -263,7 +256,7 @@ const styles = StyleSheet.create({
     },
     modalBody: {
         flex: 1,
-        paddingBottom: 20,
+        paddingBottom: 10,
     },
     inputContainer: {
         marginBottom: 24,
@@ -283,9 +276,10 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "transparent",
     },
-    inputFocused: {
-        borderColor: COLORS.primary,
-        backgroundColor: COLORS.white,
+    textArea: {
+        height: 100,
+        textAlignVertical: "top",
+        paddingTop: 16,
     },
     valueContainer: {
         marginBottom: 24,
@@ -331,10 +325,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "transparent",
     },
-    selectButtonActive: {
-        borderColor: COLORS.primary,
-        backgroundColor: COLORS.white,
-    },
     selectText: {
         color: COLORS.darkBackground,
         fontSize: 15,
@@ -342,55 +332,18 @@ const styles = StyleSheet.create({
     placeholderText: {
         color: COLORS.gray || "#999",
     },
-    colorContainer: {
-        marginBottom: 28,
-        backgroundColor: COLORS.background || "#f5f5f5",
-        borderRadius: 18,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: COLORS.lightGray || "#f0f0f0",
-    },
-    colorHeader: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 14,
-        paddingHorizontal: 4,
-    },
-    selectedColor: {
-        width: 44,
-        height: 44,
-        borderRadius: 14,
-        borderWidth: 2,
-        borderColor: COLORS.white,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
-    },
-    colorPickerWrapper: {
-        borderRadius: 18,
-        justifyContent: "center",
-        alignItems: "center",
-        paddingVertical: 4,
-        padding: 8,
-    },
     confirmButton: {
         backgroundColor: COLORS.primary,
         paddingVertical: 18,
         borderRadius: 14,
         alignItems: "center",
-        marginTop: 8,
-        marginBottom: 10,
+        marginTop: 10,
+        marginBottom: 20,
         shadowColor: COLORS.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 5,
-    },
-    confirmButtonDisabled: {
-        opacity: 0.7,
     },
     confirmText: {
         color: COLORS.white || "#fff",

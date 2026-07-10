@@ -13,6 +13,7 @@ import { Plus, X, Trash2, SquarePen } from "lucide-react-native";
 
 import BottomNav from "@/components/BottomNav";
 import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
+import EditarOrcamentoModal from "@/components/EditarOrcamentoModal";
 import { Budgets } from "@/api/endpoints";
 import { useOrcamentos } from "@/hooks/useOrcamentos";
 import { useDashboard } from "@/hooks/useDashboard";
@@ -29,6 +30,8 @@ export default function Orcamentos() {
     const [novoModalVisible, setNovoModalVisible] = useState(false);
     const [orcamentos, setOrcamentos] = useState<any[]>([]);
     const [deletando, setDeletando] = useState(false);
+    const [editarModalVisible, setEditarModalVisible] = useState(false);
+    const [orcamentoEditando, setOrcamentoEditando] = useState<any | null>(null);
 
     const { obterPorcentagem, obterCor } = useOrcamentos();
     const { gastoOrcamentoTotal, limiteOrcamentoTotal } = useDashboard();
@@ -72,6 +75,11 @@ export default function Orcamentos() {
                 },
             ]
         );
+    };
+
+    const handleEdit = () => {
+        setEditarModalVisible(true);
+        setModalVisible(false);
     };
 
     return (
@@ -311,15 +319,28 @@ export default function Orcamentos() {
                                                 : "Dentro do Limite"}
                                         </Text>
                                     </View>
-                                    <TouchableOpacity style={styles.editBtn} >
+                                    <TouchableOpacity 
+                                        style={styles.editBtn} 
+                                        onPress={handleEdit}
+                                    >
                                         <SquarePen color={COLORS.white} />
-                                        <Text style={{ color: COLORS.white, fontWeight: 'bold', fontSize: 18 }} >Editar</Text>
+                                        <Text style={{ color: COLORS.white, fontWeight: 'bold', fontSize: 18 }}>Editar</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
                     </View>
                 </Modal>
+
+                <EditarOrcamentoModal
+                    visible={editarModalVisible}
+                    onClose={() => {
+                        setEditarModalVisible(false);
+                        setOrcamentoEditando(null);
+                        reload();
+                    }}
+                    orcamento={orcamentoSelecionado}
+                />
 
                 <NovoOrcamentoModal
                     visible={novoModalVisible}
