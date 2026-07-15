@@ -26,7 +26,7 @@ export class BudgetsService {
       .then((b) => ({
         id: b.id,
         title: b.title,
-        description: b.description,
+        descricao: b.description,
         categoriaId: b.categoryId,
         limite: toNumber(b.limit),
         gasto: 0,
@@ -44,7 +44,7 @@ export class BudgetsService {
     return budgets.map((b) => ({
       id: b.id,
       title: b.title,
-      description: b.description,
+      descricao: b.description,
       categoriaId: b.categoryId,
       limite: toNumber(b.limit),
       gasto: map.get(b.categoryId) ?? 0,
@@ -70,7 +70,7 @@ export class BudgetsService {
     return {
       id: b.id,
       title: b.title,
-      description: b.description,
+      descricao: b.description,
       categoriaId: b.categoryId,
       limite: toNumber(b.limit),
     };
