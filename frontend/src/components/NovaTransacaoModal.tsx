@@ -45,6 +45,30 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
             showInfo("Preencha título, valor, conta e categoria");
             return;
         }
+
+        const contaSelecionada = contas.find(c => c.id === conta);
+
+        const isCreditCard = contaSelecionada.type === "CREDIT_CARD" ||
+            contaSelecionada.isCreditCard === true;
+
+        if (tipo === "saida") {
+            if (isCreditCard) {
+                const limiteDisponivel = (contaSelecionada.limit || 0) - (contaSelecionada.used || 0);
+
+                if (amount > limiteDisponivel) {
+                    showError(`Limite do cartão insuficiente. Disponível: ${formatCurrency(limiteDisponivel)}`);
+                    return;
+                }
+            } else {
+                const saldoDisponivel = contaSelecionada.balance || 0;
+
+                if (amount > saldoDisponivel) {
+                    showError(`Saldo insuficiente. Disponível: ${formatCurrency(saldoDisponivel)}`);
+                    return;
+                }
+            }
+        }
+
         setSaving(true);
         try {
             await Transactions.create({

@@ -28,7 +28,6 @@ interface EditarTransacaoModalProps {
 export default function EditarTransacaoModal({ visible, onClose, transacao }: EditarTransacaoModalProps) {
     const [titulo, setTitulo] = useState("");
     const [valor, setValor] = useState("");
-    const [descricao, setDescricao] = useState("");
     const [tipo, setTipo] = useState<"receita" | "despesa">("receita");
     const [categoria, setCategoria] = useState("");
     const [conta, setConta] = useState("");
@@ -47,13 +46,18 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
 
     useEffect(() => {
         if (visible && transacao) {
-            const dataObj = transacao.data ? new Date(transacao.data) : new Date();
-            setTitulo(transacao.titulo || "");
-            setValor(formatCurrency(transacao.valor || 0));
-            setDescricao(transacao.descricao || "");
-            setTipo(transacao.tipo || "receita");
-            setCategoria(transacao.categoriaId || "");
-            setConta(transacao.contaId || "");
+            // CORREÇÃO: Usar os nomes corretos dos campos
+            const dataObj = transacao.date ? new Date(transacao.date) : new Date();
+
+            setTitulo(transacao.title || transacao.titulo || "");
+            setValor(formatCurrency(transacao.amount || transacao.valor || 0));
+
+            // CORREÇÃO: Verificar o tipo corretamente
+            const tipoTransacao = transacao.type || transacao.tipo || "receita";
+            setTipo(tipoTransacao.toLowerCase() === "despesa" || tipoTransacao.toLowerCase() === "expense" ? "despesa" : "receita");
+
+            setCategoria(transacao.categoryId || transacao.categoriaId || "");
+            setConta(transacao.accountId || transacao.contaId || "");
             setData(dataObj);
         }
     }, [visible, transacao]);
@@ -96,14 +100,13 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
         try {
             await Transactions.update(transacao.id, {
                 title: titulo.trim(),
-                description: descricao,
-                value: valorNumerico,
-                type: tipo,
+                amount: valorNumerico,
+                type: tipo === "receita" ? "RECEITA" : "DESPESA",
                 categoryId: categoria,
                 accountId: conta,
                 date: data.toISOString(),
             });
-            
+
             showSuccess("Transação atualizada com sucesso!");
             emitDataChanged();
             onClose();
@@ -132,7 +135,7 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                         </View>
 
                         <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
-                            
+
                             <View style={styles.inputContainer}>
                                 <Text style={styles.label}>Título *</Text>
                                 <TextInput
@@ -145,7 +148,7 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                             </View>
 
                             <View style={styles.valueContainer}>
-                                <Text style={styles.valueLabel}>valor *</Text>
+                                <Text style={styles.valueLabel}>Valor *</Text>
                                 <TextInput
                                     style={styles.valueInput}
                                     placeholder="R$ 0,00"
@@ -190,8 +193,8 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                                 </View>
                             </View>
 
-                            <TouchableOpacity 
-                                style={styles.selectContainer} 
+                            <TouchableOpacity
+                                style={styles.selectContainer}
                                 onPress={() => setCategoriaModal(true)}
                             >
                                 <Text style={styles.selectLabel}>Categoria *</Text>
@@ -206,8 +209,8 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity 
-                                style={styles.selectContainer} 
+                            <TouchableOpacity
+                                style={styles.selectContainer}
                                 onPress={() => setContaModal(true)}
                             >
                                 <Text style={styles.selectLabel}>Conta *</Text>
@@ -222,8 +225,8 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                                 </View>
                             </TouchableOpacity>
 
-                            <TouchableOpacity 
-                                style={styles.selectContainer} 
+                            <TouchableOpacity
+                                style={styles.selectContainer}
                                 onPress={() => setShowDatePicker(true)}
                             >
                                 <Text style={styles.selectLabel}>Data *</Text>
@@ -235,25 +238,13 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                                 </View>
                             </TouchableOpacity>
 
-                            <View style={styles.inputContainer}>
-                                <Text style={styles.label}>Descrição (opcional)</Text>
-                                <TextInput
-                                    style={[styles.input, styles.textArea]}
-                                    multiline
-                                    placeholder="descrição da transação..."
-                                    placeholderTextColor={COLORS.gray}
-                                    value={descricao}
-                                    onChangeText={setDescricao}
-                                />
-                            </View>
-
-                            <TouchableOpacity 
-                                style={styles.confirmButton} 
-                                onPress={handleConfirmar} 
+                            <TouchableOpacity
+                                style={styles.confirmButton}
+                                onPress={handleConfirmar}
                                 disabled={saving}
                             >
                                 <Text style={styles.confirmText}>
-                                    {saving ? "salvando..." : "atualizar"}
+                                    {saving ? "Salvando..." : "Atualizar"}
                                 </Text>
                             </TouchableOpacity>
                         </ScrollView>
@@ -261,16 +252,15 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                 </View>
             </Modal>
 
-
             <Modal
                 transparent={true}
                 visible={categoriaModal}
                 animationType="fade"
                 onRequestClose={() => setCategoriaModal(false)}
             >
-                <TouchableOpacity 
-                    style={styles.selectModalOverlay} 
-                    activeOpacity={1} 
+                <TouchableOpacity
+                    style={styles.selectModalOverlay}
+                    activeOpacity={1}
                     onPress={() => setCategoriaModal(false)}
                 >
                     <View style={styles.selectModalContent}>
@@ -279,8 +269,8 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                             data={categories}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-                                <TouchableOpacity 
-                                    style={styles.selectOption} 
+                                <TouchableOpacity
+                                    style={styles.selectOption}
                                     onPress={() => {
                                         setCategoria(item.id);
                                         setCategoriaModal(false);
@@ -294,16 +284,15 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                 </TouchableOpacity>
             </Modal>
 
-
             <Modal
                 transparent={true}
                 visible={contaModal}
                 animationType="fade"
                 onRequestClose={() => setContaModal(false)}
             >
-                <TouchableOpacity 
-                    style={styles.selectModalOverlay} 
-                    activeOpacity={1} 
+                <TouchableOpacity
+                    style={styles.selectModalOverlay}
+                    activeOpacity={1}
                     onPress={() => setContaModal(false)}
                 >
                     <View style={styles.selectModalContent}>
@@ -312,8 +301,8 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                             data={accounts}
                             keyExtractor={(item) => item.id}
                             renderItem={({ item }) => (
-                                <TouchableOpacity 
-                                    style={styles.selectOption} 
+                                <TouchableOpacity
+                                    style={styles.selectOption}
                                     onPress={() => {
                                         setConta(item.id);
                                         setContaModal(false);
@@ -332,7 +321,7 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
                     value={data}
                     mode="date"
                     display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                    onValueChange={(event, selectedDate) => {
+                    onChange={(event, selectedDate) => {
                         setShowDatePicker(false);
                         if (selectedDate) {
                             setData(selectedDate);
@@ -398,11 +387,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         borderWidth: 1,
         borderColor: "transparent",
-    },
-    textArea: {
-        height: 100,
-        textAlignVertical: "top",
-        paddingTop: 16,
     },
     valueContainer: {
         marginBottom: 20,
