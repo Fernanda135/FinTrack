@@ -146,6 +146,15 @@ export function useEstatisticas(mes?: number, ano?: number) {
         );
     }, [despesasFiltradas]);
 
+    // NOVO: Receitas acumuladas (mesma lógica da despesa)
+    const receitasAcumulado = useMemo(() => {
+        return gerarGraficoAcumulado(
+            receitasFiltradas,
+            (t) => t.valor || 0,
+            "rgba(31, 122, 61, " // Cor verde para receitas
+        );
+    }, [receitasFiltradas]);
+
     const receitasDespesas = useMemo(() => {
         const mapa = new Map();
 
@@ -200,6 +209,7 @@ export function useEstatisticas(mes?: number, ano?: number) {
         gastosCategorias,
         saldoAcumulado,
         despesaAcumulado,
+        receitasAcumulado, // <-- NOVO: retornando a progressão de receitas
         receitasDespesas,
     };
 }

@@ -57,6 +57,7 @@ export default function Estatisticas() {
         totais,
         saldoAcumulado,
         despesaAcumulado,
+        receitasAcumulado, // <-- NOVO
         receitasDespesas,
         gastosCategorias,
         distribuicaoContas,
@@ -142,6 +143,23 @@ export default function Estatisticas() {
                             <Text style={styles.cardTitle}>Progressão de Saldo</Text>
                             <LineChart
                                 data={saldoAcumulado}
+                                width={CHART_WIDTH}
+                                height={200}
+                                yAxisLabel="R$ "
+                                yAxisSuffix=""
+                                chartConfig={chartConfig}
+                                withInnerLines={true}
+                                withOuterLines={false}
+                                bezier
+                                style={styles.chart}
+                            />
+                        </View>
+
+                        {/* PROGRESSÃO DE RECEITAS - NOVO */}
+                        <View style={styles.chartCard}>
+                            <Text style={styles.cardTitle}>Progressão de Receitas</Text>
+                            <LineChart
+                                data={receitasAcumulado}
                                 width={CHART_WIDTH}
                                 height={200}
                                 yAxisLabel="R$ "
