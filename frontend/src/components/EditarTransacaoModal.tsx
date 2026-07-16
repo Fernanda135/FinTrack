@@ -46,13 +46,11 @@ export default function EditarTransacaoModal({ visible, onClose, transacao }: Ed
 
     useEffect(() => {
         if (visible && transacao) {
-            // CORREÇÃO: Usar os nomes corretos dos campos
             const dataObj = transacao.date ? new Date(transacao.date) : new Date();
 
             setTitulo(transacao.title || transacao.titulo || "");
             setValor(formatCurrency(transacao.amount || transacao.valor || 0));
 
-            // CORREÇÃO: Verificar o tipo corretamente
             const tipoTransacao = transacao.type || transacao.tipo || "receita";
             setTipo(tipoTransacao.toLowerCase() === "despesa" || tipoTransacao.toLowerCase() === "expense" ? "despesa" : "receita");
 

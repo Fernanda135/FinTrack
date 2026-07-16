@@ -5,6 +5,7 @@ import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
 import { COLORS } from "@/constants/colors";
+import EmptyCont from "./EmptyCont";
 
 import { SquareArrowUp, SquareArrowDown } from "lucide-react-native";
 
@@ -19,13 +20,11 @@ export default function UltTransac() {
                     <Text style={styles.title}>Últimas transações</Text>
                     <Link href={"/Transferencias"} style={styles.link}>Ver tudo</Link>
                 </View>
-
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyTitle}>Nenhuma transação encontrada</Text>
-                    <Text style={styles.emptyText}>
-                        Comece a registrar suas receitas e despesas para acompanhar seu fluxo financeiro
-                    </Text>
-                </View>
+                
+                <EmptyCont
+                    titulo="Nenhuma transação registrada esse mês"
+                    texto="Comece a registrar suas receitas e despesas para acompanhar seu fluxo financeiro mensal"
+                />
             </View>
         );
     }
@@ -42,10 +41,10 @@ export default function UltTransac() {
                     const isLast = index === transacoesDoMes.length - 1;
                     const Icon = item.tipo === "receita" ? SquareArrowDown : SquareArrowUp;
                     const iconColor = item.tipo === "receita" ? COLORS.success : COLORS.danger;
-                    
+
                     return (
-                        <View 
-                            key={item.id} 
+                        <View
+                            key={item.id}
                             style={[
                                 styles.transactionCard,
                                 !isLast && styles.transactionCardBorder
@@ -56,12 +55,12 @@ export default function UltTransac() {
                                     styles.iconContainer,
                                     { backgroundColor: item.tipo === "receita" ? COLORS.chart_income + '15' : COLORS.chart_expense + '15' }
                                 ]}>
-                                    <Icon 
-                                        size={24} 
+                                    <Icon
+                                        size={24}
                                         color={iconColor}
                                     />
                                 </View>
-                                
+
                                 <View style={styles.transactionInfo}>
                                     <Text style={styles.transactionTitle} numberOfLines={1}>
                                         {item.titulo}
@@ -205,36 +204,5 @@ const styles = StyleSheet.create({
     transactionValue: {
         fontSize: 16,
         fontWeight: "bold",
-    },
-    emptyContainer: {
-        width: "100%",
-        backgroundColor: COLORS.white,
-        borderRadius: 12,
-        padding: 32,
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: COLORS.borderGray,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.05,
-        shadowRadius: 3.84,
-        elevation: 2,
-    },
-    emptyTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: COLORS.black,
-        marginBottom: 8,
-        letterSpacing: 0.2,
-    },
-    emptyText: {
-        fontSize: 13,
-        color: COLORS.gray,
-        textAlign: "center",
-        lineHeight: 20,
-        maxWidth: "80%",
     },
 });

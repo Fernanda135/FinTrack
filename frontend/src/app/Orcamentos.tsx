@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import {
     StyleSheet,
     Text,
@@ -14,9 +14,8 @@ import { Plus, X, Trash2, SquarePen } from "lucide-react-native";
 import BottomNav from "@/components/BottomNav";
 import NovoOrcamentoModal from "@/components/NovoOrcamentoModal";
 import EditarOrcamentoModal from "@/components/EditarOrcamentoModal";
-import { Budgets } from "@/api/endpoints";
+import { Budgets, Categories } from "@/api/endpoints";
 import { useOrcamentos } from "@/hooks/useOrcamentos";
-import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { onDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
@@ -25,6 +24,16 @@ import { getCategoryIcon } from "./Categorias";
 
 export default function Orcamentos() {
 
+    const {
+        getGasto,
+        getLimite,
+        getDescricao,
+        getCategoriaNome: getCategoriaNomeFromHook,
+        obterPorcentagem,
+        obterCor,
+        carregando: carregandoOrcamentos
+    } = useOrcamentos();
+
     const [modalVisible, setModalVisible] = useState(false);
     const [orcamentoSelecionado, setOrcamentoSelecionado] = useState<any | null>(null);
     const [novoModalVisible, setNovoModalVisible] = useState(false);
@@ -32,14 +41,57 @@ export default function Orcamentos() {
     const [deletando, setDeletando] = useState(false);
     const [editarModalVisible, setEditarModalVisible] = useState(false);
     const [orcamentoEditando, setOrcamentoEditando] = useState<any | null>(null);
+    const [categorias, setCategorias] = useState<any[]>([]);
 
-    const { obterPorcentagem, obterCor } = useOrcamentos();
-    const { gastoOrcamentoTotal, limiteOrcamentoTotal } = useDashboard();
+    const totais = useMemo(() => {
+        let totalGasto = 0;
+        let totalLimite = 0;
+
+        orcamentos.forEach(item => {
+            totalGasto += getGasto(item);
+            totalLimite += getLimite(item);
+        });
+
+        return {
+            gastoTotal: totalGasto,
+            limiteTotal: totalLimite,
+        };
+    }, [orcamentos, getGasto, getLimite]);
+
+    const getCategoriaNome = (orcamento: any) => {
+        if (!orcamento) return "Sem categoria";
+
+        const nome = getCategoriaNomeFromHook(orcamento);
+        if (nome && nome !== "Sem categoria") return nome;
+
+        if (orcamento.categoria?.label) return orcamento.categoria.label;
+        if (orcamento.category?.label) return orcamento.category.label;
+
+        const categoriaId = orcamento.categoriaId || orcamento.categoryId;
+        if (categoriaId) {
+            const categoria = categorias.find(c => c.id === categoriaId);
+            if (categoria) {
+                return categoria.label || categoria.name || "Sem categoria";
+            }
+        }
+
+        return "Sem categoria";
+    };
 
     const reload = useCallback(() => {
-        Budgets.list()
-            .then(setOrcamentos)
-            .catch(() => setOrcamentos([]));
+        Promise.all([
+            Budgets.list(),
+            Categories.list()
+        ])
+            .then(([budgetsData, categoriesData]) => {
+                setOrcamentos(budgetsData || []);
+                setCategorias(categoriesData || []);
+            })
+            .catch((error) => {
+                console.error('Erro ao carregar:', error);
+                setOrcamentos([]);
+                setCategorias([]);
+            });
     }, []);
 
     useEffect(() => {
@@ -82,6 +134,16 @@ export default function Orcamentos() {
         setModalVisible(false);
     };
 
+    if (carregandoOrcamentos) {
+        return (
+            <SafeAreaView style={styles.container}>
+                <View style={styles.loadingContainer}>
+                    <Text style={styles.loadingText}>Carregando orçamentos...</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
@@ -99,11 +161,11 @@ export default function Orcamentos() {
                         <View style={styles.cardsContainer}>
                             <View style={styles.topCard}>
                                 <Text style={styles.topCardLabel}>Gasto</Text>
-                                <Text style={styles.topCardValue}>{formatCurrency(gastoOrcamentoTotal)}</Text>
+                                <Text style={styles.topCardValue}>{formatCurrency(totais.gastoTotal)}</Text>
                             </View>
                             <View style={styles.topCard}>
                                 <Text style={styles.topCardLabel}>Limite</Text>
-                                <Text style={styles.topCardValue}>{formatCurrency(limiteOrcamentoTotal)}</Text>
+                                <Text style={styles.topCardValue}>{formatCurrency(totais.limiteTotal)}</Text>
                             </View>
                             <View style={styles.topCard}>
                                 <Text style={styles.topCardLabel}>Orçamentos</Text>
@@ -114,7 +176,10 @@ export default function Orcamentos() {
 
                     <View style={styles.listContainer}>
                         {orcamentos.map((item) => {
-                            const percentage = obterPorcentagem(item.gasto, item.limite);
+                            const gasto = getGasto(item);
+                            const limite = getLimite(item);
+                            const descricao = getDescricao(item);
+                            const percentage = obterPorcentagem(gasto, limite);
                             const color = obterCor(percentage);
                             const isExceeded = percentage >= 100;
 
@@ -137,17 +202,17 @@ export default function Orcamentos() {
                                             </View>
                                             <View style={styles.textArea}>
                                                 <Text style={styles.cardTitle}>{item.title}</Text>
-                                                {item.description ? (
+                                                {descricao ? (
                                                     <Text style={styles.cardDescription} numberOfLines={1}>
-                                                        {item.description}
+                                                        {descricao}
                                                     </Text>
                                                 ) : null}
                                             </View>
                                         </View>
 
                                         <View style={styles.infoArea}>
-                                            <Text style={styles.value}>{formatCurrency(item.gasto)}</Text>
-                                            <Text style={styles.limit}>de {formatCurrency(item.limite)}</Text>
+                                            <Text style={styles.value}>{formatCurrency(gasto)}</Text>
+                                            <Text style={styles.limit}>de {formatCurrency(limite)}</Text>
                                         </View>
                                     </View>
 
@@ -199,7 +264,6 @@ export default function Orcamentos() {
 
                 <BottomNav />
 
-
                 <Modal
                     animationType="slide"
                     transparent={true}
@@ -208,133 +272,144 @@ export default function Orcamentos() {
                 >
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContainer}>
-                            <View
-                                style={[
-                                    styles.modalHeader,
-                                    {
-                                        backgroundColor: obterCor(
-                                            obterPorcentagem(
-                                                orcamentoSelecionado?.gasto || 0,
-                                                orcamentoSelecionado?.limite || 1
-                                            )
-                                        ),
-                                    },
-                                ]}
-                            >
-                                <View style={styles.modalHeaderTop}>
-                                    <TouchableOpacity
-                                        style={styles.iconButton}
-                                        onPress={() => setModalVisible(false)}
-                                    >
-                                        <X size={24} color={COLORS.white} />
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity
-                                        style={styles.iconButton}
-                                        onPress={handleDeleteBudget}
-                                        disabled={deletando}
-                                    >
-                                        <Trash2 size={22} color={COLORS.white} />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <View style={styles.modalIconContainer}>
-                                    {orcamentoSelecionado && (
-                                        <View style={[styles.modalIcon, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-                                            {getCategoryIcon(
-                                                orcamentoSelecionado.title,
-                                                32,
-                                                COLORS.white
-                                            )}
-                                        </View>
-                                    )}
-                                </View>
-
-                                <Text style={styles.modalTitle}>{orcamentoSelecionado?.title}</Text>
-                                {orcamentoSelecionado?.description ? (
-                                    <Text style={styles.modalDescription}>
-                                        {orcamentoSelecionado?.description}
-                                    </Text>
-                                ) : null}
-                            </View>
-
-                            <View style={styles.modalBody}>
-                                <View style={styles.infoGrid}>
-                                    <View style={styles.infoCardDesc}>
-                                        <Text style={styles.infoLabel}>Descrição</Text>
-                                        <Text style={styles.infoDesc}>
-                                            {orcamentoSelecionado?.description ?? orcamentoSelecionado?.descricao ?? ""}
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.infoCard}>
-                                        <Text style={styles.infoLabel}>Gasto Atual</Text>
-                                        <Text style={styles.infoValue}>
-                                            {formatCurrency(orcamentoSelecionado?.gasto ?? 0)}
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.infoCard}>
-                                        <Text style={styles.infoLabel}>Limite</Text>
-                                        <Text style={styles.infoValue}>
-                                            {formatCurrency(orcamentoSelecionado?.limite ?? 0)}
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.infoCard}>
-                                        <Text style={styles.infoLabel}>Utilizado</Text>
-                                        <Text style={[
-                                            styles.infoValue,
+                            {orcamentoSelecionado ? (
+                                <>
+                                    <View
+                                        style={[
+                                            styles.modalHeader,
                                             {
-                                                color: obterCor(
+                                                backgroundColor: obterCor(
                                                     obterPorcentagem(
-                                                        orcamentoSelecionado?.gasto || 0,
-                                                        orcamentoSelecionado?.limite || 1
+                                                        getGasto(orcamentoSelecionado),
+                                                        getLimite(orcamentoSelecionado) || 1
                                                     )
-                                                )
-                                            }
-                                        ]}>
-                                            {obterPorcentagem(
-                                                orcamentoSelecionado?.gasto || 0,
-                                                orcamentoSelecionado?.limite || 1
-                                            )}
-                                            %
-                                        </Text>
+                                                ),
+                                            },
+                                        ]}
+                                    >
+                                        <View style={styles.modalHeaderTop}>
+                                            <TouchableOpacity
+                                                style={styles.iconButton}
+                                                onPress={() => setModalVisible(false)}
+                                            >
+                                                <X size={24} color={COLORS.white} />
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                style={styles.iconButton}
+                                                onPress={handleDeleteBudget}
+                                                disabled={deletando}
+                                            >
+                                                <Trash2 size={22} color={COLORS.white} />
+                                            </TouchableOpacity>
+                                        </View>
+
+                                        <View style={styles.modalIconContainer}>
+                                            <View style={[styles.modalIcon, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                                                {getCategoryIcon(
+                                                    orcamentoSelecionado.title,
+                                                    32,
+                                                    COLORS.white
+                                                )}
+                                            </View>
+                                        </View>
+
+                                        <Text style={styles.modalTitle}>{orcamentoSelecionado.title}</Text>
+                                        <Text style={styles.modalSubtitle}>{getCategoriaNome(orcamentoSelecionado)}</Text>
+                                        
+                                        {getDescricao(orcamentoSelecionado) ? (
+                                            <Text style={styles.modalDescription}>
+                                                {getDescricao(orcamentoSelecionado)}
+                                            </Text>
+                                        ) : null}
                                     </View>
 
-                                    <View style={styles.infoCard}>
-                                        <Text style={styles.infoLabel}>Status</Text>
-                                        <Text
-                                            style={[
-                                                styles.infoValue,
-                                                {
-                                                    color:
-                                                        obterPorcentagem(
-                                                            orcamentoSelecionado?.gasto || 0,
-                                                            orcamentoSelecionado?.limite || 1
-                                                        ) >= 100
-                                                            ? COLORS.danger
-                                                            : COLORS.success,
-                                                },
-                                            ]}
-                                        >
-                                            {obterPorcentagem(
-                                                orcamentoSelecionado?.gasto || 0,
-                                                orcamentoSelecionado?.limite || 1
-                                            ) >= 100
-                                                ? "Limite Excedido"
-                                                : "Dentro do Limite"}
-                                        </Text>
+                                    <View style={styles.modalBody}>
+                                        <View style={styles.infoGrid}>
+                                            {getDescricao(orcamentoSelecionado) ? (
+                                                <View style={styles.infoCardDesc}>
+                                                    <Text style={styles.infoLabel}>Descrição</Text>
+                                                    <Text style={styles.infoDesc}>
+                                                        {getDescricao(orcamentoSelecionado)}
+                                                    </Text>
+                                                </View>
+                                            ) : null}
+
+                                            <View style={styles.infoCard}>
+                                                <Text style={styles.infoLabel}>Gasto Atual</Text>
+                                                <Text style={styles.infoValue}>
+                                                    {formatCurrency(getGasto(orcamentoSelecionado))}
+                                                </Text>
+                                            </View>
+
+                                            <View style={styles.infoCard}>
+                                                <Text style={styles.infoLabel}>Limite</Text>
+                                                <Text style={styles.infoValue}>
+                                                    {formatCurrency(getLimite(orcamentoSelecionado))}
+                                                </Text>
+                                            </View>
+
+                                            <View style={styles.infoCard}>
+                                                <Text style={styles.infoLabel}>Utilizado</Text>
+                                                <Text style={[
+                                                    styles.infoValue,
+                                                    {
+                                                        color: obterCor(
+                                                            obterPorcentagem(
+                                                                getGasto(orcamentoSelecionado),
+                                                                getLimite(orcamentoSelecionado) || 1
+                                                            )
+                                                        )
+                                                    }
+                                                ]}>
+                                                    {obterPorcentagem(
+                                                        getGasto(orcamentoSelecionado),
+                                                        getLimite(orcamentoSelecionado) || 1
+                                                    )}
+                                                    %
+                                                </Text>
+                                            </View>
+
+                                            <View style={styles.infoCard}>
+                                                <Text style={styles.infoLabel}>Status</Text>
+                                                <Text
+                                                    style={[
+                                                        styles.infoValue,
+                                                        {
+                                                            color:
+                                                                obterPorcentagem(
+                                                                    getGasto(orcamentoSelecionado),
+                                                                    getLimite(orcamentoSelecionado) || 1
+                                                                ) >= 100
+                                                                    ? COLORS.danger
+                                                                    : COLORS.success,
+                                                        },
+                                                    ]}
+                                                >
+                                                    {obterPorcentagem(
+                                                        getGasto(orcamentoSelecionado),
+                                                        getLimite(orcamentoSelecionado) || 1
+                                                    ) >= 100
+                                                        ? "Limite Excedido"
+                                                        : "Dentro do Limite"}
+                                                </Text>
+                                            </View>
+
+                                            <TouchableOpacity
+                                                style={styles.editBtn}
+                                                onPress={handleEdit}
+                                            >
+                                                <SquarePen color={COLORS.white} />
+                                                <Text style={{ color: COLORS.white, fontWeight: 'bold', fontSize: 18 }}>Editar</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
-                                    <TouchableOpacity
-                                        style={styles.editBtn}
-                                        onPress={handleEdit}
-                                    >
-                                        <SquarePen color={COLORS.white} />
-                                        <Text style={{ color: COLORS.white, fontWeight: 'bold', fontSize: 18 }}>Editar</Text>
-                                    </TouchableOpacity>
+                                </>
+                            ) : (
+                                <View style={styles.loadingContainer}>
+                                    <Text style={styles.loadingText}>Carregando...</Text>
                                 </View>
-                            </View>
+                            )}
                         </View>
                     </View>
                 </Modal>
@@ -416,7 +491,7 @@ const styles = StyleSheet.create({
     },
     topCardValue: {
         color: COLORS.primary,
-        fontSize: 16,
+        fontSize: 12,
         fontWeight: "bold",
         letterSpacing: 0.3,
     },
@@ -616,6 +691,13 @@ const styles = StyleSheet.create({
         textAlign: "center",
         letterSpacing: 0.3,
     },
+    modalSubtitle: {
+        color: COLORS.white,
+        fontSize: 18,
+        textAlign: "center",
+        letterSpacing: 0.3,
+        marginTop: 4,
+    },
     modalDescription: {
         color: 'rgba(255,255,255,0.9)',
         fontSize: 14,
@@ -641,7 +723,8 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.background,
         borderRadius: 14,
         padding: 16,
-        justifyContent: "space-between",
+        flexDirection: "column",
+        gap: 8,
     },
     infoLabel: {
         color: COLORS.gray,
@@ -659,6 +742,7 @@ const styles = StyleSheet.create({
         color: COLORS.black,
         fontSize: 16,
         letterSpacing: 0.3,
+        lineHeight: 22,
     },
     editBtn: {
         backgroundColor: COLORS.primary,
@@ -668,5 +752,15 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         gap: 10,
-    }
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 40,
+    },
+    loadingText: {
+        fontSize: 16,
+        color: COLORS.gray,
+    },
 });

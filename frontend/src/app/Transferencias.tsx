@@ -14,6 +14,7 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate } from "@/utils/formatDate";
 import { COLORS } from "@/constants/colors";
 import FiltroMensal from "@/components/FiltroMensal";
+import EmptyCont from "@/components/EmptyCont";
 
 export default function Transferencias() {
 
@@ -58,11 +59,11 @@ export default function Transferencias() {
     const totalReceitas = transacoesOrdenadas
         .filter(t => t.tipo === "receita")
         .reduce((soma, t) => soma + t.valor, 0);
-    
+
     const totalDespesas = transacoesOrdenadas
         .filter(t => t.tipo === "despesa")
         .reduce((soma, t) => soma + t.valor, 0);
-    
+
     const saldo = totalReceitas - totalDespesas;
 
     if (carregando) {
@@ -133,21 +134,19 @@ export default function Transferencias() {
                             </View>
 
                             {transacoesOrdenadas.length === 0 ? (
-                                <View style={styles.emptyContainer}>
-                                    <Text style={styles.emptyTitle}>Nenhuma transação encontrada</Text>
-                                    <Text style={styles.emptyText}>
-                                        Não há transações para o período selecionado.
-                                        Comece a adicionar suas receitas e despesas para acompanhar seu histórico financeiro.
-                                    </Text>
-                                </View>
+                                <EmptyCont
+                                    titulo="Nenhuma transação encontrada"
+                                    texto="Não há transações para o período selecionado.
+                                        Comece a adicionar suas receitas e despesas para acompanhar seu histórico financeiro."
+                                />
                             ) : (
                                 transacoesOrdenadas.map((item) => {
                                     const Icon = item.tipo === "receita" ? SquareArrowDown : SquareArrowUp;
                                     const iconColor = item.tipo === "receita" ? COLORS.success : COLORS.danger;
-                                    
+
                                     return (
-                                        <TouchableOpacity 
-                                            key={item.id} 
+                                        <TouchableOpacity
+                                            key={item.id}
                                             style={styles.transItem}
                                             activeOpacity={0.7}
                                             onPress={() => handleOpenDetails(item)}
@@ -156,8 +155,8 @@ export default function Transferencias() {
                                                 styles.iconContainer,
                                                 { backgroundColor: item.tipo === "receita" ? COLORS.chart_income + '15' : COLORS.chart_expense + '15' }
                                             ]}>
-                                                <Icon 
-                                                    size={28} 
+                                                <Icon
+                                                    size={28}
                                                     color={iconColor}
                                                     strokeWidth={1.5}
                                                 />
@@ -217,7 +216,7 @@ export default function Transferencias() {
                     }}
                     transacao={transacaoSelecionada}
                 />
-                
+
             </SafeAreaView>
         </SafeAreaProvider>
     );
@@ -287,9 +286,8 @@ const styles = StyleSheet.create({
         letterSpacing: 0.3,
     },
     resumoValor: {
-        fontSize: 16,
+        fontSize: 14,
         fontWeight: "bold",
-        letterSpacing: 0.2,
     },
     receitaValor: {
         color: COLORS.success,
@@ -396,33 +394,5 @@ const styles = StyleSheet.create({
     },
     valorDespesa: {
         color: COLORS.danger,
-    },
-    emptyContainer: {
-        backgroundColor: COLORS.white,
-        borderRadius: 16,
-        padding: 40,
-        alignItems: "center",
-        marginHorizontal: 20,
-        marginTop: 20,
-        borderWidth: 1,
-        borderColor: COLORS.borderGray,
-        borderStyle: "dashed",
-    },
-    emptyIcon: {
-        fontSize: 48,
-        marginBottom: 16,
-    },
-    emptyTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: COLORS.black,
-        marginBottom: 8,
-        textAlign: "center"
-    },
-    emptyText: {
-        fontSize: 14,
-        color: COLORS.gray,
-        textAlign: "center",
-        lineHeight: 20,
     },
 });

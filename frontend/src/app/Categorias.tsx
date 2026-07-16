@@ -5,7 +5,7 @@ import {
     ScrollView,
 } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { 
+import {
     Utensils,
     Bus,
     Home,
@@ -22,6 +22,7 @@ import { useCategorias } from "@/hooks/useCategorias";
 import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
+import EmptyCont from "@/components/EmptyCont";
 
 
 
@@ -70,7 +71,7 @@ function getCategoryProgressColor(category: string): string {
 
 
 export default function Categorias() {
-    
+
     const { mesAtual, anoAtual, carregando } = useDashboard();
 
     const { categoriasComPorcentagem, totalGastos } = useCategorias({ mes: mesAtual, ano: anoAtual });
@@ -102,12 +103,10 @@ export default function Categorias() {
                         </View>
 
                         {totalGastos === 0 || categoriasOrdenadas.length === 0 ? (
-                            <View style={styles.emptyContainer}>
-                                <Text style={styles.emptyTitle}>Nenhum gasto registrado</Text>
-                                <Text style={styles.emptyText}>
-                                    Comece a adicionar suas despesas para acompanhar seus gastos por categoria
-                                </Text>
-                            </View>
+                            <EmptyCont
+                                titulo="Nenhum gasto registrado esse mês"
+                                texto="Adicione suas primeiras despesas do mês para ver os gastos por categoria"
+                            />
                         ) : (
                             <View style={styles.cardsContainer}>
                                 {categoriasOrdenadas.map((item) => (
@@ -138,7 +137,7 @@ export default function Categorias() {
                                                 <View
                                                     style={[
                                                         styles.progress,
-                                                        { 
+                                                        {
                                                             width: `${item.progresso * 100}%`,
                                                             backgroundColor: getCategoryProgressColor(item.label)
                                                         }
@@ -284,25 +283,5 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         width: 45,
         textAlign: "right",
-    },
-    emptyContainer: {
-        backgroundColor: 'rgba(255,255,255,0.05)',
-        borderRadius: 16,
-        padding: 40,
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
-    },
-    emptyTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: COLORS.white,
-        marginBottom: 8,
-    },
-    emptyText: {
-        fontSize: 14,
-        color: COLORS.gray,
-        textAlign: "center",
-        lineHeight: 20,
     },
 });

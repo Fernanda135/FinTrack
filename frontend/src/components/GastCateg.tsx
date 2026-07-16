@@ -3,12 +3,15 @@ import { Link } from "expo-router";
 import Svg, { Circle } from "react-native-svg";
 
 import { useCategorias } from "@/hooks/useCategorias";
+import { useDashboard } from "@/hooks/useDashboard";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { COLORS } from "@/constants/colors";
+import EmptyCont from "./EmptyCont";
 
 export default function GastCateg() {
 
-    const { categoriasComPorcentagem, totalGastos } = useCategorias();
+    const { mesAtual, anoAtual, carregando } = useDashboard();
+    const { categoriasComPorcentagem, totalGastos } = useCategorias({ mes: mesAtual, ano: anoAtual });
 
     if (totalGastos === 0 || categoriasComPorcentagem.length === 0) {
         return (
@@ -18,12 +21,10 @@ export default function GastCateg() {
                     <Link href={"/Categorias"} style={styles.link}>Ver tudo</Link>
                 </View>
 
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyTitle}>Nenhum gasto registrado</Text>
-                    <Text style={styles.emptyText}>
-                        Adicione suas primeiras despesas para ver os gastos por categoria
-                    </Text>
-                </View>
+                <EmptyCont 
+                titulo="Nenhum gasto registrado esse mês"
+                texto="Adicione suas primeiras despesas do mês para ver os gastos por categoria"
+                />
             </View>
         );
     }
@@ -223,36 +224,5 @@ const styles = StyleSheet.create({
         color: COLORS.black,
         flexShrink: 0,
         marginLeft: 4,
-    },
-    emptyContainer: {
-        width: "100%",
-        backgroundColor: COLORS.white,
-        borderRadius: 12,
-        padding: 32,
-        alignItems: "center",
-        borderWidth: 1,
-        borderColor: COLORS.borderGray,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.05,
-        shadowRadius: 3.84,
-        elevation: 2,
-    },
-    emptyTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: COLORS.black,
-        marginBottom: 8,
-        letterSpacing: 0.2,
-    },
-    emptyText: {
-        fontSize: 13,
-        color: COLORS.gray,
-        textAlign: "center",
-        lineHeight: 20,
-        maxWidth: "80%",
     },
 });

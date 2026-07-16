@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList } from "react-native";
-import { X, ChevronDown } from "lucide-react-native";
+import { Modal, View, Text, TouchableOpacity, StyleSheet, TextInput, FlatList, Platform, ScrollView } from "react-native";
+import { X, ChevronDown, Calendar } from "lucide-react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 import { Accounts, Categories, Transactions } from "@/api/endpoints";
 import { formatCurrency, parseMoney } from "@/utils/formatCurrency";
+import { formatDate } from "@/utils/formatDate";
 import { emitDataChanged } from "@/utils/events";
 import { COLORS } from "@/constants/colors";
 import { showError, showInfo, showSuccess } from "@/components/Toast/toast";
-
-
 
 export default function NovaTransacaoModal({ visible, onClose }: any) {
 
@@ -17,6 +17,8 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
     const [conta, setConta] = useState("");
     const [categoria, setCategoria] = useState("");
     const [titulo, setTitulo] = useState("");
+    const [data, setData] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const [contaModal, setContaModal] = useState(false);
     const [categoriaModal, setCategoriaModal] = useState(false);
     const [contas, setContas] = useState<any[]>([]);
@@ -47,6 +49,10 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
         }
 
         const contaSelecionada = contas.find(c => c.id === conta);
+        if (!contaSelecionada) {
+            showError("Conta não encontrada");
+            return;
+        }
 
         const isCreditCard = contaSelecionada.type === "CREDIT_CARD" ||
             contaSelecionada.isCreditCard === true;
@@ -77,13 +83,14 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                 type: tipo === "entrada" ? "RECEITA" : "DESPESA",
                 accountId: conta,
                 categoryId: categoria,
-                date: new Date().toISOString(),
+                date: data.toISOString(),
             });
             setValor("");
             setConta("");
             setCategoria("");
             setTitulo("");
             setTipo("entrada");
+            setData(new Date());
             showSuccess("Transação realizada com sucesso!");
             emitDataChanged();
             onClose();
@@ -123,7 +130,12 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                             </TouchableOpacity>
                         </View>
 
-                        <View style={styles.modalBody}>
+                        <ScrollView 
+                            style={styles.modalBody}
+                            showsVerticalScrollIndicator={false}
+                            contentContainerStyle={styles.scrollContent}
+                            keyboardShouldPersistTaps="handled"
+                        >
                             <View style={styles.typeContainer}>
                                 <TouchableOpacity onPress={() => setTipo("entrada")} style={[
                                     styles.typeButton,
@@ -143,11 +155,9 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                         tipo === "saida" && styles.typeTextActive]}
                                     >Saída</Text>
                                 </TouchableOpacity>
-
                             </View>
 
                             <View style={styles.valueContainer}>
-
                                 <Text style={styles.valueLabel}>insira o valor</Text>
                                 <TextInput
                                     style={styles.valueInput}
@@ -192,21 +202,37 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                 </View>
                             </TouchableOpacity>
 
+                            <TouchableOpacity
+                                style={styles.selectContainer}
+                                onPress={() => setShowDatePicker(true)}
+                            >
+                                <Text style={styles.selectLabel}>Data</Text>
+                                <View style={styles.selectButton}>
+                                    <Text style={styles.selectText}>
+                                        {formatDate(data.toISOString())}
+                                    </Text>
+                                    <Calendar size={20} color={COLORS.gray} />
+                                </View>
+                            </TouchableOpacity>
+
                             <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmar} disabled={saving} >
                                 <Text style={styles.confirmText}>{saving ? "salvando..." : "confirmar"}</Text>
                             </TouchableOpacity>
-                        </View>
+                            
+                            {/* Espaço extra no final para garantir rolagem */}
+                            <View style={styles.bottomSpacer} />
+                        </ScrollView>
                     </View>
                 </View>
             </Modal>
-
 
             <Modal
                 transparent={true}
                 visible={contaModal}
                 animationType="fade"
+                onRequestClose={() => setContaModal(false)}
             >
-                <TouchableOpacity style={styles.selectModalOverlay} onPress={() => setContaModal(false)} >
+                <TouchableOpacity style={styles.selectModalOverlay} activeOpacity={1} onPress={() => setContaModal(false)} >
                     <View style={styles.selectModalContent}>
                         <Text style={styles.selectModalTitle}>Selecione uma conta</Text>
                         <FlatList
@@ -216,8 +242,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                 <TouchableOpacity style={styles.selectOption} onPress={() => {
                                     setConta(item.id);
                                     setContaModal(false);
-                                }}
-                                >
+                                }}>
                                     <Text style={styles.selectOptionText}>{item.label}</Text>
                                 </TouchableOpacity>
                             )}
@@ -226,13 +251,13 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                 </TouchableOpacity>
             </Modal>
 
-
             <Modal
                 transparent={true}
                 visible={categoriaModal}
                 animationType="fade"
+                onRequestClose={() => setCategoriaModal(false)}
             >
-                <TouchableOpacity style={styles.selectModalOverlay} onPress={() => setCategoriaModal(false)} >
+                <TouchableOpacity style={styles.selectModalOverlay} activeOpacity={1} onPress={() => setCategoriaModal(false)} >
                     <View style={styles.selectModalContent}>
                         <Text style={styles.selectModalTitle}>Selecione uma categoria</Text>
                         <FlatList
@@ -242,8 +267,7 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                                 <TouchableOpacity style={styles.selectOption} onPress={() => {
                                     setCategoria(item.id);
                                     setCategoriaModal(false);
-                                }}
-                                >
+                                }}>
                                     <Text style={styles.selectOptionText}>{item.label}</Text>
                                 </TouchableOpacity>
                             )}
@@ -251,6 +275,20 @@ export default function NovaTransacaoModal({ visible, onClose }: any) {
                     </View>
                 </TouchableOpacity>
             </Modal>
+
+            {showDatePicker && (
+                <DateTimePicker
+                    value={data}
+                    mode="date"
+                    display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                    onChange={(event, selectedDate) => {
+                        setShowDatePicker(false);
+                        if (selectedDate) {
+                            setData(selectedDate);
+                        }
+                    }}
+                />
+            )}
         </>
     );
 }
@@ -277,7 +315,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 24,
+        marginBottom: 16,
         paddingBottom: 12,
         borderBottomWidth: 1,
         borderBottomColor: COLORS.lightGray || "#f0f0f0",
@@ -291,10 +329,16 @@ const styles = StyleSheet.create({
     modalBody: {
         flex: 1,
     },
+    scrollContent: {
+        paddingBottom: 20,
+    },
+    bottomSpacer: {
+        height: 20,
+    },
     typeContainer: {
         flexDirection: "row",
         gap: 8,
-        marginBottom: 24,
+        marginBottom: 20,
         backgroundColor: COLORS.background || "#f5f5f5",
         borderRadius: 12,
         padding: 4,
@@ -323,7 +367,7 @@ const styles = StyleSheet.create({
         fontWeight: "700",
     },
     valueContainer: {
-        marginBottom: 24,
+        marginBottom: 20,
         backgroundColor: COLORS.background || "#f5f5f5",
         borderRadius: 16,
         padding: 16,
@@ -348,7 +392,7 @@ const styles = StyleSheet.create({
         minWidth: 200,
     },
     titleContainer: {
-        marginBottom: 20,
+        marginBottom: 16,
     },
     titleLabel: {
         color: COLORS.darkBackground,
@@ -366,7 +410,7 @@ const styles = StyleSheet.create({
         borderColor: "transparent",
     },
     selectContainer: {
-        marginBottom: 20,
+        marginBottom: 16,
     },
     selectLabel: {
         color: COLORS.darkBackground,
@@ -396,7 +440,7 @@ const styles = StyleSheet.create({
         paddingVertical: 16,
         borderRadius: 12,
         alignItems: "center",
-        marginTop: 15,
+        marginTop: 10,
         shadowColor: COLORS.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
