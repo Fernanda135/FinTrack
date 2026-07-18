@@ -12,6 +12,7 @@ import { SquareArrowUp, SquareArrowDown } from "lucide-react-native";
 export default function UltTransac() {
 
     const { transacoesDoMes } = useDashboard();
+    const recentTransactions = transacoesDoMes.slice(0, 5);
 
     if (transacoesDoMes.length === 0) {
         return (
@@ -37,8 +38,8 @@ export default function UltTransac() {
             </View>
 
             <View style={styles.transactionsList}>
-                {transacoesDoMes.map((item, index) => {
-                    const isLast = index === transacoesDoMes.length - 1;
+                {recentTransactions.map((item, index) => {
+                    const isLast = index === recentTransactions.length - 1;
                     const Icon = item.tipo === "receita" ? SquareArrowDown : SquareArrowUp;
                     const iconColor = item.tipo === "receita" ? COLORS.success : COLORS.danger;
 
